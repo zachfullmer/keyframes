@@ -1,21 +1,22 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { initCanvas } from './Canvas.js'
 
-class App extends Component {
+class CanvasComponent extends React.Component {
+  componentDidMount() {
+    const ctx = this.refs.canvas.getContext('2d');
+    initCanvas(ctx);
+  }
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+      <div>
+        <div id="canvasContainer">
+          <canvas ref="canvas" id="drawingArea" width={300} height={300} />
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
       </div>
     );
   }
 }
 
-export default App;
+ReactDOM.render(<CanvasComponent />, document.getElementById('root'));
+export default CanvasComponent;
