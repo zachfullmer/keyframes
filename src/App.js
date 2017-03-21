@@ -1,9 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import $ from 'jquery'
 import { initCanvas } from './Canvas.js'
+import { initEvents } from './Events.js'
+
 
 class CanvasComponent extends React.Component {
   componentDidMount() {
+    initEvents();
     const ctx = this.refs.canvas.getContext('2d');
     initCanvas(ctx);
   }
