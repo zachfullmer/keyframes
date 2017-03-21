@@ -49,6 +49,7 @@ export function Hitbox(circle = false) {
 const maxDelta = 20;
 // canvas stuff
 var ctx = null;
+var canvas = null;
 var hitboxes = [];
 export function addHitbox(hitbox) {
     hitboxes.push(hitbox);
@@ -72,8 +73,16 @@ export function checkHitboxEvents(event) {
 
 export function initCanvas(context) {
     ctx = context;
-    let canvas = $('#drawingArea')[0];
+    canvas = $('#drawingArea')[0];
     window.requestAnimationFrame(drawCanvas);
+}
+
+function resizeCanvas() {
+    if (ctx.canvas.width != window.innerWidth ||
+        ctx.canvas.height != window.innerHeight) {
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+    }
 }
 
 var lastT = null;
@@ -83,11 +92,11 @@ function drawCanvas(timestamp) {
     }
     let delta = Math.min(timestamp - lastT, maxDelta);
     lastT = timestamp;
-    ctx.canvas.width = window.innerWidth;
-    ctx.canvas.height = window.innerHeight;
+    resizeCanvas();
     // animation
     //
     // drawing
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let h in hitboxes) {
         hitboxes[h].draw(ctx);
     }
