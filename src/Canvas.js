@@ -82,6 +82,9 @@ function resizeCanvas() {
         ctx.canvas.height != window.innerHeight) {
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
+        if (canvas.resize !== undefined) {
+            canvas.resize(ctx.canvas.width, ctx.canvas.height);
+        }
     }
 }
 
