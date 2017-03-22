@@ -47,9 +47,9 @@ export function VectorDrawing() {
         }
     }
     this.update = () => {
-        rootPnt.update(null);
+        this.rootPnt.update(null);
     }
     this.debugDraw = (ctx) => {
-        rootPnt.draw(ctx);
+        this.rootPnt.draw(ctx);
     }
 }
