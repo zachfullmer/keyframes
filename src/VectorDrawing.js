@@ -6,23 +6,23 @@ export function pnt() {
     this.o = [0, 0]; // origin
     this.r = 0; // rotation (radians)
     this.s = [1.0, 1.0]; // scale
-    var final = [0, 0];
+    this.final = [0, 0];
     var children = [];
     this.addChild = (child) => {
         children.push(child);
     }
     this.update = (parent) => {
-        final = opList(final, this.p, (a, b) => b);
+        this.final = opList(this.final, this.p, (a, b) => b);
         if (parent !== null) {
             // scale
-            final = opList(final, parent.s, (a, b) => a * b);
+            this.final = opList(this.final, parent.s, (a, b) => a * b);
             // rotate
-            let polar = cartToPolar(final);
+            let polar = cartToPolar(this.final);
             polar[1] += parent.r;
-            final = polarToCart(polar);
+            this.final = polarToCart(polar);
             // translate
             let pos = opList(parent.p, parent.o, (a, b) => a + b);
-            final = opList(final, pos, (a, b) => a + b);
+            this.final = opList(this.final, pos, (a, b) => a + b);
         }
         for (let c in children) {
             children[c].update(this);
@@ -30,11 +30,38 @@ export function pnt() {
     }
     this.draw = (ctx) => {
         ctx.beginPath();
-        ctx.rect(final[0], final[1], 1, 1);
+        ctx.rect(this.final[0], this.final[1], 1, 1);
         ctx.fillStyle = 'white';
         ctx.fill();
         for (let c in children) {
             children[c].draw(ctx);
+        }
+    }
+}
+
+
+export function shape(type, points, color) {
+    this.type = type;
+    this.points = points;
+    this.color = color;
+    this.draw = (ctx) => {
+        if (this.type == 'polygon') {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(points[0].final[0], points[0].final[1]);
+            for (let p = 1; p < points.length; p++) {
+                ctx.lineTo(points[p].final[0], points[p].final[1]);
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+        else if (this.type == 'line') {
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(points[0].final[0], points[0].final[1]);
+            ctx.lineTo(points[1].final[0], points[1].final[1]);
+            ctx.closePath();
+            ctx.stroke();
         }
     }
 }
