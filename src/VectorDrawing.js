@@ -13,12 +13,12 @@ export function pnt() {
     this.update = (parent) => {
         final = opList(final, this.p, (a, b) => b);
         if (parent !== null) {
+            // scale
+            final = opList(final, parent.s, (a, b) => a * b);
             // rotate
             let polar = cartToPolar(final);
             polar[1] += parent.r;
             final = polarToCart(polar);
-            // scale
-            final = opList(final, parent.s, (a, b) => a * b);
             // translate
             final = opList(final, parent.p, (a, b) => a + b);
         }
