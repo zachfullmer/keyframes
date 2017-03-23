@@ -2,9 +2,10 @@ import { polarToCart, cartToPolar, opList } from './Helpers.js'
 
 
 export function pnt() {
-    this.p = [0, 0];
-    this.r = 0;
-    this.s = [1.0, 1.0];
+    this.p = [0, 0]; // position
+    this.o = [0, 0]; // origin
+    this.r = 0; // rotation (radians)
+    this.s = [1.0, 1.0]; // scale
     var final = [0, 0];
     var children = [];
     this.addChild = (child) => {
@@ -20,7 +21,8 @@ export function pnt() {
             polar[1] += parent.r;
             final = polarToCart(polar);
             // translate
-            final = opList(final, parent.p, (a, b) => a + b);
+            let pos = opList(parent.p, parent.o, (a, b) => a + b);
+            final = opList(final, pos, (a, b) => a + b);
         }
         for (let c in children) {
             children[c].update(this);
