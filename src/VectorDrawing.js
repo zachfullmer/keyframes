@@ -1,4 +1,4 @@
-import { polarToCart, cartToPolar, opList } from './Helpers.js'
+import { polarToCart, cartToPolar, opList, colorNameToHex } from './Helpers.js'
 
 
 export function pnt() {
@@ -43,7 +43,7 @@ export function pnt() {
 export function shape(type, points, color) {
     this.type = type;
     this.points = points;
-    this.color = color;
+    this.color = colorNameToHex(color);
     this.draw = (ctx) => {
         if (this.type == 'polygon') {
             ctx.fillStyle = color;
