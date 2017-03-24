@@ -40,7 +40,7 @@ export function pnt() {
 }
 
 
-export function shape(type, points, color) {
+export function shape(type, points, color = 'white') {
     this.type = type;
     this.points = points;
     this.color = colorNameToHex(color);
@@ -73,6 +73,15 @@ export function shape(type, points, color) {
             ctx.beginPath();
             ctx.arc(points[0].final[0], points[0].final[1], this.radius, 0, 2 * Math.PI, false);
             ctx.strokeStyle = color;
+            ctx.stroke();
+        }
+        else if (this.type == 'bezier') {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.moveTo(points[0].final[0], points[0].final[1]);
+            ctx.bezierCurveTo(points[1].final[0], points[1].final[1],
+                points[2].final[0], points[2].final[1],
+                points[3].final[0], points[3].final[1]);
             ctx.stroke();
         }
     }
