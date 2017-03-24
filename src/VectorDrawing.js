@@ -14,6 +14,8 @@ export function pnt() {
     this.update = (parent) => {
         this.final = opList(this.final, this.p, (a, b) => b);
         if (parent !== null) {
+            // origin
+            this.final = opList(this.final, parent.o, (a, b) => a + b);
             // scale
             this.final = opList(this.final, parent.s, (a, b) => a * b);
             // rotate
@@ -21,8 +23,7 @@ export function pnt() {
             polar[1] += parent.r;
             this.final = polarToCart(polar);
             // translate
-            let pos = opList(parent.p, parent.o, (a, b) => a + b);
-            this.final = opList(this.final, pos, (a, b) => a + b);
+            this.final = opList(this.final, parent.p, (a, b) => a + b);
         }
         for (let c in children) {
             children[c].update(this);
