@@ -65,13 +65,13 @@ export function shape(type, points, color) {
         }
         else if (this.type == 'circleF') {
             ctx.beginPath();
-            ctx.arc(points[0].final[0], points[0].final[1], 10, 0, 2 * Math.PI, false);
+            ctx.arc(points[0].final[0], points[0].final[1], this.radius, 0, 2 * Math.PI, false);
             ctx.fillStyle = color;
             ctx.fill();
         }
         else if (this.type == 'circleO') {
             ctx.beginPath();
-            ctx.arc(points[0].final[0], points[0].final[1], 10, 0, 2 * Math.PI, false);
+            ctx.arc(points[0].final[0], points[0].final[1], this.radius, 0, 2 * Math.PI, false);
             ctx.strokeStyle = color;
             ctx.stroke();
         }
