@@ -19,7 +19,7 @@ export function pnt() {
         },
         "r": {
             "get": function () { return _r; },
-            "set": function (r) { _r = parseInt(r); }
+            "set": function (r) { _r = parseFloat(r); }
         },
         "s": {
             "get": function () { return _s; },
