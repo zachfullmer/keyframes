@@ -7,24 +7,36 @@ export function pnt() {
     this.o = [0, 0]; // origin
     this.r = 0; // rotation (radians)
     this.s = [1.0, 1.0]; // scale
-    this.final = [0, 0];
+    this.pf = [0, 0];
+    this.of = [0, 0];
+    this.rf = 0;
+    this.sf = [1.0, 1.0];
     var children = [];
     this.addChild = (child) => {
         children.push(child);
     }
     this.update = (parent) => {
-        this.final = opList(this.final, this.p, (a, b) => b);
-        if (parent !== null) {
+        this.pf = opList(this.pf, this.p, (a, b) => b);
+        if (parent === null) {
+            this.pf = this.p;
+            this.of = this.o;
+            this.rf = this.r;
+            this.sf = this.s;
+        }
+        else {
             // origin
-            this.final = opList(this.final, parent.o, (a, b) => a + b);
+            this.pf = opList(this.pf, parent.of, (a, b) => a + b);
+            this.of = opList(this.o, parent.of, (a, b) => a + b);
             // scale
-            this.final = opList(this.final, parent.s, (a, b) => a * b);
+            this.pf = opList(this.pf, parent.sf, (a, b) => a * b);
+            this.sf = opList(this.s, parent.sf, (a, b) => a * b);
             // rotate
-            let polar = cartToPolar(this.final);
-            polar[1] += parent.r;
-            this.final = polarToCart(polar);
+            let polar = cartToPolar(this.pf);
+            polar[1] += parent.rf;
+            this.pf = polarToCart(polar);
+            this.rf = this.r + parent.rf;
             // translate
-            this.final = opList(this.final, parent.p, (a, b) => a + b);
+            this.pf = opList(this.pf, parent.pf, (a, b) => a + b);
         }
         for (let c in children) {
             children[c].update(this);
@@ -32,7 +44,7 @@ export function pnt() {
     }
     this.draw = (ctx) => {
         ctx.beginPath();
-        ctx.rect(this.final[0], this.final[1], 1, 1);
+        ctx.rect(this.pf[0], this.pf[1], 1, 1);
         ctx.fillStyle = 'white';
         ctx.fill();
         for (let c in children) {
