@@ -2,6 +2,7 @@ import { polarToCart, cartToPolar, opList, colorNameToHex } from './Helpers.js'
 
 
 export function pnt() {
+    this.name = '';
     this.p = [0, 0]; // position
     this.o = [0, 0]; // origin
     this.r = 0; // rotation (radians)
@@ -37,6 +38,18 @@ export function pnt() {
         for (let c in children) {
             children[c].draw(ctx);
         }
+    }
+    this.getPointByName = (name) => {
+        if (this.name == name) {
+            return this;
+        }
+        for (let c in children) {
+            let result = children[c].getPointByName(name);
+            if (result !== null) {
+                return result;
+            }
+        }
+        return null;
     }
 }
 
@@ -102,5 +115,8 @@ export function VectorDrawing() {
     }
     this.debugDraw = (ctx) => {
         this.rootPnt.draw(ctx);
+    }
+    this.getPointByName = (name) => {
+        return this.rootPnt.getPointByName(name);
     }
 }
