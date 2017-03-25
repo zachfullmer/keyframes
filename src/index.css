@@ -6,8 +6,53 @@ body, #root, #canvasContainer {
   overflow: hidden;
 }
 
+body.noscroll {
+  position: fixed;
+  overflow-y: scroll;
+  width: 100%;
+}
+
 canvas {
   background-color: black;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+}
+
+#pointListContainer {
+  width: 200px;
+  height: 300px;
+  padding: 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  resize: both;
+}
+
+#propertiesContainer {
+  width: 200px;
+  height: 300px;
+}
+
+.ui-panel {
+  padding: 10px;
+  border: 1px solid #555;
+  background-color: #000;
+  color: #fff;
+  position: relative;
+  z-index: 2;
+}
+
+input[type=number] {
+  border: 1px solid #555;
+  background-color: #111;
+  color: #fff;
+  margin-right: 5px;
+  width: 50px;
+}
+
+.prop-group {
+  margin-bottom: 10px;
 }
 
 ul {
@@ -46,14 +91,4 @@ ul {
 
 .point-list {
   cursor: pointer;
-}
-
-#pointListContainer {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 200px;
-  height: 500px;
-  overflow-y: auto;
-  border: 1px solid #555;
 }

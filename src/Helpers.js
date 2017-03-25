@@ -71,3 +71,6 @@ export function colorNameToHex(color) {
 
     return false;
 }
+
+
+export const degrees = 57.2958;

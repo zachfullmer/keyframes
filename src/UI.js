@@ -1,9 +1,9 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
-import { opList } from './Helpers.js'
+import { opList, degrees } from './Helpers.js'
 
 
-var selectedPoint = vec.rootPnt;
+export var selectedPoint = vec.rootPnt;
 export function selectPoint(event) {
     let name = event.target.id.split(/-(.+)/)[1];
     let p = vec.getPointByName(name);
@@ -15,6 +15,13 @@ export function selectPoint(event) {
     }
     selectedPoint = p;
     $('#' + event.target.id).addClass('selected-point');
+    $('#pxProp').val(selectedPoint.p[0]);
+    $('#pyProp').val(selectedPoint.p[1]);
+    $('#oxProp').val(selectedPoint.o[0]);
+    $('#oyProp').val(selectedPoint.o[1]);
+    $('#rProp').val(selectedPoint.r * degrees);
+    $('#sxProp').val(selectedPoint.s[0]);
+    $('#syProp').val(selectedPoint.s[1]);
 }
 
 var currentPointID = 1;
@@ -38,4 +45,5 @@ export function initUI() {
     let rootName = 'p0';
     vec.rootPnt.name = rootName;
     $('#pointListContainer').append('<ul id="pointList-' + rootName + '"></ul>');
+    $('body').addClass('noscroll');
 }
