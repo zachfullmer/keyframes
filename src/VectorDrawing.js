@@ -3,10 +3,29 @@ import { polarToCart, cartToPolar, opList, colorNameToHex } from './Helpers.js'
 
 export function pnt() {
     this.name = '';
-    this.p = [0, 0]; // position
-    this.o = [0, 0]; // origin
-    this.r = 0; // rotation (radians)
-    this.s = [1.0, 1.0]; // scale
+    var _p = [0, 0]; // position
+    var _o = [0, 0]; // origin
+    var _r = 0; // rotation (radians)
+    var _s = [1.0, 1.0]; // scale
+    // getters and setters
+    Object.defineProperties(this, {
+        "p": {
+            "get": function () { return _p; },
+            "set": function (p) { _p = p; }
+        },
+        "o": {
+            "get": function () { return _o; },
+            "set": function (o) { _o = o; }
+        },
+        "r": {
+            "get": function () { return _r; },
+            "set": function (r) { _r = r; }
+        },
+        "s": {
+            "get": function () { return _s; },
+            "set": function (s) { _s = s; }
+        }
+    });
     this.pf = [0, 0];
     this.of = [0, 0];
     this.rf = 0;
