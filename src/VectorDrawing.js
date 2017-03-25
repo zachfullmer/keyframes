@@ -11,19 +11,19 @@ export function pnt() {
     Object.defineProperties(this, {
         "p": {
             "get": function () { return _p; },
-            "set": function (p) { _p = p; }
+            "set": function (p) { _p[0] = parseInt(p[0]); _p[1] = parseInt(p[1]); }
         },
         "o": {
             "get": function () { return _o; },
-            "set": function (o) { _o = o; }
+            "set": function (o) { _o[0] = parseInt(o[0]); _o[1] = parseInt(o[1]); }
         },
         "r": {
             "get": function () { return _r; },
-            "set": function (r) { _r = r; }
+            "set": function (r) { _r = parseInt(r); }
         },
         "s": {
             "get": function () { return _s; },
-            "set": function (s) { _s = s; }
+            "set": function (s) { _s[0] = parseInt(s[0]); _s[1] = parseInt(s[1]); }
         }
     });
     this.pf = [0, 0];
