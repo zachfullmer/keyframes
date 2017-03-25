@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { pnt, VectorDrawing, shape } from './VectorDrawing.js'
 
 
 export function Hitbox(circle = false) {
@@ -71,10 +72,12 @@ export function checkHitboxEvents(event) {
 }
 
 
+export var vec = new VectorDrawing();
 export function initCanvas(context) {
     ctx = context;
     canvas = $('#drawingArea')[0];
     window.requestAnimationFrame(drawCanvas);
+    vec.rootPnt.p = [300, 200];
 }
 
 function resizeCanvas() {
@@ -97,12 +100,15 @@ function drawCanvas(timestamp) {
     lastT = timestamp;
     resizeCanvas();
     // animation
+    vec.update();
     //
     // drawing
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let h in hitboxes) {
         hitboxes[h].draw(ctx);
     }
+    vec.draw(ctx);
+    vec.debugDraw(ctx);
     //
     window.requestAnimationFrame(drawCanvas);
 }
