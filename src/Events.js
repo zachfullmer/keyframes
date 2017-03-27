@@ -22,16 +22,16 @@ export function initEvents() {
     });
     //http://stackoverflow.com/questions/1056562/how-do-i-prevent-scrolling-with-arrow-keys-but-not-the-mouse
     var ar = new Array(33, 34, 35, 36, 37, 38, 39, 40);
-    $('#pxProp, #pyProp').change(() => {
+    $('#pxProp, #pyProp').on('input', () => {
         selectedPoint.p = [$('#pxProp').val(), $('#pyProp').val()];
     });
-    $('#oxProp, #oyProp').change(() => {
+    $('#oxProp, #oyProp').on('input', () => {
         selectedPoint.o = [$('#oxProp').val(), $('#oyProp').val()];
     });
-    $('#rProp').change(() => {
+    $('#rProp').on('input', () => {
         selectedPoint.r = $('#rProp').val() / degrees;
     });
-    $('#sxProp, #syProp').change(() => {
+    $('#sxProp, #syProp').on('input', () => {
         selectedPoint.s = [$('#sxProp').val(), $('#syProp').val()];
     });
 }
