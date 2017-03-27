@@ -3,19 +3,19 @@ import { polarToCart, cartToPolar, opList, colorNameToHex } from './Helpers.js'
 
 export function pnt() {
     this.name = '';
-    var _p = [0, 0]; // position
-    var _o = [0, 0]; // origin
-    var _r = 0; // rotation (radians)
+    var _p = [0.0, 0.0]; // position
+    var _o = [0.0, 0.0]; // origin
+    var _r = 0.0; // rotation (radians)
     var _s = [1.0, 1.0]; // scale
     // getters and setters
     Object.defineProperties(this, {
         "p": {
             "get": function () { return _p; },
-            "set": function (p) { _p[0] = parseInt(p[0]); _p[1] = parseInt(p[1]); }
+            "set": function (p) { _p[0] = parseFloat(p[0]); _p[1] = parseFloat(p[1]); }
         },
         "o": {
             "get": function () { return _o; },
-            "set": function (o) { _o[0] = parseInt(o[0]); _o[1] = parseInt(o[1]); }
+            "set": function (o) { _o[0] = parseFloat(o[0]); _o[1] = parseFloat(o[1]); }
         },
         "r": {
             "get": function () { return _r; },
@@ -23,12 +23,12 @@ export function pnt() {
         },
         "s": {
             "get": function () { return _s; },
-            "set": function (s) { _s[0] = parseInt(s[0]); _s[1] = parseInt(s[1]); }
+            "set": function (s) { _s[0] = parseFloat(s[0]); _s[1] = parseFloat(s[1]); }
         }
     });
-    this.pf = [0, 0];
-    this.of = [0, 0];
-    this.rf = 0;
+    this.pf = [0.0, 0.0];
+    this.of = [0.0, 0.0];
+    this.rf = 0.0;
     this.sf = [1.0, 1.0];
     var children = [];
     this.addChild = (child) => {
