@@ -3,9 +3,8 @@ import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { opList, degrees } from './Helpers.js'
 
 
-export var selectedPoint = vec.rootPnt;
-export function selectPoint(event) {
-    let name = event.target.id.split(/-(.+)/)[1];
+export var selectedPoint = null;
+export function selectPoint(name) {
     let p = vec.getPointByName(name);
     if (p === null) {
         return;
@@ -14,7 +13,7 @@ export function selectPoint(event) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
     selectedPoint = p;
-    $('#' + event.target.id).addClass('selected-point');
+    $('#' + name).addClass('selected-point');
     $('#pxProp').val(selectedPoint.p[0]);
     $('#pyProp').val(selectedPoint.p[1]);
     $('#oxProp').val(selectedPoint.o[0]);
@@ -35,15 +34,17 @@ export function addPoint(point, parent = selectedPoint) {
     let listId = 'pointList-' + point.name;
     let itemId = 'pointItem-' + point.name;
     $(parentListId).append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + point.name + '</li><ul id="' + listId + '"></ul></div>');
-    $('#' + itemId).click(selectPoint);
+    $('#' + itemId).click(selectPoint.bind(null, point.name));
     parent.addChild(point);
     currentPointID += 1;
 }
 
 
 export function initUI() {
-    let rootName = 'p0';
-    vec.rootPnt.name = rootName;
-    $('#pointListContainer').append('<ul id="pointList-' + rootName + '"></ul>');
     $('body').addClass('noscroll');
+    let rootName = 'p0';
+    $('#pointListContainer').append('<ul id="pointList-' + rootName + '"></ul>');
+    vec.rootPnt.name = rootName;
+    vec.rootPnt.p = [400, 400];
+    selectPoint(rootName);
 }

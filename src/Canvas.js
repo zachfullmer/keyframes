@@ -77,7 +77,6 @@ export function initCanvas(context) {
     ctx = context;
     canvas = $('#drawingArea')[0];
     window.requestAnimationFrame(drawCanvas);
-    vec.rootPnt.p = [300, 200];
 }
 
 function resizeCanvas() {
