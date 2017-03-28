@@ -6,6 +6,7 @@ import { shape } from './VectorDrawing.js'
 
 export var selectedPoint = null;
 export var selectedShape = null;
+export var editedShape = null;
 var shapes = {
     polygon: {
         unicode: '\u25A0'
@@ -32,6 +33,13 @@ function genShapeListName(shape) {
 
 
 export function setPropWindow(type) {
+    let shape = null;
+    if (selectedShape !== null) {
+        shape = selectedShape;
+    }
+    else {
+        shape = editedShape;
+    }
     $('.props-box').hide();
     if (type == 'point') {
         $('#pxProp').val(selectedPoint.p[0]);
@@ -44,25 +52,25 @@ export function setPropWindow(type) {
         $('#pointPropsBox').show();
     }
     else if (type == 'polygon') {
-        $('#pcProp').val(selectedShape.color);
+        $('#pcProp').val(shape.color);
         $('#polygonPropsBox').show();
     }
     else if (type == 'line') {
-        $('#lcProp').val(selectedShape.color);
+        $('#lcProp').val(shape.color);
         $('#linePropsBox').show();
     }
     else if (type == 'circleF') {
-        $('#cfrProp').val(selectedShape.radius);
-        $('#cfcProp').val(selectedShape.color);
+        $('#cfrProp').val(shape.radius);
+        $('#cfcProp').val(shape.color);
         $('#circleFPropsBox').show();
     }
     else if (type == 'circleO') {
-        $('#corProp').val(selectedShape.radius);
-        $('#cocProp').val(selectedShape.color);
+        $('#corProp').val(shape.radius);
+        $('#cocProp').val(shape.color);
         $('#circleOPropsBox').show();
     }
     else if (type == 'bezier') {
-        $('#bcProp').val(selectedShape.color);
+        $('#bcProp').val(shape.color);
         $('#bezierPropsBox').show();
     }
 }
@@ -79,7 +87,12 @@ export function selectPoint(name) {
     if (selectedShape !== null) {
         $('#shapeItem-' + selectedShape.name).removeClass('selected-shape');
     }
+    if (editedShape !== null) {
+        $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
+    }
     selectedPoint = p;
+    selectedShape = null;
+    editedShape = null;
     $('#pointItem-' + name).addClass('selected-point');
     setPropWindow('point');
 }
@@ -96,13 +109,55 @@ export function selectShape(name) {
     if (selectedShape !== null) {
         $('#shapeItem-' + selectedShape.name).removeClass('selected-shape');
     }
+    if (editedShape !== null) {
+        $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
+    }
+    selectedPoint = null;
     selectedShape = s;
+    editedShape = null;
     $('#shapeItem-' + name).addClass('selected-shape');
+    setPropWindow(s.type);
+}
+
+export function editShape(name) {
+    let s = vec.getShapeByName(name);
+    if (s === null) {
+        console.log('ERROR: unable to find shape ' + '"' + name + '"');
+        return;
+    }
+    if (selectedPoint !== null) {
+        $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
+    }
+    if (selectedShape !== null) {
+        $('#shapeItem-' + selectedShape.name).removeClass('selected-shape');
+    }
+    if (editedShape !== null) {
+        $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
+    }
+    selectedPoint = null;
+    selectedShape = null;
+    editedShape = s;
+    $('#shapeItem-' + name).addClass('edited-shape');
     setPropWindow(s.type);
 }
 
 var currentPointID = 1;
 var currentShapeID = 1;
+
+export function pushPointToShape(point) {
+    let pointList = editedShape.points;
+    let pointRef = 'point-ref-' + point.name;
+    let element = $('<div class="nesting-box ' + pointRef + '"><li class="no-select point-list">' + point.name + '</li></div>');
+    $('#shapeList-' + editedShape.name).append(element);
+    element.mousedown((event) => {
+        if (event.which == 2) { // middle click
+            element.remove();
+            var index = pointList.indexOf(point);
+            pointList.splice(index, 1);
+        }
+    });
+    editedShape.points.push(point);
+}
 
 export function addPoint(point, parent = selectedPoint) {
     if (parent === null) {
@@ -114,17 +169,37 @@ export function addPoint(point, parent = selectedPoint) {
     let listId = 'pointList-' + point.name;
     let itemId = 'pointItem-' + point.name;
     $(parentListId).append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + point.name + '</li><ul id="' + listId + '"></ul></div>');
-    $('#' + itemId).click(selectPoint.bind(null, point.name));
+    let select = selectPoint.bind(null, point.name);
+    $('#' + itemId).click(() => {
+        if (editedShape === null) {
+            select();
+        }
+        else {
+            pushPointToShape(point);
+        }
+    });
+    $('#' + itemId).contextmenu(() => { return false; });
     parent.addChild(point);
     currentPointID += 1;
 }
 
 export function addShape(shape) {
     shape.name = 's' + currentShapeID;
+    let listId = 'shapeList-' + shape.name;
     let itemId = 'shapeItem-' + shape.name;
     let spanId = 'shapeSpan-' + shape.name;
-    $('#shapeList').append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + shape.name + genShapeListName(shape) + '</li></div>');
-    $('#' + itemId).click(selectShape.bind(null, shape.name));
+    $('#shapeList').append('<div class="nesting-box"><li id="' + itemId + '" class="no-select shape-list">' + shape.name + genShapeListName(shape) + '</li><ul id="' + listId + '"></ul></div>');
+    let select = selectShape.bind(null, shape.name);
+    let edit = editShape.bind(null, shape.name);
+    $('#' + itemId).mousedown((event) => {
+        if (event.which == 1) {
+            select();
+        }
+        else if (event.which == 3) {
+            edit();
+        }
+    });
+    $('#' + itemId).contextmenu(() => { return false; });
     $('#' + spanId).css('color', shape.color);
     $('#' + spanId).css('float', 'right');
     vec.elements.push(shape);
