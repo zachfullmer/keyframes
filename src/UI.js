@@ -43,7 +43,7 @@ export function addPoint(point, parent = selectedPoint) {
 export function initUI() {
     $('body').addClass('noscroll');
     let rootName = 'p0';
-    $('#pointListContainer').append('<ul id="pointList-' + rootName + '"></ul>');
+    $('#pointListBox').append('<ul id="pointList-' + rootName + '"></ul>');
     vec.rootPnt.name = rootName;
     vec.rootPnt.p = [400, 400];
     selectPoint(rootName);

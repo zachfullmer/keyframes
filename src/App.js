@@ -16,13 +16,13 @@ class CanvasComponent extends React.Component {
   render() {
     return (
       <div>
-        <div id="canvasContainer">
+        <div id="canvasBox">
           <canvas ref="canvas" id="drawingArea" width={300} height={300} />
         </div>
-        <div id="pointListContainer" className="ui-panel"></div>
-        <div id="shapeListContainer" className="ui-panel"></div>
-        <div id="propertiesContainer" className="ui-panel">
-          <div id="pointPropertiesContainer">
+        <div id="pointListBox" className="ui-panel"></div>
+        <div id="shapeListBox" className="ui-panel"></div>
+        <div id="propertiesBox" className="ui-panel">
+          <div id="pointPropertiesBox">
             <div className="prop-group">
               <label><input type="number" id="pxProp"></input>position x</label><br />
               <label><input type="number" id="pyProp"></input>position y</label><br />
