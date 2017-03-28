@@ -159,7 +159,9 @@ export function removePointRefs(pointToRemove) {
         let result = vec.elements[e].getPointsByName(pointToRemove.name);
         for (let r in result) {
             let index = vec.elements[e].points.indexOf(result[r]);
-            vec.elements[e].points.splice(index, 1);
+            if (index > -1) {
+                vec.elements[e].points.splice(index, 1);
+            }
         }
     }
     // remove point itself
@@ -169,6 +171,15 @@ export function removePointRefs(pointToRemove) {
         for (let r in result) {
             removePointRefs(result[r]);
         }
+    }
+}
+
+export function removeShape(shapeToRemove) {
+    let divId = '#shapeDiv-' + shapeToRemove.name;
+    $(divId).remove();
+    let index = vec.elements.indexOf(shapeToRemove);
+    if (index > -1) {
+        vec.elements.splice(index, 1);
     }
 }
 
@@ -221,12 +232,15 @@ export function addShape(shape) {
     let listId = 'shapeList-' + shape.name;
     let itemId = 'shapeItem-' + shape.name;
     let spanId = 'shapeSpan-' + shape.name;
-    $('#shapeList').append('<div class="nesting-box"><li id="' + itemId + '" class="no-select shape-list">' + shape.name + genShapeListName(shape) + '</li><ul id="' + listId + '"></ul></div>');
+    $('#shapeList').append('<div id="shapeDiv-' + shape.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select shape-list">' + shape.name + genShapeListName(shape) + '</li><ul id="' + listId + '"></ul></div>');
     let select = selectShape.bind(null, shape.name);
     let edit = editShape.bind(null, shape.name);
     $('#' + itemId).mousedown((event) => {
         if (event.which == 1) {
             select();
+        }
+        else if (event.which == 2) {
+            removeShape(shape);
         }
         else if (event.which == 3) {
             edit();
