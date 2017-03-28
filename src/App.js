@@ -21,8 +21,8 @@ class CanvasComponent extends React.Component {
         </div>
         <div id="pointListBox" className="ui-panel"></div>
         <div id="shapeListBox" className="ui-panel"></div>
-        <div id="propertiesBox" className="ui-panel">
-          <div id="pointPropertiesBox">
+        <div id="propsBox" className="ui-panel">
+          <div id="pointPropsBox">
             <div className="prop-group">
               <label><input type="number" id="pxProp"></input>position x</label><br />
               <label><input type="number" id="pyProp"></input>position y</label><br />
