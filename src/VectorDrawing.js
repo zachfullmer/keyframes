@@ -114,8 +114,9 @@ export function shape(type, points, color = 'white', radius = undefined) {
             ctx.strokeStyle = this.color;
             ctx.beginPath();
             ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
-            ctx.lineTo(this.points[1].pf[0], this.points[1].pf[1]);
-            ctx.closePath();
+            for (let p = 1; p < this.points.length; p++) {
+                ctx.lineTo(this.points[p].pf[0], this.points[p].pf[1]);
+            }
             ctx.stroke();
         }
         else if (this.type == 'circleF') {
