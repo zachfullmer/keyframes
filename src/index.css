@@ -20,7 +20,7 @@ canvas {
   z-index: 1;
 }
 
-#pointListContainer {
+#listContainer {
   width: 200px;
   height: 300px;
   padding: 0px;

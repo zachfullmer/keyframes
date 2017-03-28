@@ -20,8 +20,7 @@ export function initEvents() {
     $(window).on('resize', (event) => {
         checkHitboxEvents(event);
     });
-    //http://stackoverflow.com/questions/1056562/how-do-i-prevent-scrolling-with-arrow-keys-but-not-the-mouse
-    var ar = new Array(33, 34, 35, 36, 37, 38, 39, 40);
+    // point properties
     $('#pxProp, #pyProp').on('input', () => {
         selectedPoint.p = [$('#pxProp').val(), $('#pyProp').val()];
     });
@@ -34,4 +33,14 @@ export function initEvents() {
     $('#sxProp, #syProp').on('input', () => {
         selectedPoint.s = [$('#sxProp').val(), $('#syProp').val()];
     });
+    // tab buttons
+    $('#pointListButton').click(() => {
+        $('#pointListContainer').show();
+        $('#shapeListContainer').hide();
+    });
+    $('#shapeListButton').click(() => {
+        $('#pointListContainer').hide();
+        $('#shapeListContainer').show();
+    });
+    $('#pointListButton').click();
 }
