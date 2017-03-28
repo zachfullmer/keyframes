@@ -63,8 +63,15 @@ input[type=number] {
 }
 
 input[type=color] {
+  border: 1px solid #555;
+  background-color: #111;
   margin-right: 5px;
   width: 50px;
+}
+
+p.prop-header {
+  margin: 0px;
+  margin-bottom: 10px;
 }
 
 .prop-group {

@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { opList, degrees } from './Helpers.js'
+import { shape } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
@@ -41,10 +42,15 @@ export function addPoint(point, parent = selectedPoint) {
 
 
 export function initUI() {
+    // document-level stuff
     $('body').addClass('noscroll');
+    // init point list
     let rootName = 'p0';
     $('#pointListBox').append('<ul id="pointList-' + rootName + '"></ul>');
     vec.rootPnt.name = rootName;
     vec.rootPnt.p = [400, 400];
     selectPoint(rootName);
+    // init properties box
+    $('.props-box').hide();
+    $('#pointPropsBox').show();
 }
