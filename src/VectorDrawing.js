@@ -82,12 +82,16 @@ export function pnt() {
         }
         return null;
     }
-    this.removePoint = (point) => {
+    this.removePoint = (point, parent = null, index = null) => {
         if (this === point) {
+            if (parent === null) {
+                throw "Tried to remove root point";
+            }
+            parent.children.splice(index, 1);
             return copyList(this.children);
         }
         for (let c in this.children) {
-            let result = this.children[c].removePoint(point);
+            let result = this.children[c].removePoint(point, this, c);
             if (result !== null) {
                 return result;
             }
