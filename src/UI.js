@@ -6,6 +6,29 @@ import { shape } from './VectorDrawing.js'
 
 export var selectedPoint = null;
 export var selectedShape = null;
+var shapes = {
+    polygon: {
+        unicode: '\u25A0'
+    },
+    line: {
+        unicode: '\u2015'
+    },
+    circleF: {
+        unicode: '\u25CF'
+    },
+    circleO: {
+        unicode: '\u25CB'
+    },
+    bezier: {
+        unicode: '\u25E0'
+    }
+}
+
+function genShapeListName(shape) {
+    let spanId = 'shapeSpan-' + shape.name;
+    let itemSymbol = shapes[shape.type].unicode;
+    return '<span id="' + spanId + '">' + itemSymbol + '</span>';
+}
 
 
 export function setPropWindow(type) {
@@ -93,8 +116,11 @@ export function addPoint(point, parent = selectedPoint) {
 export function addShape(shape) {
     shape.name = 's' + currentShapeID;
     let itemId = 'shapeItem-' + shape.name;
-    $('#shapeList').append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + shape.name + '</li></div>');
+    let spanId = 'shapeSpan-' + shape.name;
+    $('#shapeList').append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + shape.name + genShapeListName(shape) + '</li></div>');
     $('#' + itemId).click(selectShape.bind(null, shape.name));
+    $('#' + spanId).css('color', shape.color);
+    $('#' + spanId).css('float', 'right');
     vec.elements.push(shape);
     currentShapeID += 1;
 }

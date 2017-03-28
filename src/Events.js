@@ -36,23 +36,33 @@ export function initEvents() {
     // polygon properties
     $('#pcProp').on('input', () => {
         selectedShape.color = $('#pcProp').val();
+        let spanId = 'shapeSpan-' + selectedShape.name;
+        $('#' + spanId).css('color', selectedShape.color);
     });
     // line properties
     $('#lcProp').on('input', () => {
         selectedShape.color = $('#lcProp').val();
+        let spanId = 'shapeSpan-' + selectedShape.name;
+        $('#' + spanId).css('color', selectedShape.color);
     });
     // filled circle properties
     $('#cfrProp, #cfcProp').on('input', () => {
         selectedShape.radius = $('#cfrProp').val();
         selectedShape.color = $('#cfcProp').val();
+        let spanId = 'shapeSpan-' + selectedShape.name;
+        $('#' + spanId).css('color', selectedShape.color);
     });
     // circle properties
     $('#corProp, #cocProp').on('input', () => {
         selectedShape.radius = $('#corProp').val();
         selectedShape.color = $('#cocProp').val();
+        let spanId = 'shapeSpan-' + selectedShape.name;
+        $('#' + spanId).css('color', selectedShape.color);
     });
     // bezier properties
     $('#bcProp').on('input', () => {
         selectedShape.color = $('#bcProp').val();
+        let spanId = 'shapeSpan-' + selectedShape.name;
+        $('#' + spanId).css('color', selectedShape.color);
     });
 }
