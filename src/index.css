@@ -8,7 +8,6 @@ body, #root, #canvasContainer {
 
 body.noscroll {
   position: fixed;
-  overflow-y: scroll;
   width: 100%;
 }
 
@@ -20,16 +19,28 @@ canvas {
   z-index: 1;
 }
 
-#listContainer {
+#pointListContainer {
   width: 200px;
   height: 300px;
   padding: 0px;
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
+  resize: both;
+}
+
+#shapeListContainer {
+  width: 200px;
+  height: 300px;
+  padding: 0px;
+  overflow-x: hidden;
+  overflow-y: auto;
   resize: both;
 }
 
 #propertiesContainer {
+  position: absolute;
+  top: 0px;
+  right: 0px;
   width: 200px;
   height: 300px;
 }

@@ -19,12 +19,8 @@ class CanvasComponent extends React.Component {
         <div id="canvasContainer">
           <canvas ref="canvas" id="drawingArea" width={300} height={300} />
         </div>
-        <div id="listContainer" className="ui-panel">
-          <button id="pointListButton" className="tab-button">Points</button>
-          <button id="shapeListButton" className="tab-button">Shapes</button>
-          <div id="pointListContainer" className="tab-content"></div>
-          <div id="shapeListContainer" className="tab-content"></div>
-        </div>
+        <div id="pointListContainer" className="ui-panel"></div>
+        <div id="shapeListContainer" className="ui-panel"></div>
         <div id="propertiesContainer" className="ui-panel">
           <div id="pointPropertiesContainer">
             <div className="prop-group">

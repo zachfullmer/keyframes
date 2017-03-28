@@ -33,14 +33,4 @@ export function initEvents() {
     $('#sxProp, #syProp').on('input', () => {
         selectedPoint.s = [$('#sxProp').val(), $('#syProp').val()];
     });
-    // tab buttons
-    $('#pointListButton').click(() => {
-        $('#pointListContainer').show();
-        $('#shapeListContainer').hide();
-    });
-    $('#shapeListButton').click(() => {
-        $('#pointListContainer').hide();
-        $('#shapeListContainer').show();
-    });
-    $('#pointListButton').click();
 }
