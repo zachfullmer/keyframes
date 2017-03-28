@@ -144,6 +144,34 @@ export function editShape(name) {
 var currentPointID = 1;
 var currentShapeID = 1;
 
+export function removePointFromShape(point, shape) {
+    var index = shape.points.indexOf(point);
+    shape.points.splice(index, 1);
+}
+
+
+export function removePointRefs(pointToRemove) {
+    let divId = '#pointDiv-' + pointToRemove.name;
+    let pointRef = '.point-ref-' + pointToRemove.name;
+    // remove references to point
+    $(pointRef).remove();
+    for (let e in vec.elements) {
+        let result = vec.elements[e].getPointsByName(pointToRemove.name);
+        for (let r in result) {
+            let index = vec.elements[e].points.indexOf(result[r]);
+            vec.elements[e].points.splice(index, 1);
+        }
+    }
+    // remove point itself
+    $(divId).remove();
+    let result = vec.removePoint(pointToRemove);
+    if (result !== null) {
+        for (let r in result) {
+            removePointRefs(result[r]);
+        }
+    }
+}
+
 export function pushPointToShape(point) {
     let pointList = editedShape.points;
     let pointRef = 'point-ref-' + point.name;
@@ -152,8 +180,7 @@ export function pushPointToShape(point) {
     element.mousedown((event) => {
         if (event.which == 2) { // middle click
             element.remove();
-            var index = pointList.indexOf(point);
-            pointList.splice(index, 1);
+            removePointFromShape(point, editedShape);
         }
     });
     editedShape.points.push(point);
@@ -168,14 +195,20 @@ export function addPoint(point, parent = selectedPoint) {
     let parentListId = '#pointList-' + parent.name;
     let listId = 'pointList-' + point.name;
     let itemId = 'pointItem-' + point.name;
-    $(parentListId).append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + point.name + '</li><ul id="' + listId + '"></ul></div>');
+    let element = $('<div id="pointDiv-' + point.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + point.name + '</li><ul id="' + listId + '"></ul></div>');
+    $(parentListId).append(element);
     let select = selectPoint.bind(null, point.name);
-    $('#' + itemId).click(() => {
-        if (editedShape === null) {
-            select();
+    $('#' + itemId).mousedown((event) => {
+        if (event.which == 1) { // left click
+            if (editedShape === null) {
+                select();
+            }
+            else {
+                pushPointToShape(point);
+            }
         }
-        else {
-            pushPointToShape(point);
+        else if (event.which == 2) { // middle click
+            removePointRefs(point);
         }
     });
     $('#' + itemId).contextmenu(() => { return false; });
