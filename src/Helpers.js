@@ -37,6 +37,14 @@ export function opList(list1, list2, func) {
     return finalList;
 }
 
+export function copyList(list) {
+    let newList = [];
+    for (let l in list) {
+        newList.push(list[l]);
+    }
+    return newList;
+}
+
 // http://stackoverflow.com/questions/1573053/javascript-function-to-convert-color-names-to-hex-codes
 export function colorNameToHex(color) {
     var colors = {

@@ -1,4 +1,4 @@
-import { polarToCart, cartToPolar, opList, colorNameToHex } from './Helpers.js'
+import { polarToCart, cartToPolar, opList, colorNameToHex, copyList } from './Helpers.js'
 
 
 export function pnt() {
@@ -73,6 +73,18 @@ export function pnt() {
     this.getPointByName = (name) => {
         if (this.name == name) {
             return this;
+        }
+        for (let c in this.children) {
+            let result = this.children[c].getPointByName(name);
+            if (result !== null) {
+                return result;
+            }
+        }
+        return null;
+    }
+    this.removePoint = (point) => {
+        if (this === point) {
+            return copyList(this.children);
         }
         for (let c in this.children) {
             let result = this.children[c].getPointByName(name);
@@ -186,5 +198,8 @@ export function VectorDrawing() {
             }
         }
         return null;
+    }
+    this.removePoint = (point) => {
+        return this.rootPnt.removePoint(point);
     }
 }
