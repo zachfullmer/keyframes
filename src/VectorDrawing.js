@@ -86,16 +86,17 @@ export function pnt() {
 
 
 export function shape(type, points, color = 'white') {
+    this.name = '';
     this.type = type;
     this.points = points;
     this.color = colorNameToHex(color);
     this.draw = (ctx) => {
         if (this.type == 'polygon') {
-            ctx.fillStyle = color;
+            ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.moveTo(points[0].pf[0], points[0].pf[1]);
-            for (let p = 1; p < points.length; p++) {
-                ctx.lineTo(points[p].pf[0], points[p].pf[1]);
+            ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
+            for (let p = 1; p < this.points.length; p++) {
+                ctx.lineTo(this.points[p].pf[0], this.points[p].pf[1]);
             }
             ctx.closePath();
             ctx.fill();
@@ -103,30 +104,30 @@ export function shape(type, points, color = 'white') {
         else if (this.type == 'line') {
             ctx.strokeStyle = color;
             ctx.beginPath();
-            ctx.moveTo(points[0].pf[0], points[0].pf[1]);
-            ctx.lineTo(points[1].pf[0], points[1].pf[1]);
+            ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
+            ctx.lineTo(this.points[1].pf[0], this.points[1].pf[1]);
             ctx.closePath();
             ctx.stroke();
         }
         else if (this.type == 'circleF') {
             ctx.beginPath();
-            ctx.arc(points[0].pf[0], points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
+            ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
             ctx.fillStyle = color;
             ctx.fill();
         }
         else if (this.type == 'circleO') {
             ctx.beginPath();
-            ctx.arc(points[0].pf[0], points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
+            ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
             ctx.strokeStyle = color;
             ctx.stroke();
         }
         else if (this.type == 'bezier') {
             ctx.beginPath();
             ctx.strokeStyle = color;
-            ctx.moveTo(points[0].pf[0], points[0].pf[1]);
-            ctx.bezierCurveTo(points[1].pf[0], points[1].pf[1],
-                points[2].pf[0], points[2].pf[1],
-                points[3].pf[0], points[3].pf[1]);
+            ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
+            ctx.bezierCurveTo(this.points[1].pf[0], this.points[1].pf[1],
+                this.points[2].pf[0], this.points[2].pf[1],
+                this.points[3].pf[0], this.points[3].pf[1]);
             ctx.stroke();
         }
     }
@@ -149,5 +150,13 @@ export function VectorDrawing() {
     }
     this.getPointByName = (name) => {
         return this.rootPnt.getPointByName(name);
+    }
+    this.getShapeByName = (name) => {
+        for (let e in this.elements) {
+            if (this.elements[e].name == name) {
+                return this.elements[e];
+            }
+        }
+        return null;
     }
 }
