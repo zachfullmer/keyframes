@@ -50,12 +50,12 @@ class CanvasComponent extends React.Component {
           </div>
           <div id="circleFPropsBox" className="props-box">
             <p className="prop-header">Filled Circle</p>
-            <label><input type="number" id="cfrProp"></input>radius</label><br />
+            <label><input type="number" id="cfrProp" min="0"></input>radius</label><br />
             <label><input type="color" id="cfcProp"></input>color</label><br />
           </div>
           <div id="circleOPropsBox" className="props-box">
             <p className="prop-header">Circle</p>
-            <label><input type="number" id="corProp"></input>radius</label><br />
+            <label><input type="number" id="corProp" min="0"></input>radius</label><br />
             <label><input type="color" id="cocProp"></input>color</label><br />
           </div>
           <div id="bezierPropsBox" className="props-box">

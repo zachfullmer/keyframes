@@ -5,26 +5,76 @@ import { shape } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
+export var selectedShape = null;
+
+
+export function setPropWindow(type) {
+    $('.props-box').hide();
+    if (type == 'point') {
+        $('#pxProp').val(selectedPoint.p[0]);
+        $('#pyProp').val(selectedPoint.p[1]);
+        $('#oxProp').val(selectedPoint.o[0]);
+        $('#oyProp').val(selectedPoint.o[1]);
+        $('#rProp').val(selectedPoint.r * degrees);
+        $('#sxProp').val(selectedPoint.s[0]);
+        $('#syProp').val(selectedPoint.s[1]);
+        $('#pointPropsBox').show();
+    }
+    else if (type == 'polygon') {
+        $('#pcProp').val(selectedShape.color);
+        $('#polygonPropsBox').show();
+    }
+    else if (type == 'line') {
+        $('#lcProp').val(selectedShape.color);
+        $('#linePropsBox').show();
+    }
+    else if (type == 'circleF') {
+        $('#cfrProp').val(selectedShape.radius);
+        $('#cfcProp').val(selectedShape.color);
+        $('#circleFPropsBox').show();
+    }
+    else if (type == 'circleO') {
+        $('#corProp').val(selectedShape.radius);
+        $('#cocProp').val(selectedShape.color);
+        $('#circleOPropsBox').show();
+    }
+    else if (type == 'bezier') {
+        $('#bcProp').val(selectedShape.color);
+        $('#bezierPropsBox').show();
+    }
+}
+
 export function selectPoint(name) {
     let p = vec.getPointByName(name);
     if (p === null) {
+        console.log('ERROR: unable to find point ' + '"' + name + '"');
         return;
     }
     if (selectedPoint !== null) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
     selectedPoint = p;
-    $('#' + name).addClass('selected-point');
-    $('#pxProp').val(selectedPoint.p[0]);
-    $('#pyProp').val(selectedPoint.p[1]);
-    $('#oxProp').val(selectedPoint.o[0]);
-    $('#oyProp').val(selectedPoint.o[1]);
-    $('#rProp').val(selectedPoint.r * degrees);
-    $('#sxProp').val(selectedPoint.s[0]);
-    $('#syProp').val(selectedPoint.s[1]);
+    $('#pointItem-' + name).addClass('selected-point');
+    setPropWindow('point');
+}
+
+export function selectShape(name) {
+    let s = vec.getShapeByName(name);
+    if (s === null) {
+        console.log('ERROR: unable to find shape ' + '"' + name + '"');
+        return;
+    }
+    if (selectedShape !== null) {
+        $('#shapeItem-' + selectedShape.name).removeClass('selected-shape');
+    }
+    selectedShape = s;
+    $('#shapeItem-' + name).addClass('selected-shape');
+    setPropWindow(s.type);
 }
 
 var currentPointID = 1;
+var currentShapeID = 1;
+
 export function addPoint(point, parent = selectedPoint) {
     if (parent === null) {
         parent = vec.rootPnt;
@@ -40,6 +90,15 @@ export function addPoint(point, parent = selectedPoint) {
     currentPointID += 1;
 }
 
+export function addShape(shape) {
+    shape.name = 's' + currentShapeID;
+    let itemId = 'shapeItem-' + shape.name;
+    $('#shapeList').append('<div class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + shape.name + '</li></div>');
+    $('#' + itemId).click(selectShape.bind(null, shape.name));
+    vec.elements.push(shape);
+    currentShapeID += 1;
+}
+
 
 export function initUI() {
     // document-level stuff
@@ -50,6 +109,8 @@ export function initUI() {
     vec.rootPnt.name = rootName;
     vec.rootPnt.p = [400, 400];
     selectPoint(rootName);
+    // init shape list
+    $('#shapeListBox').append('<ul id="shapeList"></ul>');
     // init properties box
     $('.props-box').hide();
     $('#pointPropsBox').show();

@@ -1,8 +1,8 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
-import { pnt } from './VectorDrawing.js'
+import { pnt, shape } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
-import { addPoint, selectedPoint } from './UI.js'
+import { addPoint, selectedPoint, addShape, selectedShape } from './UI.js'
 
 
 export function initEvents() {
@@ -32,5 +32,27 @@ export function initEvents() {
     });
     $('#sxProp, #syProp').on('input', () => {
         selectedPoint.s = [$('#sxProp').val(), $('#syProp').val()];
+    });
+    // polygon properties
+    $('#pcProp').on('input', () => {
+        selectedShape.color = $('#pcProp').val();
+    });
+    // line properties
+    $('#lcProp').on('input', () => {
+        selectedShape.color = $('#lcProp').val();
+    });
+    // filled circle properties
+    $('#cfrProp, #cfcProp').on('input', () => {
+        selectedShape.radius = $('#cfrProp').val();
+        selectedShape.color = $('#cfcProp').val();
+    });
+    // circle properties
+    $('#corProp, #cocProp').on('input', () => {
+        selectedShape.radius = $('#corProp').val();
+        selectedShape.color = $('#cocProp').val();
+    });
+    // bezier properties
+    $('#bcProp').on('input', () => {
+        selectedShape.color = $('#bcProp').val();
     });
 }
