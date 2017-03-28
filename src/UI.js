@@ -76,6 +76,9 @@ export function selectPoint(name) {
     if (selectedPoint !== null) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
+    if (selectedShape !== null) {
+        $('#shapeItem-' + selectedShape.name).removeClass('selected-shape');
+    }
     selectedPoint = p;
     $('#pointItem-' + name).addClass('selected-point');
     setPropWindow('point');
@@ -86,6 +89,9 @@ export function selectShape(name) {
     if (s === null) {
         console.log('ERROR: unable to find shape ' + '"' + name + '"');
         return;
+    }
+    if (selectedPoint !== null) {
+        $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
     if (selectedShape !== null) {
         $('#shapeItem-' + selectedShape.name).removeClass('selected-shape');
