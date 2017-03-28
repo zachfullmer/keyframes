@@ -87,7 +87,7 @@ export function pnt() {
             return copyList(this.children);
         }
         for (let c in this.children) {
-            let result = this.children[c].getPointByName(name);
+            let result = this.children[c].removePoint(point);
             if (result !== null) {
                 return result;
             }
