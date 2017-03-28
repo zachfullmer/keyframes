@@ -102,7 +102,7 @@ export function shape(type, points, color = 'white') {
             ctx.fill();
         }
         else if (this.type == 'line') {
-            ctx.strokeStyle = color;
+            ctx.strokeStyle = this.color;
             ctx.beginPath();
             ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
             ctx.lineTo(this.points[1].pf[0], this.points[1].pf[1]);
@@ -112,18 +112,18 @@ export function shape(type, points, color = 'white') {
         else if (this.type == 'circleF') {
             ctx.beginPath();
             ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
-            ctx.fillStyle = color;
+            ctx.fillStyle = this.color;
             ctx.fill();
         }
         else if (this.type == 'circleO') {
             ctx.beginPath();
             ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
-            ctx.strokeStyle = color;
+            ctx.strokeStyle = this.color;
             ctx.stroke();
         }
         else if (this.type == 'bezier') {
             ctx.beginPath();
-            ctx.strokeStyle = color;
+            ctx.strokeStyle = this.color;
             ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
             ctx.bezierCurveTo(this.points[1].pf[0], this.points[1].pf[1],
                 this.points[2].pf[0], this.points[2].pf[1],
