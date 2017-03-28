@@ -93,6 +93,15 @@ export function shape(type, points, color = 'white', radius = undefined) {
     if (radius !== undefined) {
         this.radius = radius;
     }
+    this.getPointsByName = (name) => {
+        let result = [];
+        for (let p in this.points) {
+            if (this.points[p].name == name) {
+                result.push(this.points[p]);
+            }
+        }
+        return result;
+    }
     this.draw = (ctx) => {
         if (this.type == 'polygon') {
             if (this.points.length < 1) {
