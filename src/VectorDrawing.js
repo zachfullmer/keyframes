@@ -85,11 +85,14 @@ export function pnt() {
 }
 
 
-export function shape(type, points, color = 'white') {
+export function shape(type, points, color = 'white', radius = undefined) {
     this.name = '';
     this.type = type;
     this.points = points;
     this.color = colorNameToHex(color);
+    if (radius !== undefined) {
+        this.radius = radius;
+    }
     this.draw = (ctx) => {
         if (this.type == 'polygon') {
             if (this.points.length < 1) {
