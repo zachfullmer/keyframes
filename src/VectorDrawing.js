@@ -92,6 +92,9 @@ export function shape(type, points, color = 'white') {
     this.color = colorNameToHex(color);
     this.draw = (ctx) => {
         if (this.type == 'polygon') {
+            if (this.points.length < 1) {
+                return;
+            }
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
@@ -102,6 +105,9 @@ export function shape(type, points, color = 'white') {
             ctx.fill();
         }
         else if (this.type == 'line') {
+            if (this.points.length < 2) {
+                return;
+            }
             ctx.strokeStyle = this.color;
             ctx.beginPath();
             ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
@@ -110,18 +116,27 @@ export function shape(type, points, color = 'white') {
             ctx.stroke();
         }
         else if (this.type == 'circleF') {
+            if (this.points.length < 1) {
+                return;
+            }
             ctx.beginPath();
             ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
             ctx.fillStyle = this.color;
             ctx.fill();
         }
         else if (this.type == 'circleO') {
+            if (this.points.length < 1) {
+                return;
+            }
             ctx.beginPath();
             ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
             ctx.strokeStyle = this.color;
             ctx.stroke();
         }
         else if (this.type == 'bezier') {
+            if (this.points.length < 4) {
+                return;
+            }
             ctx.beginPath();
             ctx.strokeStyle = this.color;
             ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
