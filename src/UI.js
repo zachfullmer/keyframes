@@ -274,7 +274,7 @@ export function initUI() {
     $('body').addClass('noscroll');
     // init point list
     addPoint(new pnt());
-    vec.rootPnt.p = [400, 400];
+    vec.rootPnt.p = [$(window).width() / 2, $(window).height() / 2];
     selectPoint('p0');
     // init shape list
     $('#shapeListBox').append('<ul id="shapeList"></ul>');
