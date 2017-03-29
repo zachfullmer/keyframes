@@ -173,7 +173,7 @@ export function removePointRefs(pointToRemove) {
         }
     }
     if (pointToRemove === selectedPoint || vec.rootPnt.children.length == 0) {
-        selectedPoint = null;
+        selectedPoint = vec.rootPnt;
         setPropWindow('none');
     }
 }

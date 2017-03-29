@@ -13,9 +13,12 @@ export function initEvents() {
         checkHitboxEvents(event);
     });
     $('#drawingArea').dblclick((event) => {
+        if (selectedPoint === null) {
+            return;
+        }
         let p1 = new pnt();
         p1.p = [event.pageX, event.pageY];
-        addPoint(p1);
+        addPoint(p1, selectedPoint);
     });
     $(window).on('resize', (event) => {
         checkHitboxEvents(event);
