@@ -81,7 +81,7 @@ p.prop-header {
 ul {
   list-style-type: none;
   color: white;
-  padding-left: 10px;
+  padding-left: 5px;
   margin: 0px;
 }
 
@@ -91,6 +91,10 @@ ul {
   margin: 1px;
   padding-left: 2px;
   padding-right: 2px;
+}
+
+#shapeList {
+  padding: 0px;
 }
 
 .point-list {
