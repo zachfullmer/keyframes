@@ -25,19 +25,19 @@ class CanvasComponent extends React.Component {
           <div id="pointPropsBox" className="props-box">
             <p className="prop-header">Point</p>
             <div className="prop-group">
-              <label><input type="number" id="pxProp"></input>position x</label><br />
-              <label><input type="number" id="pyProp"></input>position y</label><br />
+              <label><input type="number" step="any" id="pxProp"></input>position x</label><br />
+              <label><input type="number" step="any" id="pyProp"></input>position y</label><br />
             </div>
             <div className="prop-group">
-              <label><input type="number" id="oxProp"></input>origin x</label><br />
-              <label><input type="number" id="oyProp"></input>origin y</label><br />
+              <label><input type="number" step="any" id="oxProp"></input>origin x</label><br />
+              <label><input type="number" step="any" id="oyProp"></input>origin y</label><br />
             </div>
             <div className="prop-group">
-              <label><input type="number" id="rProp"></input>rotation</label><br />
+              <label><input type="number" step="any" id="rProp"></input>rotation</label><br />
             </div>
             <div className="prop-group">
-              <label><input type="number" id="sxProp" step="0.1"></input>scale x</label><br />
-              <label><input type="number" id="syProp" step="0.1"></input>scale y</label><br />
+              <label><input type="number" step="0.1" id="sxProp"></input>scale x</label><br />
+              <label><input type="number" step="0.1" id="syProp"></input>scale y</label><br />
             </div>
           </div>
           <div id="polygonPropsBox" className="props-box">
@@ -50,12 +50,12 @@ class CanvasComponent extends React.Component {
           </div>
           <div id="circleFPropsBox" className="props-box">
             <p className="prop-header">Filled Circle</p>
-            <label><input type="number" id="cfrProp" min="0"></input>radius</label><br />
+            <label><input type="number" step="any" id="cfrProp" min="0"></input>radius</label><br />
             <label><input type="color" id="cfcProp"></input>color</label><br />
           </div>
           <div id="circleOPropsBox" className="props-box">
             <p className="prop-header">Circle</p>
-            <label><input type="number" id="corProp" min="0"></input>radius</label><br />
+            <label><input type="number" step="any" id="corProp" min="0"></input>radius</label><br />
             <label><input type="color" id="cocProp"></input>color</label><br />
           </div>
           <div id="bezierPropsBox" className="props-box">
