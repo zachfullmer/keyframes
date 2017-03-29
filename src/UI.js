@@ -278,6 +278,4 @@ export function initUI() {
     selectPoint('p0');
     // init shape list
     $('#shapeListBox').append('<ul id="shapeList"></ul>');
-    // init properties box
-    setPropWindow('none');
 }
