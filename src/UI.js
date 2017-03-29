@@ -172,6 +172,10 @@ export function removePointRefs(pointToRemove) {
             removePointRefs(result[r]);
         }
     }
+    if (pointToRemove === selectedPoint || vec.rootPnt.children.length == 0) {
+        selectedPoint = null;
+        setPropWindow('none');
+    }
 }
 
 export function removeShape(shapeToRemove) {
@@ -180,6 +184,11 @@ export function removeShape(shapeToRemove) {
     let index = vec.elements.indexOf(shapeToRemove);
     if (index > -1) {
         vec.elements.splice(index, 1);
+    }
+    if (shapeToRemove === selectedShape || shapeToRemove === editedShape || vec.elements.length == 0) {
+        selectedShape = null;
+        editedShape = null;
+        setPropWindow('none');
     }
 }
 
@@ -266,6 +275,5 @@ export function initUI() {
     // init shape list
     $('#shapeListBox').append('<ul id="shapeList"></ul>');
     // init properties box
-    $('.props-box').hide();
-    $('#pointPropsBox').show();
+    setPropWindow('none');
 }

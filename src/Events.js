@@ -22,31 +22,52 @@ export function initEvents() {
     });
     // point properties
     $('#pxProp, #pyProp').on('input', () => {
+        if (selectedPoint === null) {
+            return;
+        }
         selectedPoint.p = [$('#pxProp').val(), $('#pyProp').val()];
     });
     $('#oxProp, #oyProp').on('input', () => {
+        if (selectedPoint === null) {
+            return;
+        }
         selectedPoint.o = [$('#oxProp').val(), $('#oyProp').val()];
     });
     $('#rProp').on('input', () => {
+        if (selectedPoint === null) {
+            return;
+        }
         selectedPoint.r = $('#rProp').val() / degrees;
     });
     $('#sxProp, #syProp').on('input', () => {
+        if (selectedPoint === null) {
+            return;
+        }
         selectedPoint.s = [$('#sxProp').val(), $('#syProp').val()];
     });
     // polygon properties
     $('#pcProp').on('input', () => {
+        if (selectedShape === null) {
+            return;
+        }
         selectedShape.color = $('#pcProp').val();
         let spanId = 'shapeSpan-' + selectedShape.name;
         $('#' + spanId).css('color', selectedShape.color);
     });
     // line properties
     $('#lcProp').on('input', () => {
+        if (selectedShape === null) {
+            return;
+        }
         selectedShape.color = $('#lcProp').val();
         let spanId = 'shapeSpan-' + selectedShape.name;
         $('#' + spanId).css('color', selectedShape.color);
     });
     // filled circle properties
     $('#cfrProp, #cfcProp').on('input', () => {
+        if (selectedShape === null) {
+            return;
+        }
         selectedShape.radius = $('#cfrProp').val();
         selectedShape.color = $('#cfcProp').val();
         let spanId = 'shapeSpan-' + selectedShape.name;
@@ -54,6 +75,9 @@ export function initEvents() {
     });
     // circle properties
     $('#corProp, #cocProp').on('input', () => {
+        if (selectedShape === null) {
+            return;
+        }
         selectedShape.radius = $('#corProp').val();
         selectedShape.color = $('#cocProp').val();
         let spanId = 'shapeSpan-' + selectedShape.name;
@@ -61,6 +85,9 @@ export function initEvents() {
     });
     // bezier properties
     $('#bcProp').on('input', () => {
+        if (selectedShape === null) {
+            return;
+        }
         selectedShape.color = $('#bcProp').val();
         let spanId = 'shapeSpan-' + selectedShape.name;
         $('#' + spanId).css('color', selectedShape.color);
