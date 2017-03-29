@@ -179,7 +179,7 @@ export function shape(type, points, color = 'white', radius = undefined) {
 
 
 export function VectorDrawing() {
-    this.rootPnt = new pnt();
+    this.rootPnt = null;
     this.elements = [];
     this.draw = (ctx) => {
         for (let e in this.elements) {

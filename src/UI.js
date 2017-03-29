@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { opList, degrees } from './Helpers.js'
-import { shape } from './VectorDrawing.js'
+import { shape, pnt } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
@@ -141,8 +141,8 @@ export function editShape(name) {
     setPropWindow(s.type);
 }
 
-var currentPointID = 1;
-var currentShapeID = 1;
+var currentPointID = 0;
+var currentShapeID = 0;
 
 export function removePointFromShape(point, shape) {
     var index = shape.points.indexOf(point);
@@ -207,12 +207,17 @@ export function pushPointToShape(point) {
 }
 
 export function addPoint(point, parent = selectedPoint) {
+    let parentListId = '';
     if (parent === null) {
-        parent = vec.rootPnt;
+        parentListId = '#pointListBox';
+        vec.rootPnt = point;
     }
-    point.p = opList(point.p, parent.pf, (a, b) => a - b);
+    else {
+        parentListId = '#pointList-' + parent.name;
+        point.p = opList(point.p, parent.pf, (a, b) => a - b);
+        parent.addChild(point);
+    }
     point.name = 'p' + currentPointID;
-    let parentListId = '#pointList-' + parent.name;
     let listId = 'pointList-' + point.name;
     let itemId = 'pointItem-' + point.name;
     let element = $('<div id="pointDiv-' + point.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + point.name + '</li><ul id="' + listId + '"></ul></div>');
@@ -228,11 +233,12 @@ export function addPoint(point, parent = selectedPoint) {
             }
         }
         else if (event.which == 2) { // middle click
-            removePointRefs(point);
+            if (point !== vec.rootPnt) {
+                removePointRefs(point);
+            }
         }
     });
     $('#' + itemId).contextmenu(() => { return false; });
-    parent.addChild(point);
     currentPointID += 1;
 }
 
@@ -267,11 +273,9 @@ export function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
     // init point list
-    let rootName = 'p0';
-    $('#pointListBox').append('<ul id="pointList-' + rootName + '"></ul>');
-    vec.rootPnt.name = rootName;
+    addPoint(new pnt());
     vec.rootPnt.p = [400, 400];
-    selectPoint(rootName);
+    selectPoint('p0');
     // init shape list
     $('#shapeListBox').append('<ul id="shapeList"></ul>');
     // init properties box
