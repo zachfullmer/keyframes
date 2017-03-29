@@ -135,7 +135,7 @@ export function editShape(name) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
     selectedPoint = null;
-    selectedShape = null;
+    selectedShape = s;
     editedShape = s;
     $('#shapeItem-' + name).addClass('edited-shape');
     setPropWindow(s.type);
