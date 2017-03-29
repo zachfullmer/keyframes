@@ -99,6 +99,11 @@ ul {
 
 .point-list {
   cursor: pointer;
+  background-color: #111120;
+}
+
+.selected-point {
+  background-color: #222d4a;
 }
 
 .shape-list {
@@ -106,16 +111,12 @@ ul {
   background-color: #3a1111;
 }
 
-.selected-point {
-  background-color: #333;
-}
-
 .selected-shape {
   background-color: #4a222d;
 }
 
 .edited-shape {
-  background-color: #4a224a;
+  background-color: #6a224a;
 }
 
 .no-select {
