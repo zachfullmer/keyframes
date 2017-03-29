@@ -21,7 +21,7 @@ var shapes = {
         unicode: '\u25CB'
     },
     bezier: {
-        unicode: '\u25E0'
+        unicode: '\u223F'
     }
 }
 
