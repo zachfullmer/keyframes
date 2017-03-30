@@ -202,13 +202,24 @@ export function stopEditing() {
 export function pushPointToShape(point) {
     let pointList = editedShape.points;
     let pointRef = 'point-ref-' + point.name;
-    let element = $('<div class="nesting-box ' + pointRef + '"><li class="no-select point-list">' + point.name + '</li></div>');
-    $('#shapeList-' + editedShape.name).append(element);
-    element.mousedown((event) => {
+    let cloneId = '#pointItem-' + point.name;
+    let li = $(cloneId).clone(true, false);
+    li.attr('id', '');
+    li.off('mousedown');
+    let div = $('<div class="nesting-box ' + pointRef + '"></div>');
+    div.append(li);
+    $('#shapeList-' + editedShape.name).append(div);
+    div.mousedown((event) => {
         if (event.which == 2) { // middle click
-            element.remove();
+            div.remove();
             removePointFromShape(point, editedShape);
         }
+    });
+    $(li).mouseenter(() => {
+        $(cloneId).addClass('highlighted');
+    });
+    $(li).mouseleave(() => {
+        $(cloneId).removeClass('highlighted');
     });
     editedShape.points.push(point);
 }
