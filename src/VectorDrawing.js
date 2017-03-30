@@ -1,4 +1,5 @@
 import { polarToCart, cartToPolar, opList, colorNameToHex, copyList } from './Helpers.js'
+import { Hitbox, addHitbox, removeHitbox } from './Canvas.js'
 
 
 export function pnt() {
@@ -7,6 +8,9 @@ export function pnt() {
     var _o = [0.0, 0.0]; // origin
     var _r = 0.0; // rotation (radians)
     var _s = [1.0, 1.0]; // scale
+    this.hitbox = new Hitbox(true);
+    this.hitbox.setRad(8);
+    addHitbox(this.hitbox);
     // getters and setters
     Object.defineProperties(this, {
         "p": {
@@ -57,17 +61,29 @@ export function pnt() {
             // translate
             this.pf = opList(this.pf, parent.pf, (a, b) => a + b);
         }
+        // hitbox
+        this.hitbox.setPos(this.pf[0], this.pf[1]);
+        // children
         for (let c in this.children) {
             this.children[c].update(this);
         }
     }
-    this.draw = (ctx) => {
+    this.draw = (ctx, hi) => {
+        if (this === hi) {
+            ctx.beginPath();
+            ctx.arc(this.pf[0], this.pf[1], 5, 0, 2 * Math.PI, false);
+            ctx.strokeStyle = 'yellow';
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(this.pf[0], this.pf[1], 10, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        }
         ctx.beginPath();
         ctx.rect(this.pf[0], this.pf[1], 1, 1);
         ctx.fillStyle = 'white';
         ctx.fill();
         for (let c in this.children) {
-            this.children[c].draw(ctx);
+            this.children[c].draw(ctx, hi);
         }
     }
     this.getPointByName = (name) => {
@@ -87,6 +103,7 @@ export function pnt() {
             if (parent === null) {
                 throw "Tried to remove root point";
             }
+            removeHitbox(this.hitbox);
             parent.children.splice(index, 1);
             return copyList(this.children);
         }
@@ -180,6 +197,7 @@ export function shape(type, points, color = 'white', radius = undefined) {
 
 export function VectorDrawing() {
     this.rootPnt = null;
+    this.highlightedPoint = null;
     this.elements = [];
     this.draw = (ctx) => {
         for (let e in this.elements) {
@@ -190,7 +208,7 @@ export function VectorDrawing() {
         this.rootPnt.update(null);
     }
     this.debugDraw = (ctx) => {
-        this.rootPnt.draw(ctx);
+        this.rootPnt.draw(ctx, this.highlightedPoint);
     }
     this.getPointByName = (name) => {
         return this.rootPnt.getPointByName(name);

@@ -245,7 +245,20 @@ export function addPoint(point, parent = selectedPoint) {
             }
         }
     });
-    $('#' + itemId).contextmenu(() => { return false; });
+    let id = '#' + itemId;
+    $(id).contextmenu(() => { return false; });
+    $(id).mouseenter(() => {
+        vec.highlightedPoint = point;
+    });
+    $(id).mouseleave(() => {
+        vec.highlightedPoint = null;
+    });
+    point.hitbox.mouseenter = () => {
+        $(id).addClass('highlighted');
+    };
+    point.hitbox.mouseleave = () => {
+        $(id).removeClass('highlighted');
+    };
     currentPointID += 1;
 }
 

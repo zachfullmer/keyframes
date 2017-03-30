@@ -9,7 +9,7 @@ export function initEvents() {
     let canvas = $('#drawingArea')[0];
     // disable right click
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });
-    $('#drawingArea').on('click dblclick', (event) => {
+    $('#drawingArea').on('click dblclick mousemove', (event) => {
         checkHitboxEvents(event);
     });
     $(document).keydown((event) => {
