@@ -264,12 +264,12 @@ export function addPoint(point, parent = selectedPoint) {
     $(id).mouseleave(() => {
         vec.highlightedPoint = null;
     });
-    point.hitbox.mouseenter = () => {
+    point.hitbox.mouseenter(() => {
         $(id).addClass('highlighted');
-    };
-    point.hitbox.mouseleave = () => {
+    });
+    point.hitbox.mouseleave(() => {
         $(id).removeClass('highlighted');
-    };
+    });
     currentPointID += 1;
 }
 

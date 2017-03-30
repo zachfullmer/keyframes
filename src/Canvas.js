@@ -10,6 +10,51 @@ export function Hitbox(circle = false) {
     this.r = 0;
     this.circle = circle;
     this.hover = false;
+    var _mouseenter = [];
+    var _mouseleave = [];
+    var _mousemove = [];
+    var _click = [];
+    var _dblclick = [];
+    this.execute = (event) => {
+        let list = null;
+        switch ('_' + event.type) {
+            case '_mouseenter':
+                list = _mouseenter;
+                break;
+            case '_mouseleave':
+                list = _mouseleave;
+                break;
+            case '_mousemove':
+                list = _mousemove;
+                break;
+            case '_click':
+                list = _click;
+                break;
+            case '_dblclick':
+                list = _dblclick;
+                break;
+            default:
+                break;
+        }
+        for (let e in list) {
+            list[e](event);
+        }
+    }
+    this.mouseenter = (func) => {
+        _mouseenter.push(func);
+    }
+    this.mouseleave = (func) => {
+        _mouseleave.push(func);
+    }
+    this.mousemove = (func) => {
+        _mousemove.push(func);
+    }
+    this.click = (func) => {
+        _click.push(func);
+    }
+    this.dblclick = (func) => {
+        _dblclick.push(func);
+    }
     this.setPos = (x, y) => {
         this.x = x;
         this.y = y;
@@ -68,9 +113,7 @@ export function checkHitboxEvents(event) {
         else {
             if (hitboxes[h].hover == true) {
                 event.type = 'mouseleave';
-                if (hitboxes[h][event.type] !== undefined) {
-                    hitboxes[h][event.type](event);
-                }
+                hitboxes[h].execute(event);
             }
             hitboxes[h].hover = false;
         }
@@ -78,14 +121,10 @@ export function checkHitboxEvents(event) {
     for (let h in hits) {
         if (hits[h].hover == false) {
             event.type = 'mouseenter';
-            if (hits[h][event.type] !== undefined) {
-                hits[h][event.type](event);
-            }
+            hits[h].execute(event);
         }
         hits[h].hover = true;
-        if (hits[h][event.type] !== undefined) {
-            hits[h][event.type](event);
-        }
+        hits[h].execute(event);
     }
 }
 
