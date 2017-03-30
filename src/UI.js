@@ -152,9 +152,9 @@ export function removePointFromShape(point, shape) {
 
 export function removePointRefs(pointToRemove) {
     let divId = '#pointDiv-' + pointToRemove.name;
-    let pointRef = '.point-ref-' + pointToRemove.name;
+    let pointRefDiv = '.point-ref-div-' + pointToRemove.name;
     // remove references to point
-    $(pointRef).remove();
+    $(pointRefDiv).remove();
     for (let e in vec.elements) {
         let result = vec.elements[e].getPointsByName(pointToRemove.name);
         for (let r in result) {
@@ -202,12 +202,13 @@ export function stopEditing() {
 export function pushPointToShape(point) {
     let pointList = editedShape.points;
     let pointRef = 'point-ref-' + point.name;
+    let pointRefDiv = 'point-ref-div-' + point.name;
     let cloneId = '#pointItem-' + point.name;
     let li = $(cloneId).clone(true, false);
     li.addClass(pointRef);
     li.attr('id', '');
     li.off('mousedown');
-    let div = $('<div class="nesting-box"></div>');
+    let div = $('<div class="nesting-box ' + pointRefDiv + '"></div>');
     div.append(li);
     $('#shapeList-' + editedShape.name).append(div);
     div.mousedown((event) => {
@@ -249,7 +250,8 @@ export function addPoint(point, parent = selectedPoint) {
     let element = $('<div id="pointDiv-' + point.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + point.name + '</li><ul id="' + listId + '"></ul></div>');
     $(parentListId).append(element);
     let select = selectPoint.bind(null, point.name);
-    $('#' + itemId).mousedown((event) => {
+    let id = '#' + itemId;
+    $(id).mousedown((event) => {
         if (event.which == 1) { // left click
             if (editedShape === null) {
                 select();
@@ -266,7 +268,6 @@ export function addPoint(point, parent = selectedPoint) {
         }
     });
     let pointRef = '.point-ref-' + point.name;
-    let id = '#' + itemId;
     $(id).contextmenu(() => { return false; });
     $(id).mouseenter(() => {
         $(pointRef).addClass('highlighted');
