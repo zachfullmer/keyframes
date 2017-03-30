@@ -69,7 +69,7 @@ export function pnt() {
         }
     }
     this.draw = (ctx, hi) => {
-        if (this === hi) {
+        if (hi.indexOf(this) >= 0) {
             ctx.beginPath();
             ctx.arc(this.pf[0], this.pf[1], 10, 0, 2 * Math.PI, false);
             ctx.fillStyle = 'black';
@@ -201,8 +201,15 @@ export function shape(type, points, color = 'white', radius = undefined) {
 
 export function VectorDrawing() {
     this.rootPnt = null;
-    this.highlightedPoint = null;
+    var highlightedPoints = [];
     this.elements = [];
+    this.hiPoint = (point) => {
+        highlightedPoints.push(point);
+    }
+    this.loPoint = (point) => {
+        let index = highlightedPoints.indexOf(point);
+        highlightedPoints.splice(index, 1);
+    }
     this.draw = (ctx) => {
         for (let e in this.elements) {
             this.elements[e].draw(ctx);
@@ -212,7 +219,7 @@ export function VectorDrawing() {
         this.rootPnt.update(null);
     }
     this.debugDraw = (ctx) => {
-        this.rootPnt.draw(ctx, this.highlightedPoint);
+        this.rootPnt.draw(ctx, highlightedPoints);
     }
     this.getPointByName = (name) => {
         return this.rootPnt.getPointByName(name);
