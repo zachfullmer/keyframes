@@ -192,6 +192,13 @@ export function removeShape(shapeToRemove) {
     }
 }
 
+export function stopEditing() {
+    if (editedShape !== null) {
+        $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
+    }
+    editedShape = null;
+}
+
 export function pushPointToShape(point) {
     let pointList = editedShape.points;
     let pointRef = 'point-ref-' + point.name;

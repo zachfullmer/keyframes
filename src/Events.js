@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
-import { addPoint, selectedPoint, addShape, selectedShape } from './UI.js'
+import { addPoint, selectedPoint, addShape, selectedShape, stopEditing } from './UI.js'
 
 
 export function initEvents() {
@@ -11,6 +11,11 @@ export function initEvents() {
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });
     $('#drawingArea').on('click dblclick', (event) => {
         checkHitboxEvents(event);
+    });
+    $(document).keydown((event) => {
+        if (event.which == 27) { // escape
+            stopEditing();
+        }
     });
     $('#drawingArea').dblclick((event) => {
         if (selectedPoint === null) {
