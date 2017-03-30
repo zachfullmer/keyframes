@@ -213,6 +213,7 @@ export function pushPointToShape(point) {
         if (event.which == 2) { // middle click
             div.remove();
             removePointFromShape(point, editedShape);
+            vec.loPoint(point);
         }
     });
     li.mouseenter(() => {
@@ -259,6 +260,7 @@ export function addPoint(point, parent = selectedPoint) {
         else if (event.which == 2) { // middle click
             if (point !== vec.rootPnt) {
                 removePointRefs(point);
+                vec.loPoint(point);
             }
         }
     });
