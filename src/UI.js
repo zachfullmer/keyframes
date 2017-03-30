@@ -265,16 +265,18 @@ export function addPoint(point, parent = selectedPoint) {
     let id = '#' + itemId;
     $(id).contextmenu(() => { return false; });
     $(id).mouseenter(() => {
-        vec.highlightedPoint = point;
+        vec.hiPoint(point);
     });
     $(id).mouseleave(() => {
-        vec.highlightedPoint = null;
+        vec.loPoint(point);
     });
     point.hitbox.mouseenter(() => {
         $(id).addClass('highlighted');
+        vec.hiPoint(point);
     });
     point.hitbox.mouseleave(() => {
         $(id).removeClass('highlighted');
+        vec.loPoint(point);
     });
     currentPointID += 1;
 }
