@@ -71,6 +71,10 @@ export function pnt() {
     this.draw = (ctx, hi) => {
         if (this === hi) {
             ctx.beginPath();
+            ctx.arc(this.pf[0], this.pf[1], 10, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.beginPath();
             ctx.arc(this.pf[0], this.pf[1], 5, 0, 2 * Math.PI, false);
             ctx.strokeStyle = 'yellow';
             ctx.stroke();
