@@ -204,9 +204,10 @@ export function pushPointToShape(point) {
     let pointRef = 'point-ref-' + point.name;
     let cloneId = '#pointItem-' + point.name;
     let li = $(cloneId).clone(true, false);
+    li.addClass(pointRef);
     li.attr('id', '');
     li.off('mousedown');
-    let div = $('<div class="nesting-box ' + pointRef + '"></div>');
+    let div = $('<div class="nesting-box"></div>');
     div.append(li);
     $('#shapeList-' + editedShape.name).append(div);
     div.mousedown((event) => {
@@ -264,12 +265,17 @@ export function addPoint(point, parent = selectedPoint) {
             }
         }
     });
+    let pointRef = '.point-ref-' + point.name;
     let id = '#' + itemId;
     $(id).contextmenu(() => { return false; });
     $(id).mouseenter(() => {
+        $(pointRef).addClass('highlighted');
+        $(id).addClass('highlighted');
         vec.hiPoint(point);
     });
     $(id).mouseleave(() => {
+        $(pointRef).removeClass('highlighted');
+        $(id).removeClass('highlighted');
         vec.loPoint(point);
     });
     point.hitbox.mouseenter(() => {
