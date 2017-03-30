@@ -280,6 +280,19 @@ export function addPoint(point, parent = selectedPoint) {
         $(id).removeClass('highlighted');
         vec.loPoint(point);
     });
+    point.hitbox.mousedown((event) => {
+        if (event.which == 1) { // left
+            if (editedShape !== null) {
+                pushPointToShape(point);
+            }
+        }
+        else if (event.which == 2) { // middle
+            if (point !== vec.rootPnt) {
+                removePointRefs(point);
+                vec.loPoint(point);
+            }
+        }
+    });
     currentPointID += 1;
 }
 
