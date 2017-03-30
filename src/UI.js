@@ -215,11 +215,17 @@ export function pushPointToShape(point) {
             removePointFromShape(point, editedShape);
         }
     });
-    $(li).mouseenter(() => {
+    li.mouseenter(() => {
         $(cloneId).addClass('highlighted');
     });
-    $(li).mouseleave(() => {
+    li.mouseleave(() => {
         $(cloneId).removeClass('highlighted');
+    });
+    point.hitbox.mouseenter(() => {
+        li.addClass('highlighted');
+    });
+    point.hitbox.mouseleave(() => {
+        li.removeClass('highlighted');
     });
     editedShape.points.push(point);
 }
