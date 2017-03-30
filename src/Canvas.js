@@ -13,6 +13,7 @@ export function Hitbox(circle = false) {
     var _mouseenter = [];
     var _mouseleave = [];
     var _mousemove = [];
+    var _mousedown = [];
     var _click = [];
     var _dblclick = [];
     this.execute = (event) => {
@@ -26,6 +27,9 @@ export function Hitbox(circle = false) {
                 break;
             case '_mousemove':
                 list = _mousemove;
+                break;
+            case '_mousedown':
+                list = _mousedown;
                 break;
             case '_click':
                 list = _click;
@@ -48,6 +52,9 @@ export function Hitbox(circle = false) {
     }
     this.mousemove = (func) => {
         _mousemove.push(func);
+    }
+    this.mousedown = (func) => {
+        _mousedown.push(func);
     }
     this.click = (func) => {
         _click.push(func);
