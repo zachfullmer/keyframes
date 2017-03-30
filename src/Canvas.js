@@ -9,6 +9,7 @@ export function Hitbox(circle = false) {
     this.h = 0;
     this.r = 0;
     this.circle = circle;
+    this.hover = false;
     this.setPos = (x, y) => {
         this.x = x;
         this.y = y;
@@ -55,18 +56,35 @@ var hitboxes = [];
 export function addHitbox(hitbox) {
     hitboxes.push(hitbox);
 }
+export function removeHitbox(hitbox) {
+    hitboxes.splice(hitboxes.indexOf(hitbox), 1);
+}
 export function checkHitboxEvents(event) {
     let hits = [];
     for (let h in hitboxes) {
         if (hitboxes[h].contains(event.pageX, event.pageY)) {
             hits.push(hitboxes[h]);
         }
+        else {
+            if (hitboxes[h].hover == true) {
+                event.type = 'mouseleave';
+                if (hitboxes[h][event.type] !== undefined) {
+                    hitboxes[h][event.type](event);
+                }
+            }
+            hitboxes[h].hover = false;
+        }
     }
     for (let h in hits) {
-        if (hits[h][event.type] !== undefined) {
-            if (hits[h][event.type](event) === false) {
-                break;
+        if (hits[h].hover == false) {
+            event.type = 'mouseenter';
+            if (hits[h][event.type] !== undefined) {
+                hits[h][event.type](event);
             }
+        }
+        hits[h].hover = true;
+        if (hits[h][event.type] !== undefined) {
+            hits[h][event.type](event);
         }
     }
 }
@@ -103,9 +121,6 @@ function drawCanvas(timestamp) {
     //
     // drawing
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let h in hitboxes) {
-        hitboxes[h].draw(ctx);
-    }
     vec.draw(ctx);
     vec.debugDraw(ctx);
     //
