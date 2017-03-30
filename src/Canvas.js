@@ -119,12 +119,12 @@ export function checkHitboxEvents(event) {
         }
     }
     for (let h in hits) {
+        hits[h].execute(event);
         if (hits[h].hover == false) {
             event.type = 'mouseenter';
             hits[h].execute(event);
         }
         hits[h].hover = true;
-        hits[h].execute(event);
     }
 }
 
