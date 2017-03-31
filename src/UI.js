@@ -60,6 +60,10 @@ export function setPropWindow(type) {
             $('#bcProp').val(shape.color);
             $('#bezierPropsBox').show();
         }
+        else {
+            shapeTypeSelect.hide();
+            return;
+        }
         shapeTypeSelect.val(type);
     }
 }
