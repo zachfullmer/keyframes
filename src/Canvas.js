@@ -119,8 +119,10 @@ export function checkHitboxEvents(event) {
         }
         else {
             if (hitboxes[h].hover == true) {
+                let type = event.type;
                 event.type = 'mouseleave';
                 hitboxes[h].execute(event);
+                event.type = type;
             }
             hitboxes[h].hover = false;
         }
@@ -128,8 +130,10 @@ export function checkHitboxEvents(event) {
     for (let h in hits) {
         hits[h].execute(event);
         if (hits[h].hover == false) {
+            let type = event.type;
             event.type = 'mouseenter';
             hits[h].execute(event);
+            event.type = type;
         }
         hits[h].hover = true;
     }
