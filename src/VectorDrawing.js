@@ -154,14 +154,12 @@ export function pnt() {
 }
 
 
-export function shape(type, points, color = 'white', radius = undefined) {
+export function shape(type, points, color = 'white', radius = 20) {
     this.name = '';
     this.type = type;
     this.points = points;
     this.color = colorNameToHex(color);
-    if (radius !== undefined) {
-        this.radius = radius;
-    }
+    this.radius = radius;
     this.getPointsByName = (name) => {
         let result = [];
         for (let p in this.points) {
