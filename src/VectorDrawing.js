@@ -55,7 +55,6 @@ export function pnt() {
         return point;
     }
     this.inverseTransform = (point) => {
-        console.log(this.rf);
         point = opList(point, this.pf, (a, b) => a - b);
         // rotate
         let polar = cartToPolar(point);
