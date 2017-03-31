@@ -46,6 +46,7 @@ export function pnt() {
         point = polarToCart(polar);
         // translate
         point = opList(point, this.pf, (a, b) => a + b);
+        return point;
     }
     this.addChild = (child) => {
         this.children.push(child);
