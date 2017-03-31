@@ -1,33 +1,16 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { opList, degrees, cartToPolar, polarToCart } from './Helpers.js'
-import { shape, pnt } from './VectorDrawing.js'
+import { shape, pnt, shapeTypes } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
 export var selectedShape = null;
 export var editedShape = null;
-var shapes = {
-    polygon: {
-        unicode: '\u25A0'
-    },
-    line: {
-        unicode: '\u2015'
-    },
-    circleF: {
-        unicode: '\u25CF'
-    },
-    circleO: {
-        unicode: '\u25CB'
-    },
-    bezier: {
-        unicode: '\u223F'
-    }
-}
 
 function genShapeListName(shape) {
     let spanId = 'shapeSpan-' + shape.name;
-    let itemSymbol = shapes[shape.type].unicode;
+    let itemSymbol = shapeTypes[shape.type].unicode;
     return '<span id="' + spanId + '">' + itemSymbol + '</span>';
 }
 

@@ -154,6 +154,35 @@ export function pnt() {
 }
 
 
+export const shapeTypes = {
+    polygon: {
+        id: 0,
+        name: 'Polygon',
+        unicode: '\u25A0',
+    },
+    line: {
+        id: 1,
+        name: 'Line',
+        unicode: '\u2015'
+    },
+    circleF: {
+        id: 2,
+        name: 'Filled Circle',
+        unicode: '\u25CF'
+    },
+    circleO: {
+        id: 3,
+        name: 'Circle',
+        unicode: '\u25CB'
+    },
+    bezier: {
+        id: 4,
+        name: 'Bezier Curve',
+        unicode: '\u223F'
+    }
+}
+
+
 export function shape(type, points, color = 'white', radius = 20) {
     this.name = '';
     this.type = type;
