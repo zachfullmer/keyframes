@@ -401,7 +401,9 @@ export function dragPoint(screenPos) {
     if (grabbedPoint === null) {
         return;
     }
-    screenPos = grabbedPoint.parent.inverseTransform(screenPos);
+    if (grabbedPoint.parent !== null) {
+        screenPos = grabbedPoint.parent.inverseTransform(screenPos);
+    }
     grabbedPoint.p = screenPos;
     return screenPos;
 }
