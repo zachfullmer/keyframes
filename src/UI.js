@@ -143,6 +143,22 @@ export function removePointFromShape(point, shape) {
 }
 
 
+function pointRefsHi(point) {
+    if (grabbedPoint !== point) {
+        $('#pointItem-' + point.name).addClass('highlighted');
+        $('.point-ref-' + point.name).addClass('highlighted');
+        vec.hiPoint(point);
+    }
+}
+
+function pointRefsLo(point) {
+    if (grabbedPoint !== point) {
+        $('#pointItem-' + point.name).removeClass('highlighted');
+        $('.point-ref-' + point.name).removeClass('highlighted');
+        vec.loPoint(point);
+    }
+}
+
 export function removePointRefs(pointToRemove) {
     let divId = '#pointDiv-' + pointToRemove.name;
     let pointRefDiv = '.point-ref-div-' + pointToRemove.name;
@@ -212,8 +228,7 @@ export function pushPointToShape(point) {
         else if (event.which == 2) { // middle click
             li.parent().remove();
             removePointFromShape(point, shape);
-            vec.loPoint(point);
-            $(cloneId).removeClass('highlighted');
+            pointRefsLo(point);
         }
     });
     li.mouseup((event) => {
@@ -226,21 +241,11 @@ export function pushPointToShape(point) {
             swapPointRefs(li.parent(), shape.points);
         }
         else {
-            $(cloneId).addClass('highlighted');
+            pointRefsHi(point);
         }
     });
     li.mouseleave(() => {
-        $(cloneId).removeClass('highlighted');
-    });
-    point.hitbox.mouseenter(() => {
-        if (grabbedPoint !== point) {
-            li.addClass('highlighted');
-        }
-    });
-    point.hitbox.mouseleave(() => {
-        if (grabbedPoint !== point) {
-            li.removeClass('highlighted');
-        }
+        pointRefsLo(point);
     });
     editedShape.points.push(point);
 }
@@ -275,33 +280,23 @@ export function addPoint(point, parent = selectedPoint) {
         else if (event.which == 2) { // middle click
             if (point !== vec.rootPnt) {
                 removePointRefs(point);
-                vec.loPoint(point);
+                pointRefsLo(point);
             }
         }
     });
     let pointRef = '.point-ref-' + point.name;
     $(id).contextmenu(() => { return false; });
     $(id).mouseenter(() => {
-        $(pointRef).addClass('highlighted');
-        $(id).addClass('highlighted');
-        vec.hiPoint(point);
+        pointRefsHi(point);
     });
     $(id).mouseleave(() => {
-        $(pointRef).removeClass('highlighted');
-        $(id).removeClass('highlighted');
-        vec.loPoint(point);
+        pointRefsLo(point);
     });
     point.hitbox.mouseenter(() => {
-        if (grabbedPoint !== point) {
-            $(id).addClass('highlighted');
-            vec.hiPoint(point);
-        }
+        pointRefsHi(point);
     });
     point.hitbox.mouseleave(() => {
-        if (grabbedPoint !== point) {
-            $(id).removeClass('highlighted');
-            vec.loPoint(point);
-        }
+        pointRefsLo(point);
     });
     point.hitbox.mousedown((event) => {
         if (event.which == 1) { // left
@@ -315,7 +310,7 @@ export function addPoint(point, parent = selectedPoint) {
         else if (event.which == 2) { // middle
             if (point !== vec.rootPnt) {
                 removePointRefs(point);
-                vec.loPoint(point);
+                pointRefsLo(point);
             }
         }
     });
@@ -393,9 +388,7 @@ export function dropPoint() {
     if (grabbedPoint === null) {
         return;
     }
-    $('#pointItem-' + grabbedPoint.name).removeClass('highlighted');
-    $('.point-ref-' + grabbedPoint.name).removeClass('highlighted');
-    vec.loPoint(grabbedPoint);
+    pointRefsLo(grabbedPoint);
     grabbedPoint = null;
 }
 
