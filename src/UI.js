@@ -240,10 +240,14 @@ export function pushPointToShape(point) {
         $(cloneId).removeClass('highlighted');
     });
     point.hitbox.mouseenter(() => {
-        li.addClass('highlighted');
+        if (grabbedPoint !== point) {
+            li.addClass('highlighted');
+        }
     });
     point.hitbox.mouseleave(() => {
-        li.removeClass('highlighted');
+        if (grabbedPoint !== point) {
+            li.removeClass('highlighted');
+        }
     });
     editedShape.points.push(point);
 }
@@ -295,12 +299,16 @@ export function addPoint(point, parent = selectedPoint) {
         vec.loPoint(point);
     });
     point.hitbox.mouseenter(() => {
-        $(id).addClass('highlighted');
-        vec.hiPoint(point);
+        if (grabbedPoint !== point) {
+            $(id).addClass('highlighted');
+            vec.hiPoint(point);
+        }
     });
     point.hitbox.mouseleave(() => {
-        $(id).removeClass('highlighted');
-        vec.loPoint(point);
+        if (grabbedPoint !== point) {
+            $(id).removeClass('highlighted');
+            vec.loPoint(point);
+        }
     });
     point.hitbox.mousedown((event) => {
         if (event.which == 1) { // left
@@ -394,6 +402,9 @@ export function dropPoint() {
     if (grabbedPoint === null) {
         return;
     }
+    $('#pointItem-' + grabbedPoint.name).removeClass('highlighted');
+    $('.point-ref-' + grabbedPoint.name).removeClass('highlighted');
+    vec.loPoint(grabbedPoint);
     grabbedPoint = null;
 }
 
