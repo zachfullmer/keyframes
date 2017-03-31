@@ -143,16 +143,16 @@ export function removePointFromShape(point, shape) {
 }
 
 
-function pointRefsHi(point) {
-    if (grabbedPoint !== point) {
+function pointRefsHi(point, force = false) {
+    if (force || grabbedPoint !== point) {
         $('#pointItem-' + point.name).addClass('highlighted');
         $('.point-ref-' + point.name).addClass('highlighted');
         vec.hiPoint(point);
     }
 }
 
-function pointRefsLo(point) {
-    if (grabbedPoint !== point) {
+function pointRefsLo(point, force = false) {
+    if (force || grabbedPoint !== point) {
         $('#pointItem-' + point.name).removeClass('highlighted');
         $('.point-ref-' + point.name).removeClass('highlighted');
         vec.loPoint(point);
@@ -388,7 +388,7 @@ export function dropPoint() {
     if (grabbedPoint === null) {
         return;
     }
-    pointRefsLo(grabbedPoint);
+    pointRefsLo(grabbedPoint, true);
     grabbedPoint = null;
 }
 
@@ -407,6 +407,8 @@ export function dragPoint(screenPos) {
 export function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
+    // init shape list
+    $('#shapeListBox').append('<ul id="shapeList"></ul>');
     let shapeTypeSelect = $('#shapeTypeSelect');
     $.each(shapeTypes, (key, val) => {
         shapeTypeSelect.append($('<option/>', {
@@ -414,8 +416,6 @@ export function initUI() {
             text: val.name
         }));
     });
-    // init shape list
-    $('#shapeListBox').append('<ul id="shapeList"></ul>');
     // init point list
     addPoint(new pnt());
     vec.rootPnt.p = [$(window).width() / 2, $(window).height() / 2];
