@@ -2,14 +2,15 @@ import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
-import { addPoint, selectedPoint, addShape, selectedShape, stopEditing } from './UI.js'
+import { addPoint, selectedPoint, addShape, selectedShape, stopEditing, dropPoint } from './UI.js'
 
 
 export function initEvents() {
-    let canvas = $('#drawingArea')[0];
+    let canvas = $('#drawingArea');
     // disable right click
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });
-    $('#drawingArea').on('click dblclick mousemove mousedown', (event) => {
+    // hitbox checking
+    canvas.on('click dblclick mousemove mousedown', (event) => {
         checkHitboxEvents(event);
     });
     $(document).keydown((event) => {
@@ -17,13 +18,18 @@ export function initEvents() {
             stopEditing();
         }
     });
-    $('#drawingArea').dblclick((event) => {
+    canvas.dblclick((event) => {
         if (selectedPoint === null) {
             return;
         }
         let p1 = new pnt();
         p1.p = [event.pageX, event.pageY];
         addPoint(p1, selectedPoint);
+    });
+    $(document).mouseup((event) => {
+        if (event.which == 1) { // left
+            dropPoint();
+        }
     });
     $(window).on('resize', (event) => {
         checkHitboxEvents(event);

@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
-import { opList, degrees } from './Helpers.js'
+import { opList, degrees, cartToPolar, polarToCart } from './Helpers.js'
 import { shape, pnt } from './VectorDrawing.js'
 
 
@@ -304,7 +304,10 @@ export function addPoint(point, parent = selectedPoint) {
     });
     point.hitbox.mousedown((event) => {
         if (event.which == 1) { // left
-            if (editedShape !== null) {
+            if (editedShape === null) {
+                grabPoint(point);
+            }
+            else {
                 pushPointToShape(point);
             }
         }
@@ -378,6 +381,29 @@ export function swapPointRefs(div1, pointList) {
     div2.addClass(divClass1);
     // gotta move this over too
     grabbedPointRef = div1;
+}
+
+
+export var grabbedPoint = null;
+
+export function grabPoint(point) {
+    grabbedPoint = point;
+}
+
+export function dropPoint() {
+    if (grabbedPoint === null) {
+        return;
+    }
+    grabbedPoint = null;
+}
+
+export function dragPoint(screenPos) {
+    if (grabbedPoint === null) {
+        return;
+    }
+    screenPos = grabbedPoint.parent.inverseTransform(screenPos);
+    grabbedPoint.p = screenPos;
+    return screenPos;
 }
 
 
