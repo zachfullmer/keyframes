@@ -8,15 +8,16 @@ export var selectedPoint = null;
 export var selectedShape = null;
 export var editedShape = null;
 
-function genShapeListName(shape) {
+export function genShapeListName(shape) {
     let spanId = 'shapeSpan-' + shape.name;
     let itemSymbol = shapeTypes[shape.type].unicode;
-    return '<span id="' + spanId + '">' + itemSymbol + '</span>';
+    return shape.name + '<span id="' + spanId + '" style="color:' + shape.color + ';float:right;">' + itemSymbol + '</span>';
 }
 
 
 export function setPropWindow(type) {
     let shape = null;
+    let shapeTypeSelect = $('#shapeTypeSelect');
     if (selectedShape !== null) {
         shape = selectedShape;
     }
@@ -33,28 +34,33 @@ export function setPropWindow(type) {
         $('#sxProp').val(selectedPoint.s[0]);
         $('#syProp').val(selectedPoint.s[1]);
         $('#pointPropsBox').show();
+        shapeTypeSelect.hide();
     }
-    else if (type == 'polygon') {
-        $('#pcProp').val(shape.color);
-        $('#polygonPropsBox').show();
-    }
-    else if (type == 'line') {
-        $('#lcProp').val(shape.color);
-        $('#linePropsBox').show();
-    }
-    else if (type == 'circleF') {
-        $('#cfrProp').val(shape.radius);
-        $('#cfcProp').val(shape.color);
-        $('#circleFPropsBox').show();
-    }
-    else if (type == 'circleO') {
-        $('#corProp').val(shape.radius);
-        $('#cocProp').val(shape.color);
-        $('#circleOPropsBox').show();
-    }
-    else if (type == 'bezier') {
-        $('#bcProp').val(shape.color);
-        $('#bezierPropsBox').show();
+    else {
+        shapeTypeSelect.show();
+        if (type == 'polygon') {
+            $('#pcProp').val(shape.color);
+            $('#polygonPropsBox').show();
+        }
+        else if (type == 'line') {
+            $('#lcProp').val(shape.color);
+            $('#linePropsBox').show();
+        }
+        else if (type == 'circleF') {
+            $('#cfrProp').val(shape.radius);
+            $('#cfcProp').val(shape.color);
+            $('#circleFPropsBox').show();
+        }
+        else if (type == 'circleO') {
+            $('#corProp').val(shape.radius);
+            $('#cocProp').val(shape.color);
+            $('#circleOPropsBox').show();
+        }
+        else if (type == 'bezier') {
+            $('#bcProp').val(shape.color);
+            $('#bezierPropsBox').show();
+        }
+        shapeTypeSelect.val(type);
     }
 }
 
@@ -317,7 +323,7 @@ export function addShape(shape) {
     let listId = 'shapeList-' + shape.name;
     let itemId = 'shapeItem-' + shape.name;
     let spanId = 'shapeSpan-' + shape.name;
-    $('#shapeList').append('<div id="shapeDiv-' + shape.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select shape-list">' + shape.name + genShapeListName(shape) + '</li><ul id="' + listId + '"></ul></div>');
+    $('#shapeList').append('<div id="shapeDiv-' + shape.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select shape-list">' + genShapeListName(shape) + '</li><ul id="' + listId + '"></ul></div>');
     let select = selectShape.bind(null, shape.name);
     let edit = editShape.bind(null, shape.name);
     $('#' + itemId).mousedown((event) => {
@@ -332,8 +338,6 @@ export function addShape(shape) {
         }
     });
     $('#' + itemId).contextmenu(() => { return false; });
-    $('#' + spanId).css('color', shape.color);
-    $('#' + spanId).css('float', 'right');
     vec.elements.push(shape);
     currentShapeID += 1;
 }
@@ -406,6 +410,13 @@ export function dragPoint(screenPos) {
 export function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
+    let shapeTypeSelect = $('#shapeTypeSelect');
+    $.each(shapeTypes, (key, val) => {
+        shapeTypeSelect.append($('<option/>', {
+            value: key,
+            text: val.name
+        }));
+    });
     // init shape list
     $('#shapeListBox').append('<ul id="shapeList"></ul>');
     // init point list

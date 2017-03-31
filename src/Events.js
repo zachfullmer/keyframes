@@ -2,7 +2,8 @@ import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
-import { addPoint, selectedPoint, addShape, selectedShape, stopEditing, dropPoint, dragPoint, grabbedPoint } from './UI.js'
+import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName, setPropWindow } from './UI.js'
+import { selectedPoint, selectedShape, grabbedPoint } from './UI.js'
 
 
 export function initEvents() {
@@ -39,6 +40,16 @@ export function initEvents() {
     });
     $(window).on('resize', (event) => {
         checkHitboxEvents(event);
+    });
+    // properties
+    $('#shapeTypeSelect').on('change', function () {
+        if (selectedShape === null) {
+            return;
+        }
+        selectedShape.type = this.value;
+        let itemId = '#shapeItem-' + selectedShape.name;
+        $(itemId).html(genShapeListName(selectedShape));
+        setPropWindow(this.value);
     });
     // point properties
     $('#pxProp, #pyProp').on('input', () => {

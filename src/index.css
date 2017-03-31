@@ -107,6 +107,13 @@ input[type=color] {
   width: 50px;
 }
 
+select {
+  color: #fff;
+  border: 1px solid #555;
+  background-color: #111;
+  font-size: 110%;
+}
+
 p.prop-header {
   margin: 0px;
   margin-bottom: 10px;

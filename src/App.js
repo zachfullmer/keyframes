@@ -22,6 +22,7 @@ class CanvasComponent extends React.Component {
         <div id="pointListBox" className="ui-panel"></div>
         <div id="shapeListBox" className="ui-panel"></div>
         <div id="propsBox" className="ui-panel">
+          <select id="shapeTypeSelect"></select>
           <div id="pointPropsBox" className="props-box">
             <p className="prop-header">Point</p>
             <div className="prop-group">
@@ -41,25 +42,25 @@ class CanvasComponent extends React.Component {
             </div>
           </div>
           <div id="polygonPropsBox" className="props-box">
-            <p className="prop-header">Polygon</p>
+            <hr />
             <label><input type="color" id="pcProp"></input>color</label><br />
           </div>
           <div id="linePropsBox" className="props-box">
-            <p className="prop-header">Line</p>
+            <hr />
             <label><input type="color" id="lcProp"></input>color</label><br />
           </div>
           <div id="circleFPropsBox" className="props-box">
-            <p className="prop-header">Filled Circle</p>
+            <hr />
             <label><input type="number" step="any" id="cfrProp" min="0"></input>radius</label><br />
             <label><input type="color" id="cfcProp"></input>color</label><br />
           </div>
           <div id="circleOPropsBox" className="props-box">
-            <p className="prop-header">Circle</p>
+            <hr />
             <label><input type="number" step="any" id="corProp" min="0"></input>radius</label><br />
             <label><input type="color" id="cocProp"></input>color</label><br />
           </div>
           <div id="bezierPropsBox" className="props-box">
-            <p className="prop-header">Bezier Curve</p>
+            <hr />
             <label><input type="color" id="bcProp"></input>color</label><br />
           </div>
         </div>
