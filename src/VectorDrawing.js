@@ -35,6 +35,18 @@ export function pnt() {
     this.rf = 0.0;
     this.sf = [1.0, 1.0];
     this.children = [];
+    this.transform = (point) => {
+        // origin
+        point = opList(point, this.of, (a, b) => a + b);
+        // scale
+        point = opList(point, this.sf, (a, b) => a * b);
+        // rotate
+        let polar = cartToPolar(point);
+        polar[1] += this.rf;
+        point = polarToCart(polar);
+        // translate
+        point = opList(point, this.pf, (a, b) => a + b);
+    }
     this.addChild = (child) => {
         this.children.push(child);
     }
