@@ -200,6 +200,7 @@ export function stopEditing() {
 }
 
 export function pushPointToShape(point) {
+    let shape = editedShape;
     let pointList = editedShape.points;
     let pointRef = 'point-ref-' + point.name;
     let pointRefDiv = 'point-ref-div-' + point.name;
@@ -211,15 +212,28 @@ export function pushPointToShape(point) {
     let div = $('<div class="nesting-box ' + pointRefDiv + '"></div>');
     div.append(li);
     $('#shapeList-' + editedShape.name).append(div);
-    div.mousedown((event) => {
-        if (event.which == 2) { // middle click
-            div.remove();
+    li.mousedown((event) => {
+        if (event.which == 1) { // left click
+            grabPointRef(li.parent());
+        }
+        else if (event.which == 2) { // middle click
+            li.parent().remove();
             removePointFromShape(point, editedShape);
             vec.loPoint(point);
         }
     });
+    li.mouseup((event) => {
+        if (event.which == 1) { // left click
+            dropPointRef();
+        }
+    });
     li.mouseenter(() => {
-        $(cloneId).addClass('highlighted');
+        if (grabbedPointRef !== null && grabbedPointRef[0] !== li.parent()[0]) {
+            swapPointRefs(li.parent(), shape.points);
+        }
+        else {
+            $(cloneId).addClass('highlighted');
+        }
     });
     li.mouseleave(() => {
         $(cloneId).removeClass('highlighted');
@@ -330,13 +344,64 @@ export function addShape(shape) {
 }
 
 
+export var grabbedPointRef = null;
+
+export function grabPointRef(refDiv) {
+    grabbedPointRef = refDiv;
+}
+
+export function dropPointRef() {
+    if (grabbedPointRef === null) {
+        return;
+    }
+    grabbedPointRef = null;
+}
+
+export function swapPointRefs(div1, pointList) {
+    let div2 = grabbedPointRef;
+    let li1 = div1.children().first();
+    let li2 = div2.children().first();
+    // swap actual points
+    pointList[div2.index()] = [pointList[div1.index()], pointList[div1.index()] = pointList[div2.index()]][0];
+    // swap list items
+    li1.detach();
+    li2.detach();
+    div1.prepend(li2);
+    div2.prepend(li1);
+    // swap classes
+    let divClass1 = 'point-ref-div-' + li1.text();
+    let divClass2 = 'point-ref-div-' + li2.text();
+    div1.removeClass(divClass1);
+    div1.addClass(divClass2);
+    div2.removeClass(divClass2);
+    div2.addClass(divClass1);
+    // gotta move this over too
+    grabbedPointRef = div1;
+}
+
+
 export function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
+    // init shape list
+    $('#shapeListBox').append('<ul id="shapeList"></ul>');
     // init point list
     addPoint(new pnt());
     vec.rootPnt.p = [$(window).width() / 2, $(window).height() / 2];
     selectPoint('p0');
-    // init shape list
-    $('#shapeListBox').append('<ul id="shapeList"></ul>');
+    let points = [];
+    let pos = [[20, 40], [50, -70], [-10, -80], [-30, -30]];
+    for (let a = 0; a < 4; a++) {
+        let p = new pnt();
+        points.push(p);
+        addPoint(p, vec.rootPnt);
+        p.p = pos[a];
+    }
+    let s = new shape('bezier', [], 'white');
+    addShape(s);
+    editShape(s.name);
+    for (let p in points) {
+        pushPointToShape(points[p]);
+    }
+    stopEditing();
 }
