@@ -35,6 +35,12 @@ export function pnt() {
     this.rf = 0.0;
     this.sf = [1.0, 1.0];
     this.children = [];
+    this._parent = null;
+    Object.defineProperties(this, {
+        "parent": {
+            "get": function () { return this._parent; }
+        }
+    });
     this.transform = (point) => {
         // origin
         point = opList(point, this.of, (a, b) => a + b);
@@ -48,7 +54,21 @@ export function pnt() {
         point = opList(point, this.pf, (a, b) => a + b);
         return point;
     }
+    this.inverseTransform = (point) => {
+        console.log(this.rf);
+        point = opList(point, this.pf, (a, b) => a - b);
+        // rotate
+        let polar = cartToPolar(point);
+        polar[1] -= this.rf;
+        point = polarToCart(polar);
+        // scale
+        point = opList(point, this.sf, (a, b) => a / b);
+        // origin
+        point = opList(point, this.of, (a, b) => a - b);
+        return point;
+    }
     this.addChild = (child) => {
+        child._parent = this;
         this.children.push(child);
     }
     this.update = (parent) => {
