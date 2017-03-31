@@ -218,8 +218,9 @@ export function pushPointToShape(point) {
         }
         else if (event.which == 2) { // middle click
             li.parent().remove();
-            removePointFromShape(point, editedShape);
+            removePointFromShape(point, shape);
             vec.loPoint(point);
+            $(cloneId).removeClass('highlighted');
         }
     });
     li.mouseup((event) => {
