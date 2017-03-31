@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
-import { addPoint, selectedPoint, addShape, selectedShape, stopEditing, dropPoint } from './UI.js'
+import { addPoint, selectedPoint, addShape, selectedShape, stopEditing, dropPoint, dragPoint, grabbedPoint } from './UI.js'
 
 
 export function initEvents() {
@@ -25,6 +25,12 @@ export function initEvents() {
         let p1 = new pnt();
         p1.p = [event.pageX, event.pageY];
         addPoint(p1, selectedPoint);
+    });
+    canvas.mousemove((event) => {
+        if (grabbedPoint === null) {
+            return
+        }
+        dragPoint([event.pageX, event.pageY]);
     });
     $(document).mouseup((event) => {
         if (event.which == 1) { // left
