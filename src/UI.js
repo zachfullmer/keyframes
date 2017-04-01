@@ -42,17 +42,28 @@ export function openRename(item, isShape) {
     renameInput.select();
 }
 
-export function applyRename(item, isShape) {
+export function applyRename(item, isShape, nameChange = null) {
     // set up id names
     var name = item.name;
     let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
-    let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
+    let renameInput = null;
+    if (nameChange === null) {
+        renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
+    }
     let type = (isShape ? 'shape' : 'point');
     // hide the input element
     nameSpan.show();
-    renameInput.hide();
+    if (nameChange === null) {
+        renameInput.hide();
+    }
     // clean the input string
-    let newName = renameInput.val();
+    let newName = ''
+    if (nameChange === null) {
+        newName = renameInput.val();
+    }
+    else {
+        newName = nameChange;
+    }
     if (!newName) newName = name;
     newName = newName.replace(/[\W]/g, "");
     if (name == newName || newName.length < 1) {
@@ -549,5 +560,4 @@ export function initUI() {
         pushPointToShape(points[p]);
     }
     stopEditing();
-    //$('.rename-box').val('test');
 }
