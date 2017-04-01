@@ -1,5 +1,6 @@
 import $ from 'jquery'
 import { pnt, VectorDrawing, shape } from './VectorDrawing.js'
+import { Timeline } from './Animation.js'
 
 
 export function Hitbox(circle = false) {
@@ -139,12 +140,20 @@ export function checkHitboxEvents(event) {
     }
 }
 
-
+export var timeline = new Timeline();
 export var vec = new VectorDrawing();
 export function initCanvas(context) {
     ctx = context;
     canvas = $('#drawingArea')[0];
+    updateTimelinePos();
     window.requestAnimationFrame(drawCanvas);
+}
+
+function updateTimelinePos() {
+    timeline.left = 0;
+    timeline.right = window.innerWidth;
+    timeline.bottom = window.innerHeight;
+    timeline.top = window.innerHeight - 100;
 }
 
 function resizeCanvas() {
@@ -155,6 +164,7 @@ function resizeCanvas() {
         if (canvas.resize !== undefined) {
             canvas.resize(ctx.canvas.width, ctx.canvas.height);
         }
+        updateTimelinePos();
     }
 }
 
@@ -173,6 +183,7 @@ function drawCanvas(timestamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     vec.draw(ctx);
     vec.debugDraw(ctx);
+    timeline.draw(ctx);
     //
     window.requestAnimationFrame(drawCanvas);
 }
