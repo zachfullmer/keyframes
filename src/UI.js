@@ -42,6 +42,7 @@ export function openRename(item, isShape) {
     renameInput.select();
 }
 
+const nameLengthLimit = 100;
 export function applyRename(item, isShape, nameChange = null) {
     // set up id names
     var name = item.name;
@@ -66,6 +67,7 @@ export function applyRename(item, isShape, nameChange = null) {
     }
     if (!newName) newName = name;
     newName = newName.replace(/[\W]/g, "");
+    newName = newName.substr(0, nameLengthLimit);
     if (name == newName || newName.length < 1) {
         return;
     }
