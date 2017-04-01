@@ -348,7 +348,7 @@ export function pushPointToShape(point) {
     editedShape.points.push(point);
 }
 
-export function addPoint(point, parent = selectedPoint) {
+export function addPoint(point, parent = selectedPoint, name = null) {
     let parentListId = '';
     if (parent === null) {
         parentListId = '#pointListBox';
@@ -359,7 +359,12 @@ export function addPoint(point, parent = selectedPoint) {
         point.p = opList(point.p, parent.pf, (a, b) => a - b);
         parent.addChild(point);
     }
-    point.name = 'p' + currentPointID;
+    if (name === null) {
+        point.name = 'p' + currentPointID;
+    }
+    else {
+        point.name = name;
+    }
     let listId = 'pointList-' + point.name;
     let itemId = 'pointItem-' + point.name;
     let element = $('<div id="pointDiv-' + point.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select point-list">' + genListNameSpan(point.name, false) + '</li><ul id="' + listId + '"></ul></div>');
@@ -521,7 +526,7 @@ export function initUI() {
         }));
     });
     // init point list
-    addPoint(new pnt());
+    addPoint(new pnt(), null, 'rootPoint');
     vec.rootPnt.p = [$(window).width() / 2, $(window).height() / 2];
     selectPoint(vec.rootPnt);
     let points = [];
