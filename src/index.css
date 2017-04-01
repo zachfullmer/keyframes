@@ -27,6 +27,12 @@ ul {
   padding-right: 2px;
 }
 
+input.rename-box {
+  background: transparent;
+  border: none;
+  color: #fff;
+}
+
 
 /* point list */
 
