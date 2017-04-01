@@ -150,7 +150,7 @@ export function initCanvas(context) {
 }
 
 function updateTimelinePos() {
-    timeline.left = 0;
+    timeline.left = 300;
     timeline.right = window.innerWidth;
     timeline.bottom = window.innerHeight;
     timeline.top = window.innerHeight - 100;
