@@ -509,6 +509,8 @@ export var grabbedPoint = null;
 
 export function grabPoint(point) {
     grabbedPoint = point;
+    selectPoint(grabbedPoint);
+    setPropWindow('point');
 }
 
 export function dropPoint() {
@@ -527,7 +529,8 @@ export function dragPoint(screenPos) {
         screenPos = grabbedPoint.parent.inverseTransform(screenPos);
     }
     grabbedPoint.p = screenPos;
-    return screenPos;
+    $('#pxProp').val(grabbedPoint.p[0]);
+    $('#pyProp').val(grabbedPoint.p[1]);
 }
 
 
