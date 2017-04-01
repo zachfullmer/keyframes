@@ -153,7 +153,7 @@ canvas {
   z-index: 1;
 }
 
-.no-select {
+.ui-panel label, .no-select {
   -webkit-touch-callout: none;
   /* iOS Safari */
   -webkit-user-select: none;
