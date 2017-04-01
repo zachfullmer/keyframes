@@ -328,6 +328,8 @@ export function pushPointToShape(point) {
     li.addClass(pointRef);
     li.attr('id', '');
     li.off('mousedown');
+    li.off('mouseenter');
+    li.off('mouseleave');
     // nameSpan
     let nameSpan = li.find('span');
     nameSpan.addClass(pointRefNameSpan);
