@@ -8,35 +8,33 @@ export var selectedPoint = null;
 export var selectedShape = null;
 export var editedShape = null;
 
-function initRenameInput(item, shape) {
-    let renameInput = $((shape ? '#shapeRenameInput-' : '#pointRenameInput-') + item.name);
-    console.log((shape ? '#shapeRenameInput-' : '#pointRenameInput-') + item.name);
-    console.log(renameInput);
+function initRenameInput(item, isShape) {
+    let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + item.name);
     renameInput.hide();
     renameInput.blur(function () {
-        applyRename(item, shape);
+        applyRename(item, isShape);
     });
     renameInput.keydown((event) => {
         if (event.which == 27) { // escape
-            cancelRename(item, shape);
+            cancelRename(item, isShape);
         }
         else if (event.which == 13) { // return
-            applyRename(item, shape);
+            applyRename(item, isShape);
         }
     });
-    let id = (shape ? '#shapeItem-' : '#pointItem-') + item.name;
+    let id = (isShape ? '#shapeItem-' : '#pointItem-') + item.name;
     $(id).dblclick(() => {
         if (editedShape !== null) {
             return;
         }
-        openRename(item, shape);
+        openRename(item, isShape);
     });
 }
 
-export function openRename(item, shape) {
+export function openRename(item, isShape) {
     let name = item.name;
-    let nameSpan = $((shape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
-    let renameInput = $((shape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
+    let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
+    let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
     nameSpan.hide();
     renameInput.show();
     renameInput.val(nameSpan.text());
@@ -44,24 +42,34 @@ export function openRename(item, shape) {
     renameInput.select();
 }
 
-export function applyRename(item, shape) {
-    let name = item.name;
-    let renameInput = $((shape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
+export function applyRename(item, isShape) {
+    // set up id names
+    var name = item.name;
+    let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
+    let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
+    let type = (isShape ? 'shape' : 'point');
+    // hide the input element
+    nameSpan.show();
+    renameInput.hide();
+    // clean the input string
     let newName = renameInput.val();
-    if (name == newName) {
+    if (!newName) newName = name;
+    newName = newName.replace(/[\W]/g, "");
+    if (name == newName || newName.length < 1) {
         return;
     }
-    let nameSpan = $((shape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
-    if (!newName) newName = name;
-    renameInput.hide();
+    // check if the name already exists
+    if ((isShape ? vec.getShapeByName(newName) : vec.getPointByName(newName))) {
+        console.log('ERROR: can\'t rename "' + name + '"; ' + type + ' with name "' + newName + '" already exists');
+        return;
+    }
+    // rename the list item
     nameSpan.text(newName);
-    nameSpan.show();
     // rename associated object
     item.name = newName;
     // change ids and classes on dom elements
     let ids = [];
-    (shape ? 'shape' : 'point');
-    if (shape) {
+    if (isShape) {
         ids = ['shapeDiv-', 'shapeItem-', 'shapeList-', 'shapeNameSpan-', 'shapeRenameInput-', 'shapeSpan-'];
     }
     else {
@@ -71,7 +79,7 @@ export function applyRename(item, shape) {
         $('#' + ids[i] + name).attr('id', ids[i] + newName);
     }
     // classes
-    if (!shape) {
+    if (!isShape) {
         pointRefsLo(item, true);
         let classes = ['point-ref-', 'point-ref-div-', 'point-ref-name-span-', 'point-ref-rename-input-'];
         for (let c in classes) {
@@ -82,25 +90,25 @@ export function applyRename(item, shape) {
     }
 }
 
-export function cancelRename(item, shape) {
+export function cancelRename(item, isShape) {
     let name = item.name;
-    let nameSpan = $((shape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
-    let renameInput = $((shape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
+    let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
+    let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
     renameInput.hide();
     renameInput.val(nameSpan.text());
     nameSpan.show();
 }
 
-export function genListNameSpan(name, shape) {
-    let spanId = (shape ? 'shapeNameSpan-' : 'pointNameSpan-') + name;
-    let inputId = (shape ? 'shapeRenameInput-' : 'pointRenameInput-') + name;
+export function genListNameSpan(name, isShape) {
+    let spanId = (isShape ? 'shapeNameSpan-' : 'pointNameSpan-') + name;
+    let inputId = (isShape ? 'shapeRenameInput-' : 'pointRenameInput-') + name;
     return '<span id="' + spanId + '">' + name + '</span><input id="' + inputId + '" class="rename-box"></input>';
 }
 
-export function genShapeListName(shape) {
-    let spanId = 'shapeSpan-' + shape.name;
-    let itemSymbol = shapeTypes[shape.type].unicode;
-    return genListNameSpan(shape.name, true) + '<span id="' + spanId + '" style="color:' + shape.color + ';float:right;">' + itemSymbol + '</span>';
+export function genShapeListName(isShape) {
+    let spanId = 'shapeSpan-' + isShape.name;
+    let itemSymbol = shapeTypes[isShape.type].unicode;
+    return genListNameSpan(isShape.name, true) + '<span id="' + spanId + '" style="color:' + isShape.color + ';float:right;">' + itemSymbol + '</span>';
 }
 
 
@@ -389,9 +397,6 @@ export function addPoint(point, parent = selectedPoint, name = null) {
         }
     });
     let pointRef = '.point-ref-' + point.name;
-    $(id).dblclick(() => {
-        console.log('double clicked ' + point.name);
-    });
     $(id).contextmenu(() => { return false; });
     $(id).mouseenter(() => {
         pointRefsHi(point);
