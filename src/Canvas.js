@@ -177,6 +177,7 @@ function drawCanvas(timestamp) {
     lastT = timestamp;
     resizeCanvas();
     // animation
+    timeline.updateAnim(delta);
     vec.update();
     //
     // drawing
