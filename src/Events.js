@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
+import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
 import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName, setPropWindow } from './UI.js'
@@ -8,6 +8,14 @@ import { selectedPoint, selectedShape, grabbedPoint } from './UI.js'
 
 export function initEvents() {
     let canvas = $('#drawingArea');
+    $(document).keydown((event) => {
+        if (event.which == 37) { // left
+            timeline.timeOffset -= 1;
+        }
+        else if (event.which == 39) { // right
+            timeline.timeOffset += 1;
+        }
+    });
     // disable right click
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });
     // hitbox checking
