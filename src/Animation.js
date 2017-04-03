@@ -52,6 +52,7 @@ export function Timeline() {
     const fontFace = 'Arial';
     const markerFreq = 18;
     const markersPerStamp = 2;
+    var _displayDecimals = 1;
     this.textRender = Object.create(Text).init(formatTime(10));
     this.textRender.originX = 0.0;
     this.textRender.originY = 0.5;
@@ -90,7 +91,23 @@ export function Timeline() {
             }
         },
         "advance": {
-            "get": function () { return _advance; }
+            "get": function () { return _advance; },
+            "set": function (a) {
+                console.log(_advance);
+                _advance = a;
+                if (_advance >= 100) {
+                    _displayDecimals = 1;
+                }
+                else if (_advance >= 10) {
+                    _displayDecimals = 2;
+                }
+                else {
+                    _displayDecimals = 3;
+                }
+            }
+        },
+        "displayDecimals": {
+            "get": function () { return _displayDecimals; }
         },
         "width": {
             "get": function () { return _size[0]; },
@@ -168,14 +185,14 @@ export function Timeline() {
             "set": function (p) {
                 _period = p;
                 _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
-                _advance = this.timelineSize / markerFreq;
+                this.advance = this.timelineSize / markerFreq;
             }
         },
         "timelineSize": {
             "get": function () { return _timelineSize; },
             "set": function (ts) {
                 _timelineSize = ts;
-                _advance = _timelineSize / markerFreq;
+                this.advance = _timelineSize / markerFreq;
             }
         },
         "timeOffset": {
@@ -223,7 +240,7 @@ export function Timeline() {
         if (withStamp) {
             // timestamp
             let ms = this.advance * markerNum;
-            this.textRender.text = formatTime(ms, 1);
+            this.textRender.text = formatTime(ms, this.displayDecimals);
             this.textRender.update();
             this.textRender.x = linePixelPos + 5;
             this.textRender.y = this.top + timeAreaHeight / 2;
@@ -232,7 +249,6 @@ export function Timeline() {
         }
     }
     this.draw = (ctx) => {
-        this.timelineSize = this.width;
         // main box
         ctx.beginPath();
         ctx.rect(this.posX, this.posY, this.width, this.height);
