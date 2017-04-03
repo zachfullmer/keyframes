@@ -31,6 +31,7 @@ function formatTime(ms, decimals = 3, log = false) {
 }
 
 export function Timeline() {
+    var pThis = this;
     // hitbox
     var hitbox = new Hitbox();
     var grabbed = false;
@@ -43,6 +44,8 @@ export function Timeline() {
     $(document).mousemove((event) => {
         if (!this.lastMouse) this.lastMouse = [0, 0];
         if (grabbed) {
+            let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
+            pThis.pixelOffset -= moved[0];
         }
         this.lastMouse = [event.clientX, event.clientY];
     });
@@ -206,7 +209,7 @@ export function Timeline() {
             "get": function () { return _pixelOffset; },
             "set": function (po) {
                 _pixelOffset = Math.max(Math.round(po), 0);
-                _timeOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
+                _timeOffset = Math.round(this.timelineSize / this.width * _pixelOffset);
             }
         }
     });
