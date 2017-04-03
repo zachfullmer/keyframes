@@ -1,5 +1,6 @@
 import $ from 'jquery'
 import { Text } from './Text.js'
+import { Hitbox, addHitbox } from './Canvas.js'
 
 function clr() {
     $('#debugBox').text('');
@@ -25,14 +26,27 @@ function formatTime(ms, decimals = 3) {
 }
 
 export function Timeline() {
+    // hitbox
+    var hitbox = new Hitbox();
+    var grabbed = false;
+    hitbox.mousedown(() => {
+        grabbed = true;
+    });
+    hitbox.mouseup(() => {
+        grabbed = false;
+    });
+    $(document).mousemove((event) => {
+        if (!this.lastMouse) this.lastMouse = [0, 0];
+        if (grabbed) {
+        }
+        this.lastMouse = [event.clientX, event.clientY];
+    });
+    addHitbox(hitbox);
     // text
     const fontSize = 10;
     const fontFace = 'Arial';
     const markerFreq = 18;
-    const markersPerStamp = 3;
-    var _timeOffset = 0;
-    var _pixelOffset = 0;
-    var _advance = 0;
+    const markersPerStamp = 2;
     this.textRender = Object.create(Text).init(formatTime(10));
     this.textRender.originX = 0.0;
     this.textRender.originY = 0.5;
@@ -42,24 +56,51 @@ export function Timeline() {
     // time
     var curTime = 0;
     var _period = 0;
+    var _timeOffset = 0;
+    var _advance = 0;
     // drawing
     const timeAreaHeight = 20;
+    var _timelineSize = 3000;
+    var _pixelOffset = 0;
     var _minWidth = 1;
     var _minHeight = timeAreaHeight;
+    var timelinePos = 0;
     var linePos = 0.0;
-    var pos = [0.0, 0.0];
+    var endLinePos = 0.0;
+    var _pos = [0.0, 0.0];
     var _size = [100.0, 100.0];
     Object.defineProperties(this, {
+        "posX": {
+            "get": function () { return _pos[0]; },
+            "set": function (px) {
+                _pos[0] = px;
+                hitbox.setPos(_pos[0], _pos[1]);
+            }
+        },
+        "posY": {
+            "get": function () { return _pos[1]; },
+            "set": function (py) {
+                _pos[1] = py;
+                hitbox.setPos(_pos[0], _pos[1]);
+            }
+        },
         "advance": {
             "get": function () { return _advance; }
         },
         "width": {
             "get": function () { return _size[0]; },
-            "set": function (w) { _size[0] = w; }
+            "set": function (w) {
+                _size[0] = w;
+                hitbox.setBox(_size[0], _size[1]);
+                _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
+            }
         },
         "height": {
             "get": function () { return _size[1]; },
-            "set": function (h) { _size[1] = h; }
+            "set": function (h) {
+                _size[1] = h;
+                hitbox.setBox(_size[0], _size[1]);
+            }
         },
         "minHeight": {
             "get": function () { return _minHeight; },
@@ -75,47 +116,45 @@ export function Timeline() {
         },
         "left": {
             "get": function () {
-                return pos[0];
+                return this.posX;
             },
             "set": function (l) {
-                let oldL = pos[0];
-                pos[0] = l;
+                let oldL = this.posX;
+                this.posX = l;
                 this.width += oldL - l;
                 this.width = Math.max(this.width, this.minWidth);
-                _pixelOffset = this.timeOffset / this.period * this.width;
             }
         },
         "right": {
             "get": function () {
-                return pos[0] + this.width;
+                return this.posX + this.width;
             },
             "set": function (r) {
-                let oldR = pos[0] + this.width;
+                let oldR = this.posX + this.width;
                 this.width += r - oldR;
-                pos[0] = Math.min(pos[0], pos[0] + this.width);
+                this.posX = Math.min(this.posX, this.posX + this.width);
                 this.width = Math.max(this.width, this.minWidth);
-                _pixelOffset = this.timeOffset / this.period * this.width;
             }
         },
         "top": {
             "get": function () {
-                return pos[1];
+                return this.posY;
             },
             "set": function (t) {
-                let oldT = pos[1];
-                pos[1] = t;
+                let oldT = this.posY;
+                this.posY = t;
                 this.height += oldT - t;
                 this.height = Math.max(this.height, this.minHeight);
             }
         },
         "bottom": {
             "get": function () {
-                return pos[1] + this.height;
+                return this.posY + this.height;
             },
             "set": function (b) {
-                let oldB = pos[1] + this.height;
+                let oldB = this.posY + this.height;
                 this.height += b - oldB;
-                pos[1] = Math.min(pos[1], pos[1] + this.height);
+                this.posY = Math.min(this.posY, this.posY + this.height);
                 this.height = Math.max(this.height, this.minHeight);
             }
         },
@@ -123,19 +162,30 @@ export function Timeline() {
             "get": function () { return _period; },
             "set": function (p) {
                 _period = p;
-                _pixelOffset = this.timeOffset / this.period * this.width;
-                _advance = _period / markerFreq;
+                _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
+                _advance = this.timelineSize / markerFreq;
+            }
+        },
+        "timelineSize": {
+            "get": function () { return _timelineSize; },
+            "set": function (ts) {
+                _timelineSize = ts;
+                _advance = _timelineSize / markerFreq;
             }
         },
         "timeOffset": {
             "get": function () { return _timeOffset; },
             "set": function (to) {
                 _timeOffset = Math.max(to, 0);
-                _pixelOffset = this.timeOffset / this.period * this.width;
+                _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
             }
         },
         "pixelOffset": {
-            "get": function () { return _pixelOffset; }
+            "get": function () { return _pixelOffset; },
+            "set": function (po) {
+                _pixelOffset = Math.max(Math.round(po), 0);
+                _timeOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
+            }
         }
     });
     this.period = 5000;
@@ -144,26 +194,31 @@ export function Timeline() {
 
     this.updateAnim = (delta) => {
         curTime = (curTime + delta) % this.period;
-        linePos = curTime / this.period;
+        linePos = (curTime - this.timeOffset) / this.timelineSize;
+        endLinePos = (this.period - this.timeOffset) / this.timelineSize;
     }
     var drawTimeMarker = (ctx, f, markerNum) => {
         let withStamp = (markerNum % markersPerStamp == 0);
         // line
         ctx.beginPath();
-        let linePixelPos = f * this.width + pos[0] - this.pixelOffset % (this.width / markerFreq);
+        let linePixelPos = f * this.width + this.posX - (this.pixelOffset % Math.floor(this.width / markerFreq));
+        clr();
+        log(Math.floor(this.width));
+        log(Math.floor(markerFreq));
+        log(Math.floor(this.width / markerFreq));
+        // log((this.pixelOffset));
+        // log(Math.floor(this.width / markerFreq));
+        // log((this.pixelOffset % Math.floor(this.width / markerFreq)));
+        // log(Math.floor(this.pixelOffset / Math.floor(this.width / markerFreq)));
         ctx.moveTo(linePixelPos, this.top);
-        if (withStamp) {
-            ctx.lineTo(linePixelPos, this.top + timeAreaHeight);
-        }
-        else {
-            ctx.lineTo(linePixelPos, this.top + timeAreaHeight * 0.5);
-        }
+        if (withStamp) { ctx.lineTo(linePixelPos, this.top + timeAreaHeight); }
+        else { ctx.lineTo(linePixelPos, this.top + timeAreaHeight * 0.5); }
         ctx.strokeStyle = '#999';
         ctx.stroke();
         if (withStamp) {
             // timestamp
             let ms = this.advance * markerNum;
-            this.textRender.text = formatTime(ms, 3);
+            this.textRender.text = formatTime(ms, 1);
             this.textRender.update();
             this.textRender.x = linePixelPos + 5;
             this.textRender.y = this.top + timeAreaHeight / 2;
@@ -172,9 +227,10 @@ export function Timeline() {
         }
     }
     this.draw = (ctx) => {
+        this.timelineSize = this.width;
         // main box
         ctx.beginPath();
-        ctx.rect(pos[0], pos[1], this.width, this.height);
+        ctx.rect(this.posX, this.posY, this.width, this.height);
         ctx.fillStyle = '#000';
         ctx.fill();
         ctx.lineWidth = 0;
@@ -182,22 +238,33 @@ export function Timeline() {
         ctx.stroke();
         // time area
         ctx.beginPath();
-        ctx.rect(pos[0], pos[1], this.width, timeAreaHeight);
+        ctx.rect(this.posX, this.posY, this.width, timeAreaHeight);
         ctx.fill();
         ctx.stroke();
-        // const markerFreq = 18;
-        // const stampFreq = 6;
-        // var _period = 5000;
-        let endTime = this.period + this.timeOffset;
-        for (let m = this.timeOffset, ma = Math.floor(this.timeOffset / this.advance); m < endTime; m += this.advance, ma++) {
-            drawTimeMarker(ctx, (m - this.timeOffset) / this.period, ma);
+        let endTime = this.timelineSize + this.timeOffset + this.advance;
+        let startMarker = Math.floor(this.pixelOffset / Math.floor(this.width / markerFreq));
+        clr();
+        for (let m = this.timeOffset, ma = startMarker; m < endTime; m += this.advance, ma++) {
+            drawTimeMarker(ctx, (m - this.timeOffset) / this.timelineSize, ma);
         }
-        // line
-        ctx.beginPath();
-        let linePixelPos = linePos * this.width + pos[0];
-        ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
-        ctx.lineTo(linePixelPos, this.bottom);
-        ctx.strokeStyle = '#f99';
-        ctx.stroke();
+        // lines
+        if (linePos >= 0.0 && linePos <= 1.0) {
+            ctx.beginPath();
+            let linePixelPos = linePos * this.width + this.posX;
+            ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
+            ctx.lineTo(linePixelPos, this.bottom);
+            ctx.strokeStyle = '#ff9';
+            ctx.stroke();
+        }
+        if (endLinePos >= 0.0 && endLinePos <= 1.0) {
+            ctx.beginPath();
+            //(m - this.timeOffset) / timelineSize
+            //endLinePos = (this.period - this.timeOffset) / timelineSize;
+            let linePixelPos = endLinePos * this.width + this.posX;
+            ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
+            ctx.lineTo(linePixelPos, this.bottom);
+            ctx.strokeStyle = '#f99';
+            ctx.stroke();
+        }
     }
 }

@@ -10,10 +10,10 @@ export function initEvents() {
     let canvas = $('#drawingArea');
     $(document).keydown((event) => {
         if (event.which == 37) { // left
-            timeline.timeOffset -= 6;
+            timeline.timeOffset -= 20;
         }
         else if (event.which == 39) { // right
-            timeline.timeOffset += 6;
+            timeline.timeOffset += 20;
         }
     });
     // disable right click
