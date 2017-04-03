@@ -22,6 +22,10 @@ function formatTime(ms, decimals = 3) {
     let seconds = Math.floor(ms / 1000);
     let milli = ms % 1000;
     milli = Math.round(milli / Math.pow(10, (3 - decimals)));
+    while (milli > 9) {
+        milli -= 10;
+        seconds += 1;
+    }
     return pad(minutes, 2) + ':' + pad(seconds, 2) + '.' + pad(milli, decimals);
 }
 
