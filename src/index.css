@@ -88,14 +88,20 @@ input.rename-box {
 }
 
 
-/* properties window */
+/**/
 
-#propsBox {
+#rightBox {
   position: absolute;
   top: 0px;
   right: 0px;
+}
+
+
+/* properties window */
+
+#propsBox {
   width: 200px;
-  height: 300px;
+  height: 250px;
 }
 
 input[type=number] {
@@ -127,6 +133,18 @@ p.prop-header {
 
 .prop-group {
   margin-bottom: 10px;
+}
+
+
+/* debugBox */
+
+#debugBox {
+  position: relative;
+  float: right;
+  top: 0px;
+  right: 0px;
+  width: 200px;
+  height: 200px;
 }
 
 

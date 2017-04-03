@@ -21,55 +21,64 @@ class CanvasComponent extends React.Component {
         </div>
         <div id="pointListBox" className="ui-panel"></div>
         <div id="shapeListBox" className="ui-panel"></div>
-        <div id="propsBox" className="ui-panel">
-          <select id="shapeTypeSelect"></select>
-          <div id="pointPropsBox" className="props-box">
-            <p className="prop-header">Point</p>
-            <div className="prop-group">
-              <label><input type="number" step="any" id="pxProp"></input>position x</label><br />
-              <label><input type="number" step="any" id="pyProp"></input>position y</label><br />
+        <div id="rightBox">
+          <div id="propsBox" className="ui-panel">
+            <select id="shapeTypeSelect"></select>
+            <div id="pointPropsBox" className="props-box">
+              <p className="prop-header">Point</p>
+              <div className="prop-group">
+                <label><input type="number" step="any" id="pxProp"></input>position x</label><br />
+                <label><input type="number" step="any" id="pyProp"></input>position y</label><br />
+              </div>
+              <div className="prop-group">
+                <label><input type="number" step="any" id="oxProp"></input>origin x</label><br />
+                <label><input type="number" step="any" id="oyProp"></input>origin y</label><br />
+              </div>
+              <div className="prop-group">
+                <label><input type="number" step="any" id="rProp"></input>rotation</label><br />
+              </div>
+              <div className="prop-group">
+                <label><input type="number" step="0.1" id="sxProp"></input>scale x</label><br />
+                <label><input type="number" step="0.1" id="syProp"></input>scale y</label><br />
+              </div>
             </div>
-            <div className="prop-group">
-              <label><input type="number" step="any" id="oxProp"></input>origin x</label><br />
-              <label><input type="number" step="any" id="oyProp"></input>origin y</label><br />
+            <div id="polygonPropsBox" className="props-box">
+              <hr />
+              <label><input type="color" id="pcProp"></input>color</label><br />
             </div>
-            <div className="prop-group">
-              <label><input type="number" step="any" id="rProp"></input>rotation</label><br />
+            <div id="linePropsBox" className="props-box">
+              <hr />
+              <label><input type="color" id="lcProp"></input>color</label><br />
             </div>
-            <div className="prop-group">
-              <label><input type="number" step="0.1" id="sxProp"></input>scale x</label><br />
-              <label><input type="number" step="0.1" id="syProp"></input>scale y</label><br />
+            <div id="circleFPropsBox" className="props-box">
+              <hr />
+              <div className="prop-group">
+                <label><input type="number" step="any" id="cfrProp" min="0"></input>radius</label><br />
+              </div>
+              <div className="prop-group">
+                <label><input type="color" id="cfcProp"></input>color</label><br />
+              </div>
+            </div>
+            <div id="circleOPropsBox" className="props-box">
+              <hr />
+              <div className="prop-group">
+                <label><input type="number" step="any" id="corProp" min="0"></input>radius</label><br />
+              </div>
+              <div className="prop-group">
+                <label><input type="color" id="cocProp"></input>color</label><br />
+              </div>
+            </div>
+            <div id="bezierPropsBox" className="props-box">
+              <hr />
+              <label><input type="color" id="bcProp"></input>color</label><br />
             </div>
           </div>
-          <div id="polygonPropsBox" className="props-box">
-            <hr />
-            <label><input type="color" id="pcProp"></input>color</label><br />
-          </div>
-          <div id="linePropsBox" className="props-box">
-            <hr />
-            <label><input type="color" id="lcProp"></input>color</label><br />
-          </div>
-          <div id="circleFPropsBox" className="props-box">
-            <hr />
-            <div className="prop-group">
-              <label><input type="number" step="any" id="cfrProp" min="0"></input>radius</label><br />
-            </div>
-            <div className="prop-group">
-              <label><input type="color" id="cfcProp"></input>color</label><br />
-            </div>
-          </div>
-          <div id="circleOPropsBox" className="props-box">
-            <hr />
-            <div className="prop-group">
-              <label><input type="number" step="any" id="corProp" min="0"></input>radius</label><br />
-            </div>
-            <div className="prop-group">
-              <label><input type="color" id="cocProp"></input>color</label><br />
-            </div>
-          </div>
-          <div id="bezierPropsBox" className="props-box">
-            <hr />
-            <label><input type="color" id="bcProp"></input>color</label><br />
+          <div id="debugBox" className="ui-panel">
+            <p id="d1"></p>
+            <p id="d2"></p>
+            <p id="d3"></p>
+            <p id="d4"></p>
+            <p id="d5"></p>
           </div>
         </div>
       </div>
