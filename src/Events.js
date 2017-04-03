@@ -19,7 +19,7 @@ export function initEvents() {
     // disable right click
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });
     // hitbox checking
-    canvas.on('click dblclick mousemove mousedown', (event) => {
+    canvas.on('click dblclick mousemove mousedown mouseup', (event) => {
         checkHitboxEvents(event);
     });
     $(document).keydown((event) => {
