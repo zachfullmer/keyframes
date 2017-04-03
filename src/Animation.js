@@ -18,9 +18,16 @@ function pad(num, size) {
 function formatTime(ms, decimals = 3, log = false) {
     let overflow = Math.pow(10, decimals);
     ms = Math.round(ms);
-    decimals = Math.min(Math.max(1, decimals), 3);
+    decimals = Math.min(Math.max(0, decimals), 3);
     let minutes = Math.floor(ms / 60000);
     let seconds = Math.floor(ms / 1000);
+    while (seconds >= 60) {
+        seconds -= 60;
+        minutes += 1;
+    }
+    if (decimals == 0) {
+        return pad(minutes, 2) + ':' + pad(seconds, 2);
+    }
     let milli = ms % 1000;
     milli = Math.round(milli / Math.pow(10, (3 - decimals)));
     while (milli >= overflow) {
@@ -38,7 +45,7 @@ export function Timeline() {
     hitbox.mousedown(() => {
         grabbed = true;
     });
-    hitbox.mouseup(() => {
+    $(document).mouseup(() => {
         grabbed = false;
     });
     $(document).mousemove((event) => {
@@ -48,6 +55,14 @@ export function Timeline() {
             pThis.pixelOffset -= moved[0];
         }
         this.lastMouse = [event.clientX, event.clientY];
+    });
+    hitbox.mousewheel((e) => {
+        if (e.originalEvent.wheelDelta > 0) {
+            pThis.timelineSize *= 1.2;
+        }
+        else {
+            pThis.timelineSize /= 1.2;
+        }
     });
     addHitbox(hitbox);
     // text
@@ -98,10 +113,14 @@ export function Timeline() {
             "set": function (a) {
                 console.log(_advance);
                 _advance = a;
-                if (_advance >= 100) {
+                let adv = _advance * markersPerStamp;
+                if (adv >= 1000) {
+                    _displayDecimals = 0;
+                }
+                else if (adv >= 100) {
                     _displayDecimals = 1;
                 }
-                else if (_advance >= 10) {
+                else if (adv >= 10) {
                     _displayDecimals = 2;
                 }
                 else {
