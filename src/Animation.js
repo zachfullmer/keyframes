@@ -15,15 +15,16 @@ function pad(num, size) {
     return s;
 }
 
-function formatTime(ms, decimals = 3) {
+function formatTime(ms, decimals = 3, log = false) {
+    let overflow = Math.pow(10, decimals);
     ms = Math.round(ms);
     decimals = Math.min(Math.max(1, decimals), 3);
     let minutes = Math.floor(ms / 60000);
     let seconds = Math.floor(ms / 1000);
     let milli = ms % 1000;
     milli = Math.round(milli / Math.pow(10, (3 - decimals)));
-    while (milli > 9) {
-        milli -= 10;
+    while (milli >= overflow) {
+        milli -= overflow;
         seconds += 1;
     }
     return pad(minutes, 2) + ':' + pad(seconds, 2) + '.' + pad(milli, decimals);
