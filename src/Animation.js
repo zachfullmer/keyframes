@@ -1,4 +1,12 @@
+import $ from 'jquery'
 import { Text } from './Text.js'
+
+function clr() {
+    $('#debugBox').text('');
+}
+function log(str) {
+    $('#debugBox').append(str + '<br/>');
+}
 
 function pad(num, size) {
     var s = num + "";
@@ -21,9 +29,10 @@ export function Timeline() {
     const fontSize = 10;
     const fontFace = 'Arial';
     const markerFreq = 18;
-    const stampFreq = 6;
+    const markersPerStamp = 3;
     var _timeOffset = 0;
     var _pixelOffset = 0;
+    var _advance = 0;
     this.textRender = Object.create(Text).init(formatTime(10));
     this.textRender.originX = 0.0;
     this.textRender.originY = 0.5;
@@ -32,7 +41,7 @@ export function Timeline() {
     this.textRender.update();
     // time
     var curTime = 0;
-    var _period = 5000;
+    var _period = 0;
     // drawing
     const timeAreaHeight = 20;
     var _minWidth = 1;
@@ -41,6 +50,9 @@ export function Timeline() {
     var pos = [0.0, 0.0];
     var _size = [100.0, 100.0];
     Object.defineProperties(this, {
+        "advance": {
+            "get": function () { return _advance; }
+        },
         "width": {
             "get": function () { return _size[0]; },
             "set": function (w) { _size[0] = w; }
@@ -112,13 +124,13 @@ export function Timeline() {
             "set": function (p) {
                 _period = p;
                 _pixelOffset = this.timeOffset / this.period * this.width;
+                _advance = _period / markerFreq;
             }
         },
         "timeOffset": {
             "get": function () { return _timeOffset; },
             "set": function (to) {
                 _timeOffset = Math.max(to, 0);
-                console.log(_timeOffset);
                 _pixelOffset = this.timeOffset / this.period * this.width;
             }
         },
@@ -126,14 +138,19 @@ export function Timeline() {
             "get": function () { return _pixelOffset; }
         }
     });
+    this.period = 5000;
+
+
+
     this.updateAnim = (delta) => {
         curTime = (curTime + delta) % this.period;
         linePos = curTime / this.period;
     }
-    var drawTimeMarker = (ctx, f, withStamp) => {
+    var drawTimeMarker = (ctx, f, markerNum) => {
+        let withStamp = (markerNum % markersPerStamp == 0);
         // line
         ctx.beginPath();
-        let linePixelPos = f * this.width + pos[0] - this.pixelOffset;
+        let linePixelPos = f * this.width + pos[0] - this.pixelOffset % (this.width / markerFreq);
         ctx.moveTo(linePixelPos, this.top);
         if (withStamp) {
             ctx.lineTo(linePixelPos, this.top + timeAreaHeight);
@@ -145,8 +162,8 @@ export function Timeline() {
         ctx.stroke();
         if (withStamp) {
             // timestamp
-            let ms = this.period * f;
-            this.textRender.text = formatTime(ms, 1);
+            let ms = this.advance * markerNum;
+            this.textRender.text = formatTime(ms, 3);
             this.textRender.update();
             this.textRender.x = linePixelPos + 5;
             this.textRender.y = this.top + timeAreaHeight / 2;
@@ -168,18 +185,12 @@ export function Timeline() {
         ctx.rect(pos[0], pos[1], this.width, timeAreaHeight);
         ctx.fill();
         ctx.stroke();
-        let stampCount = -1;
-        let advance = this.period / markerFreq;
+        // const markerFreq = 18;
+        // const stampFreq = 6;
+        // var _period = 5000;
         let endTime = this.period + this.timeOffset;
-        for (let m = this.timeOffset, ma = Math.floor(this.timeOffset / advance); m < endTime; m += advance, ma++) {
-            let newStampCount = Math.floor(stampFreq / markerFreq * ma);
-            if (stampCount != newStampCount) {
-                drawTimeMarker(ctx, m / this.period, true);
-                stampCount = newStampCount;
-            }
-            else {
-                drawTimeMarker(ctx, m / this.period, false);
-            }
+        for (let m = this.timeOffset, ma = Math.floor(this.timeOffset / this.advance); m < endTime; m += this.advance, ma++) {
+            drawTimeMarker(ctx, (m - this.timeOffset) / this.period, ma);
         }
         // line
         ctx.beginPath();
