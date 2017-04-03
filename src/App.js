@@ -74,11 +74,6 @@ class CanvasComponent extends React.Component {
             </div>
           </div>
           <div id="debugBox" className="ui-panel">
-            <p id="d1"></p>
-            <p id="d2"></p>
-            <p id="d3"></p>
-            <p id="d4"></p>
-            <p id="d5"></p>
           </div>
         </div>
       </div>
