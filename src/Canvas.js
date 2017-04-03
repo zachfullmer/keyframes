@@ -16,6 +16,7 @@ export function Hitbox(circle = false) {
     var _mousemove = [];
     var _mousedown = [];
     var _mouseup = [];
+    var _mousewheel = [];
     var _click = [];
     var _dblclick = [];
     this.execute = (event) => {
@@ -35,6 +36,9 @@ export function Hitbox(circle = false) {
                 break;
             case '_mouseup':
                 list = _mouseup;
+                break;
+            case '_mousewheel':
+                list = _mousewheel;
                 break;
             case '_click':
                 list = _click;
@@ -63,6 +67,9 @@ export function Hitbox(circle = false) {
     }
     this.mouseup = (func) => {
         _mouseup.push(func);
+    }
+    this.mousewheel = (func) => {
+        _mousewheel.push(func);
     }
     this.click = (func) => {
         _click.push(func);
@@ -194,4 +201,14 @@ function drawCanvas(timestamp) {
     timeline.draw(ctx);
     //
     window.requestAnimationFrame(drawCanvas);
+}
+
+export function initHitboxEvents(eventRoot) {
+    eventRoot.on('click dblclick mousemove mousedown mouseup mousewheel DOMMouseScroll', (event) => {
+        if (event.type == 'DOMMouseScroll') {
+            event.type = 'mousewheel';
+            event.originalEvent.wheelDelta = event.originalEvent.detail;
+        }
+        checkHitboxEvents(event);
+    });
 }
