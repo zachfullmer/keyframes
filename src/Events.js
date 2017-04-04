@@ -6,6 +6,20 @@ import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName
 import { selectedPoint, selectedShape, grabbedPoint } from './UI.js'
 
 
+export function showTooltip(mousePos, text) {
+    let tooltip = $('#tooltip');
+    tooltip.show();
+    tooltip.offset({ left: mousePos[0] + 10, top: mousePos[1] + 15 });
+    let offset = tooltip.offset();
+    if (offset.left + tooltip.outerWidth() >= $(window).innerWidth()) {
+        tooltip.offset({ left: $(window).innerWidth() - tooltip.outerWidth() });
+    }
+    if (offset.top + tooltip.outerHeight() >= $(window).innerHeight()) {
+        tooltip.offset({ top: $(window).innerHeight() - tooltip.outerHeight() });
+    }
+    tooltip.text(text);
+}
+
 export function initEvents() {
     let canvas = $('#drawingArea');
     // disable right click
