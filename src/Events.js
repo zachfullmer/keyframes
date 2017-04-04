@@ -20,6 +20,11 @@ export function showTooltip(mousePos, text) {
     tooltip.text(text);
 }
 
+export function hideTooltip() {
+    let tooltip = $('#tooltip');
+    tooltip.hide();
+}
+
 export function initEvents() {
     let canvas = $('#drawingArea');
     // disable right click
