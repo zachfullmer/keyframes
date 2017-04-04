@@ -16,6 +16,7 @@ class CanvasComponent extends React.Component {
   render() {
     return (
       <div>
+        <div id="tooltip" className="ui-panel"></div>
         <div id="canvasBox">
           <canvas ref="canvas" id="drawingArea" width={300} height={300} />
         </div>
