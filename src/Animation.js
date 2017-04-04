@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { Text } from './Text.js'
 import { Hitbox, addHitbox } from './Canvas.js'
+import { showTooltip, hideTooltip } from './Events.js'
 
 function clr() {
     $('#debugBox').text('');
@@ -15,7 +16,7 @@ function pad(num, size) {
     return s;
 }
 
-function formatTime(ms, decimals = 3, log = false) {
+function formatTime(ms, decimals) {
     let overflow = Math.pow(10, decimals);
     ms = Math.round(ms);
     decimals = Math.min(Math.max(0, decimals), 3);
@@ -48,13 +49,19 @@ export function Timeline() {
     $(document).mouseup(() => {
         grabbed = false;
     });
-    $(document).mousemove((event) => {
+    $(document).mousemove(function (event) {
         if (!this.lastMouse) this.lastMouse = [0, 0];
         if (grabbed) {
             let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
             pThis.pixelOffset -= moved[0];
         }
-        this.lastMouse = [event.clientX, event.clientY];
+        this.lastMouse = [event.pageX, event.pageY];
+        if (hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
+            showTooltip(this.lastMouse, formatTime(getTime(event.pageX - pThis.left) + 2 * pThis.timeOffset, 3));
+        }
+        else {
+            hideTooltip();
+        }
     });
     hitbox.mousewheel((e) => {
         if (e.originalEvent.wheelDelta > 0) {
@@ -71,7 +78,7 @@ export function Timeline() {
     const markerFreq = 18;
     const markersPerStamp = 2;
     var _displayDecimals = 1;
-    this.textRender = Object.create(Text).init(formatTime(10));
+    this.textRender = Object.create(Text).init('');
     this.textRender.originX = 0.0;
     this.textRender.originY = 0.5;
     this.textRender.fontSize = fontSize;
@@ -251,6 +258,10 @@ export function Timeline() {
         let oTime = time - this.timeOffset;
         return oTime * this.width / this.timelineSize;
     }
+    var getTime = (pixel) => {
+        let oPixel = pixel - this.pixelOffset;
+        return oPixel * this.timelineSize / this.width;
+    }
     this.updateAnim = (delta) => {
         curTime = (curTime + delta) % this.period;
     }
@@ -259,14 +270,6 @@ export function Timeline() {
         // line
         ctx.beginPath();
         let linePixelPos = f * this.width + this.posX - (this.pixelOffset % Math.floor(this.width / markerFreq));
-        clr();
-        log(Math.floor(this.width));
-        log(Math.floor(markerFreq));
-        log(Math.floor(this.width / markerFreq));
-        // log((this.pixelOffset));
-        // log(Math.floor(this.width / markerFreq));
-        // log((this.pixelOffset % Math.floor(this.width / markerFreq)));
-        // log(Math.floor(this.pixelOffset / Math.floor(this.width / markerFreq)));
         ctx.moveTo(linePixelPos, this.top);
         if (withStamp) { ctx.lineTo(linePixelPos, this.top + timeAreaHeight); }
         else { ctx.lineTo(linePixelPos, this.top + timeAreaHeight * 0.5); }
@@ -290,8 +293,6 @@ export function Timeline() {
             return;
         }
         let kPos = [this.left + pixPos, this.top + timeAreaHeight + this.laneSize * (lane + 0.5)];
-        clr();
-        log(getPixelPos(time));
         ctx.beginPath();
         ctx.moveTo(kPos[0], kPos[1] - keyframeSize);
         ctx.lineTo(kPos[0] + keyframeSize, kPos[1]);
@@ -304,6 +305,7 @@ export function Timeline() {
         ctx.stroke();
     }
     this.draw = (ctx) => {
+        ctx.strokeStyle = '#fff';
         // box bg
         ctx.beginPath();
         ctx.rect(this.posX, this.posY, this.width, this.height);
