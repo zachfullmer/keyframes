@@ -43,8 +43,13 @@ export function Timeline() {
     // hitbox
     var hitbox = new Hitbox();
     var grabbed = false;
-    hitbox.mousedown(() => {
-        grabbed = true;
+    hitbox.mousedown((event) => {
+        if (event.which == 1) { // left button
+            grabbed = true;
+        }
+        else if (event.which == 2) { // middle button
+            pThis.timelinePeriod = defaultTimelinePeriod;
+        }
     });
     $(document).mouseup(() => {
         grabbed = false;
@@ -82,7 +87,8 @@ export function Timeline() {
     const fontSize = 10;
     const fontFace = 'Arial';
     const markerFreq = 18;
-    const markersPerStamp = 2;
+    const markersPerStamp = 3;
+    const defaultTimelinePeriod = 3000;
     var _displayDecimals = 1;
     this.textRender = Object.create(Text).init('');
     this.textRender.originX = 0.0;
@@ -95,7 +101,7 @@ export function Timeline() {
     var _period = 0;
     var _timeOffset = 0;
     var _advance = 0;
-    var _timelinePeriod = 3000;
+    var _timelinePeriod = defaultTimelinePeriod;
     // drawing
     const timeAreaHeight = 20;
     const infoAreaWidth = 100;
@@ -141,18 +147,19 @@ export function Timeline() {
             "set": function (a) {
                 _advance = a;
                 let adv = _advance * markersPerStamp;
-                if (adv >= 1000) {
-                    _displayDecimals = 0;
-                }
-                else if (adv >= 100) {
-                    _displayDecimals = 1;
-                }
-                else if (adv >= 10) {
-                    _displayDecimals = 2;
-                }
-                else {
-                    _displayDecimals = 3;
-                }
+                _displayDecimals = 3;
+                // if (adv >= 10000) {
+                //     _displayDecimals = 0;
+                // }
+                // else if (adv >= 1000) {
+                //     _displayDecimals = 1;
+                // }
+                // else if (adv >= 100) {
+                //     _displayDecimals = 2;
+                // }
+                // else {
+                //     _displayDecimals = 3;
+                // }
             }
         },
         "displayDecimals": {
@@ -288,7 +295,7 @@ export function Timeline() {
         ctx.stroke();
         if (withStamp) {
             // timestamp
-            this.textRender.text = formatTime(time, 3);
+            this.textRender.text = formatTime(time, this.displayDecimals);
             this.textRender.update();
             this.textRender.x = linePixelPos + 5;
             this.textRender.y = this.top + timeAreaHeight / 2;
@@ -352,6 +359,19 @@ export function Timeline() {
         }
         // keyframes
         drawKeyframe(ctx, 0, 2000);
+        /* time area */
+        ctx.beginPath();
+        ctx.rect(this.posX + infoAreaWidth, this.posY, this.width, timeAreaHeight);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+        let endTime = this.timelinePeriod + this.timeOffset + this.advance;
+        let markerAdvance = this.timeAreaWidth / markerFreq;
+        let ta = Math.floor(this.timeOffset / this.advance);
+        for (let m = this.timeOffset, ma = 0; m < endTime; m += this.advance, ma++) {
+            drawTimeMarker(ctx, (m - this.timeOffset) + (this.advance * ta), ma);
+        }
         /* info area */
         ctx.beginPath();
         ctx.rect(this.posX, this.posY, infoAreaWidth, this.height);
@@ -360,33 +380,12 @@ export function Timeline() {
         ctx.lineWidth = 0;
         ctx.strokeStyle = '#fff';
         ctx.stroke();
-        /* time area */
-        ctx.beginPath();
-        ctx.rect(this.posX + infoAreaWidth, this.posY, this.width, timeAreaHeight);
-        ctx.fillStyle = '#000';
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.stroke();
-        clr();
-        let endTime = this.timelinePeriod + this.timeOffset + this.advance;
-        //let startMarker = Math.floor(this.pixelOffset / Math.floor((this.width) / markerFreq));
-        let markerAdvance = this.timeAreaWidth / markerFreq;
-        //let startMarker = Math.floor(this.pixelOffset / markerAdvance) % 2;
-        let startMarker = 0;
-        log(this.advance);
-        log(this.timeOffset);
-        log(Math.floor(this.timeOffset / this.advance));
-        log('----------------');
-        let ta = Math.floor(this.timeOffset / this.advance);
-        for (let m = this.timeOffset, ma = startMarker; m < endTime; m += this.advance, ma++) {
-            drawTimeMarker(ctx, (m - this.timeOffset) + (this.advance * ta), ma);
-        }
 
         // box outline
         ctx.beginPath();
         ctx.rect(this.posX + infoAreaWidth, this.posY, this.width - infoAreaWidth, this.height);
         ctx.lineWidth = 0;
-        ctx.strokeStyle = '#0ff';
+        ctx.strokeStyle = '#fff';
         ctx.stroke();
     }
 }
