@@ -1,7 +1,7 @@
 import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec } from './Canvas.js'
+import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline } from './Canvas.js'
 import { opList, degrees, cartToPolar, polarToCart } from './Helpers.js'
-import { shape, pnt, shapeTypes } from './VectorDrawing.js'
+import { shape, pnt, shapeTypes, propTypes } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
@@ -145,30 +145,36 @@ export function setPropWindow(type) {
         $('#syProp').val(selectedPoint.s[1]);
         $('#pointPropsBox').show();
         shapeTypeSelect.hide();
+        timeline.setObjType(type);
     }
     else {
         shapeTypeSelect.show();
         if (type == 'polygon') {
             $('#pcProp').val(shape.color);
             $('#polygonPropsBox').show();
+            timeline.setObjType(type);
         }
         else if (type == 'line') {
             $('#lcProp').val(shape.color);
             $('#linePropsBox').show();
+            timeline.setObjType(type);
         }
         else if (type == 'circleF') {
             $('#cfrProp').val(shape.radius);
             $('#cfcProp').val(shape.color);
             $('#circleFPropsBox').show();
+            timeline.setObjType(type);
         }
         else if (type == 'circleO') {
             $('#corProp').val(shape.radius);
             $('#cocProp').val(shape.color);
             $('#circleOPropsBox').show();
+            timeline.setObjType(type);
         }
         else if (type == 'bezier') {
             $('#bcProp').val(shape.color);
             $('#bezierPropsBox').show();
+            timeline.setObjType(type);
         }
         else {
             shapeTypeSelect.hide();

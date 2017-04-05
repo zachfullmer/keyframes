@@ -2,6 +2,7 @@ import $ from 'jquery'
 import { Text } from './Text.js'
 import { Hitbox, addHitbox } from './Canvas.js'
 import { showTooltip, hideTooltip } from './Events.js'
+import { propTypes } from './VectorDrawing.js'
 
 function clr() {
     $('#debugBox').text('');
@@ -84,18 +85,26 @@ export function Timeline() {
     });
     addHitbox(hitbox);
     // text
-    const fontSize = 10;
+    const stampFontSize = 10;
+    const propFontSize = 12;
     const fontFace = 'Arial';
     const markerFreq = 18;
     const markersPerStamp = 3;
     const defaultTimelinePeriod = 3000;
     var _displayDecimals = 1;
-    this.textRender = Object.create(Text).init('');
-    this.textRender.originX = 0.0;
-    this.textRender.originY = 0.5;
-    this.textRender.fontSize = fontSize;
-    this.textRender.fontFamily = fontFace;
-    this.textRender.update();
+    this.stampText = Object.create(Text).init('');
+    this.stampText.originX = 0.0;
+    this.stampText.originY = 0.5;
+    this.stampText.fontSize = stampFontSize;
+    this.stampText.fontFamily = fontFace;
+    this.stampText.update();
+    this.propText = Object.create(Text).init('');
+    this.propText.originX = 1.0;
+    this.propText.originY = 0.5;
+    this.propText.fontSize = propFontSize;
+    this.propText.fontFamily = fontFace;
+    this.propText.update();
+    var laneNames = [];
     // time
     var curTime = 0;
     var _period = 0;
@@ -114,6 +123,7 @@ export function Timeline() {
     var _size = [100.0, 100.0];
     var _laneNum = 5;
     var _laneSize = 10;
+    var objType = 'none';
     Object.defineProperties(this, {
         "laneNum": {
             "get": function () {
@@ -269,7 +279,15 @@ export function Timeline() {
     });
     this.period = 10000;
 
-
+    this.setObjType = (type) => {
+        objType = type;
+        this.laneNum = propTypes[type].length;
+        laneNames.length = 0;
+        for (let p in propTypes[type]) {
+            console.log(propTypes[type][p].name);
+            laneNames.push(propTypes[type][p].name);
+        }
+    }
     var getPixelPos = (time) => {
         let oTime = time - this.timeOffset;
         return oTime * this.timeAreaWidth / this.timelinePeriod;
@@ -283,7 +301,7 @@ export function Timeline() {
     }
     var drawTimeMarker = (ctx, time, markerNum) => {
         let markerAdvance = this.timeAreaWidth / markerFreq;
-        let withStamp = ((markerNum + Math.floor(this.pixelOffset / markerAdvance) % 2) % markersPerStamp == 0);
+        let withStamp = ((markerNum + Math.floor(this.pixelOffset / markerAdvance) % markersPerStamp) % markersPerStamp == 0);
         let linePixelPos = this.posX + infoAreaWidth + (markerNum * markerAdvance);
         linePixelPos -= this.pixelOffset % markerAdvance;
         // line
@@ -295,12 +313,12 @@ export function Timeline() {
         ctx.stroke();
         if (withStamp) {
             // timestamp
-            this.textRender.text = formatTime(time, this.displayDecimals);
-            this.textRender.update();
-            this.textRender.x = linePixelPos + 5;
-            this.textRender.y = this.top + timeAreaHeight / 2;
+            this.stampText.text = formatTime(time, this.displayDecimals);
+            this.stampText.update();
+            this.stampText.x = linePixelPos + 5;
+            this.stampText.y = this.top + timeAreaHeight / 2;
             ctx.fillStyle = '#fff';
-            this.textRender.draw(ctx);
+            this.stampText.draw(ctx);
         }
     }
     const keyframeSize = 5;
@@ -323,22 +341,13 @@ export function Timeline() {
     }
     this.draw = (ctx) => {
         ctx.strokeStyle = '#fff';
+
         /* timeline area */
         // box bg
         ctx.beginPath();
         ctx.rect(this.posX + infoAreaWidth, this.posY, this.width - infoAreaWidth, this.height);
         ctx.fillStyle = '#000';
         ctx.fill();
-        // lanes
-        let startPos = this.top + timeAreaHeight;
-        for (let k = 1; k < this.laneNum; k++) {
-            ctx.beginPath();
-            let yPos = startPos + k * this.laneSize;
-            ctx.moveTo(this.left + infoAreaWidth, yPos);
-            ctx.lineTo(this.right, yPos);
-            ctx.strokeStyle = '#333';
-            ctx.stroke();
-        }
         // current time
         let linePixelPos = getPixelPos(curTime) + this.left + infoAreaWidth;
         if (linePixelPos >= this.left + infoAreaWidth && linePixelPos < this.right) {
@@ -359,6 +368,7 @@ export function Timeline() {
         }
         // keyframes
         drawKeyframe(ctx, 0, 2000);
+
         /* time area */
         ctx.beginPath();
         ctx.rect(this.posX + infoAreaWidth, this.posY, this.width, timeAreaHeight);
@@ -372,19 +382,45 @@ export function Timeline() {
         for (let m = this.timeOffset, ma = 0; m < endTime; m += this.advance, ma++) {
             drawTimeMarker(ctx, (m - this.timeOffset) + (this.advance * ta), ma);
         }
+
         /* info area */
+        // box bg
         ctx.beginPath();
         ctx.rect(this.posX, this.posY, infoAreaWidth, this.height);
         ctx.fillStyle = '#000';
         ctx.fill();
+        // text
+        for (let t in laneNames) {
+            this.propText.text = laneNames[t];
+            this.propText.update();
+            // this.propText.c.width
+            let tPos = [this.left + infoAreaWidth - 20, this.top + timeAreaHeight + this.laneSize * (parseInt(t) + 0.5)];
+            this.propText.x = tPos[0];
+            this.propText.y = tPos[1];
+            ctx.fillStyle = '#fff';
+            this.propText.draw(ctx);
+        }
+        // lanes
+        let startPos = this.top + timeAreaHeight;
+        for (let k = 0; k < this.laneNum; k++) {
+            ctx.beginPath();
+            let yPos = startPos + k * this.laneSize;
+            ctx.moveTo(this.left, yPos);
+            ctx.lineTo(this.right, yPos);
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+        }
+        // box
+        ctx.beginPath();
+        ctx.rect(this.posX, this.posY, infoAreaWidth, this.height);
         ctx.lineWidth = 0;
         ctx.strokeStyle = '#fff';
         ctx.stroke();
 
-        // box outline
+        /* all */
+        // box
         ctx.beginPath();
-        ctx.rect(this.posX + infoAreaWidth, this.posY, this.width - infoAreaWidth, this.height);
-        ctx.lineWidth = 0;
+        ctx.rect(this.posX, this.posY, this.width, this.height);
         ctx.strokeStyle = '#fff';
         ctx.stroke();
     }
