@@ -158,7 +158,7 @@ export const shapeTypes = {
     polygon: {
         id: 0,
         name: 'Polygon',
-        unicode: '\u25A0',
+        unicode: '\u25A0'
     },
     line: {
         id: 1,
@@ -180,6 +180,36 @@ export const shapeTypes = {
         name: 'Bezier Curve',
         unicode: '\u223F'
     }
+}
+
+
+export const propTypes = {
+    point: [
+        { name: 'position x', type: 'num' },
+        { name: 'position y', type: 'num' },
+        { name: 'origin x', type: 'num' },
+        { name: 'origin y', type: 'num' },
+        { name: 'rotation', type: 'num' },
+        { name: 'scale x', type: 'num' },
+        { name: 'scale y', type: 'num' }
+    ],
+    polygon: [
+        { name: 'color', type: 'col' }
+    ],
+    polygon: [
+        { name: 'color', type: 'col' }
+    ],
+    circleF: [
+        { name: 'radius', type: 'num' },
+        { name: 'color', type: 'col' }
+    ],
+    circleO: [
+        { name: 'radius', type: 'num' },
+        { name: 'color', type: 'col' }
+    ],
+    bezier: [
+        { name: 'color', type: 'col' }
+    ]
 }
 
 
