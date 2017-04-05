@@ -57,7 +57,13 @@ export function Timeline() {
         }
         this.lastMouse = [event.pageX, event.pageY];
         if (hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
-            showTooltip(this.lastMouse, formatTime(getTime(event.pageX - pThis.left) + 2 * pThis.timeOffset, 3));
+            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
+            if (t < 0) {
+                hideTooltip();
+            }
+            else {
+                showTooltip(this.lastMouse, formatTime(t, 3));
+            }
         }
         else {
             hideTooltip();
@@ -65,10 +71,10 @@ export function Timeline() {
     });
     hitbox.mousewheel((e) => {
         if (e.originalEvent.wheelDelta > 0) {
-            pThis.timelineSize *= 1.2;
+            pThis.timelinePeriod *= 1.2;
         }
         else {
-            pThis.timelineSize /= 1.2;
+            pThis.timelinePeriod /= 1.2;
         }
     });
     addHitbox(hitbox);
@@ -89,13 +95,13 @@ export function Timeline() {
     var _period = 0;
     var _timeOffset = 0;
     var _advance = 0;
+    var _timelinePeriod = 3000;
     // drawing
     const timeAreaHeight = 20;
-    var _timelineSize = 3000;
+    const infoAreaWidth = 100;
     var _pixelOffset = 0;
-    var _minWidth = 1;
+    var _minWidth = infoAreaWidth;
     var _minHeight = timeAreaHeight;
-    var timelinePos = 0;
     var linePos = 0.0;
     var endLinePos = 0.0;
     var _pos = [0.0, 0.0];
@@ -127,6 +133,9 @@ export function Timeline() {
                 hitbox.setPos(_pos[0], _pos[1]);
             }
         },
+        "timeAreaWidth": {
+            "get": function () { return this.width - infoAreaWidth; }
+        },
         "advance": {
             "get": function () { return _advance; },
             "set": function (a) {
@@ -154,7 +163,7 @@ export function Timeline() {
             "set": function (w) {
                 _size[0] = w;
                 hitbox.setBox(_size[0], _size[1]);
-                _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
+                _pixelOffset = this.timeOffset / this.timelinePeriod * this.timeAreaWidth;
             }
         },
         "height": {
@@ -225,51 +234,53 @@ export function Timeline() {
             "get": function () { return _period; },
             "set": function (p) {
                 _period = p;
-                _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
-                this.advance = this.timelineSize / markerFreq;
+                _pixelOffset = this.timeOffset / this.timelinePeriod * this.timeAreaWidth;
+                this.advance = this.timelinePeriod / markerFreq;
             }
         },
-        "timelineSize": {
-            "get": function () { return _timelineSize; },
+        "timelinePeriod": {
+            "get": function () { return _timelinePeriod; },
             "set": function (ts) {
-                _timelineSize = ts;
-                this.advance = _timelineSize / markerFreq;
+                _timelinePeriod = ts;
+                this.advance = _timelinePeriod / markerFreq;
             }
         },
         "timeOffset": {
             "get": function () { return _timeOffset; },
             "set": function (to) {
                 _timeOffset = Math.max(to, 0);
-                _pixelOffset = Math.round(this.timeOffset / this.timelineSize * this.width);
+                _pixelOffset = (this.timeOffset / this.timelinePeriod * this.timeAreaWidth);
             }
         },
         "pixelOffset": {
             "get": function () { return _pixelOffset; },
             "set": function (po) {
-                _pixelOffset = Math.max(Math.round(po), 0);
-                _timeOffset = Math.round(this.timelineSize / this.width * _pixelOffset);
+                _pixelOffset = Math.max((po), 0);
+                _timeOffset = (this.timelinePeriod / this.timeAreaWidth * _pixelOffset);
             }
         }
     });
-    this.period = 5000;
+    this.period = 10000;
 
 
     var getPixelPos = (time) => {
         let oTime = time - this.timeOffset;
-        return oTime * this.width / this.timelineSize;
+        return oTime * this.timeAreaWidth / this.timelinePeriod;
     }
     var getTime = (pixel) => {
         let oPixel = pixel - this.pixelOffset;
-        return oPixel * this.timelineSize / this.width;
+        return oPixel * this.timelinePeriod / this.timeAreaWidth;
     }
     this.updateAnim = (delta) => {
         curTime = (curTime + delta) % this.period;
     }
-    var drawTimeMarker = (ctx, f, markerNum) => {
-        let withStamp = (markerNum % markersPerStamp == 0);
+    var drawTimeMarker = (ctx, time, markerNum) => {
+        let markerAdvance = this.timeAreaWidth / markerFreq;
+        let withStamp = ((markerNum + Math.floor(this.pixelOffset / markerAdvance) % 2) % markersPerStamp == 0);
+        let linePixelPos = this.posX + infoAreaWidth + (markerNum * markerAdvance);
+        linePixelPos -= this.pixelOffset % markerAdvance;
         // line
         ctx.beginPath();
-        let linePixelPos = f * this.width + this.posX - (this.pixelOffset % Math.floor(this.width / markerFreq));
         ctx.moveTo(linePixelPos, this.top);
         if (withStamp) { ctx.lineTo(linePixelPos, this.top + timeAreaHeight); }
         else { ctx.lineTo(linePixelPos, this.top + timeAreaHeight * 0.5); }
@@ -277,8 +288,7 @@ export function Timeline() {
         ctx.stroke();
         if (withStamp) {
             // timestamp
-            let ms = this.advance * markerNum;
-            this.textRender.text = formatTime(ms, this.displayDecimals);
+            this.textRender.text = formatTime(time, 3);
             this.textRender.update();
             this.textRender.x = linePixelPos + 5;
             this.textRender.y = this.top + timeAreaHeight / 2;
@@ -292,7 +302,7 @@ export function Timeline() {
         if (pixPos + keyframeSize < 0 || pixPos - keyframeSize >= this.width) {
             return;
         }
-        let kPos = [this.left + pixPos, this.top + timeAreaHeight + this.laneSize * (lane + 0.5)];
+        let kPos = [this.left + infoAreaWidth + pixPos, this.top + timeAreaHeight + this.laneSize * (lane + 0.5)];
         ctx.beginPath();
         ctx.moveTo(kPos[0], kPos[1] - keyframeSize);
         ctx.lineTo(kPos[0] + keyframeSize, kPos[1]);
@@ -306,54 +316,77 @@ export function Timeline() {
     }
     this.draw = (ctx) => {
         ctx.strokeStyle = '#fff';
+        /* timeline area */
         // box bg
         ctx.beginPath();
-        ctx.rect(this.posX, this.posY, this.width, this.height);
+        ctx.rect(this.posX + infoAreaWidth, this.posY, this.width - infoAreaWidth, this.height);
         ctx.fillStyle = '#000';
         ctx.fill();
-        // time area
-        ctx.beginPath();
-        ctx.rect(this.posX, this.posY, this.width, timeAreaHeight);
-        ctx.fill();
-        ctx.stroke();
-        let endTime = this.timelineSize + this.timeOffset + this.advance;
-        let startMarker = Math.floor(this.pixelOffset / Math.floor(this.width / markerFreq));
-        clr();
-        for (let m = this.timeOffset, ma = startMarker; m < endTime; m += this.advance, ma++) {
-            drawTimeMarker(ctx, (m - this.timeOffset) / this.timelineSize, ma);
-        }
         // lanes
-        let lanes = 5;
         let startPos = this.top + timeAreaHeight;
-        for (let k = 1; k < lanes; k++) {
+        for (let k = 1; k < this.laneNum; k++) {
             ctx.beginPath();
             let yPos = startPos + k * this.laneSize;
-            ctx.moveTo(this.left, yPos);
+            ctx.moveTo(this.left + infoAreaWidth, yPos);
             ctx.lineTo(this.right, yPos);
             ctx.strokeStyle = '#333';
             ctx.stroke();
         }
         // current time
-        let linePixelPos = getPixelPos(curTime) + this.left;
-        ctx.beginPath();
-        ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
-        ctx.lineTo(linePixelPos, this.bottom);
-        ctx.strokeStyle = '#ff9';
-        ctx.stroke();
+        let linePixelPos = getPixelPos(curTime) + this.left + infoAreaWidth;
+        if (linePixelPos >= this.left + infoAreaWidth && linePixelPos < this.right) {
+            ctx.beginPath();
+            ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
+            ctx.lineTo(linePixelPos, this.bottom);
+            ctx.strokeStyle = '#ff9';
+            ctx.stroke();
+        }
         // end time
-        linePixelPos = getPixelPos(this.period) + this.left;
-        ctx.beginPath();
-        ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
-        ctx.lineTo(linePixelPos, this.bottom);
-        ctx.strokeStyle = '#f99';
-        ctx.stroke();
+        linePixelPos = getPixelPos(this.period) + this.left + infoAreaWidth;
+        if (linePixelPos >= this.left + infoAreaWidth && linePixelPos < this.right) {
+            ctx.beginPath();
+            ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
+            ctx.lineTo(linePixelPos, this.bottom);
+            ctx.strokeStyle = '#ff9';
+            ctx.stroke();
+        }
         // keyframes
-        drawKeyframe(ctx, 3, 2000);
-        // box outline
+        drawKeyframe(ctx, 0, 2000);
+        /* info area */
         ctx.beginPath();
-        ctx.rect(this.posX, this.posY, this.width, this.height);
+        ctx.rect(this.posX, this.posY, infoAreaWidth, this.height);
+        ctx.fillStyle = '#000';
+        ctx.fill();
         ctx.lineWidth = 0;
         ctx.strokeStyle = '#fff';
+        ctx.stroke();
+        /* time area */
+        ctx.beginPath();
+        ctx.rect(this.posX + infoAreaWidth, this.posY, this.width, timeAreaHeight);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+        clr();
+        let endTime = this.timelinePeriod + this.timeOffset + this.advance;
+        //let startMarker = Math.floor(this.pixelOffset / Math.floor((this.width) / markerFreq));
+        let markerAdvance = this.timeAreaWidth / markerFreq;
+        //let startMarker = Math.floor(this.pixelOffset / markerAdvance) % 2;
+        let startMarker = 0;
+        log(this.advance);
+        log(this.timeOffset);
+        log(Math.floor(this.timeOffset / this.advance));
+        log('----------------');
+        let ta = Math.floor(this.timeOffset / this.advance);
+        for (let m = this.timeOffset, ma = startMarker; m < endTime; m += this.advance, ma++) {
+            drawTimeMarker(ctx, (m - this.timeOffset) + (this.advance * ta), ma);
+        }
+
+        // box outline
+        ctx.beginPath();
+        ctx.rect(this.posX + infoAreaWidth, this.posY, this.width - infoAreaWidth, this.height);
+        ctx.lineWidth = 0;
+        ctx.strokeStyle = '#0ff';
         ctx.stroke();
     }
 }
