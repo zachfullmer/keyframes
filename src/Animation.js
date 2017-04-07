@@ -284,7 +284,6 @@ export function Timeline() {
         this.laneNum = propTypes[type].length;
         laneNames.length = 0;
         for (let p in propTypes[type]) {
-            console.log(propTypes[type][p].name);
             laneNames.push(propTypes[type][p].name);
         }
     }
@@ -423,5 +422,71 @@ export function Timeline() {
         ctx.rect(this.posX, this.posY, this.width, this.height);
         ctx.strokeStyle = '#fff';
         ctx.stroke();
+    }
+}
+
+export const keyframeTypes = {
+    instant: {
+        name: 'Instant',
+        func: (a, b, f) => a,
+        funcArr: (a, b, f) => a
+    },
+    linear: {
+        name: 'Linear',
+        func: (a, b, f) => a + (b - a) * f,
+        funcArr: (a, b, f) => {
+            let col = [];
+            for (let x in a) {
+                col.push(a[x] + (b[x] - a[x]) * f);
+            }
+            return col;
+        }
+    },
+    cosine: {
+        name: 'Cosine',
+        func: (a, b, f) => {
+            let fCosine = (1 - Math.cos(f * Math.PI)) / 2;
+            return (a * (1 - fCosine) + b * fCosine);
+        },
+        funcArr: (a, b, f) => {
+            let fCosine = (1 - Math.cos(f * Math.PI)) / 2;
+            let col = [];
+            for (let x in a) {
+                col.push((a[x] * (1 - fCosine) + b[x] * fCosine));
+            }
+            return col;
+        }
+    }
+};
+
+export function Keyframe(time, type, val) {
+    this.time = time;
+    this.type = type;
+    this.val = val;
+}
+
+export function Animation(kType) {
+
+    var type = 'func';
+    if (kType == 'number') type = 'func';
+    else if (kType == 'color') type = 'funcArr';
+    this.keyframes = [];
+    this.getValue = (time) => {
+        let k = 0;
+        while (k < this.keyframes.length) {
+            if (this.keyframes[k].time > time) {
+                k -= 1;
+                break;
+            }
+            k++;
+        }
+        if (k >= this.keyframes.length - 1) {
+            return this.keyframes[k - 1].val;
+        }
+        else {
+            let dt = time - this.keyframes[k].time;
+            let keyDiff = this.keyframes[k + 1].time - this.keyframes[k].time;
+            return this.keyframes[k + 1].type[type](this.keyframes[k].val, this.keyframes[k + 1].val, dt / keyDiff);
+        }
     }
 }
