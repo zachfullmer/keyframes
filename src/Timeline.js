@@ -1,8 +1,8 @@
 import $ from 'jquery'
 import { Text } from './Text.js'
-import { Hitbox, addHitbox } from './Canvas.js'
+import { Hitbox, addHitbox, setGlobalTime } from './Canvas.js'
 import { showTooltip, hideTooltip } from './Events.js'
-import { propTypes } from './VectorDrawing.js'
+import { propTypes } from './UI.js'
 
 function clr() {
     $('#debugBox').text('');
@@ -50,6 +50,14 @@ export function Timeline() {
         }
         else if (event.which == 2) { // middle button
             pThis.timelinePeriod = defaultTimelinePeriod;
+        }
+    });
+    hitbox.click((event) => {
+        if (event.which == 1) { // left button
+            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
+            if (t >= 0) {
+                setGlobalTime(t);
+            }
         }
     });
     $(document).mouseup(() => {
@@ -106,7 +114,6 @@ export function Timeline() {
     this.propText.update();
     var laneNames = [];
     // time
-    var curTime = 0;
     var _period = 0;
     var _timeOffset = 0;
     var _advance = 0;
@@ -295,9 +302,6 @@ export function Timeline() {
         let oPixel = pixel - this.pixelOffset;
         return oPixel * this.timelinePeriod / this.timeAreaWidth;
     }
-    this.updateAnim = (delta) => {
-        curTime = (curTime + delta) % this.period;
-    }
     var drawTimeMarker = (ctx, time, markerNum) => {
         let markerAdvance = this.timeAreaWidth / markerFreq;
         let withStamp = ((markerNum + Math.floor(this.pixelOffset / markerAdvance) % markersPerStamp) % markersPerStamp == 0);
@@ -338,7 +342,7 @@ export function Timeline() {
         ctx.strokeStyle = '#ff9';
         ctx.stroke();
     }
-    this.draw = (ctx) => {
+    this.draw = (ctx, time, keyLists) => {
         ctx.strokeStyle = '#fff';
 
         /* timeline area */
@@ -348,7 +352,7 @@ export function Timeline() {
         ctx.fillStyle = '#000';
         ctx.fill();
         // current time
-        let linePixelPos = getPixelPos(curTime) + this.left + infoAreaWidth;
+        let linePixelPos = getPixelPos(time) + this.left + infoAreaWidth;
         if (linePixelPos >= this.left + infoAreaWidth && linePixelPos < this.right) {
             ctx.beginPath();
             ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
@@ -366,7 +370,16 @@ export function Timeline() {
             ctx.stroke();
         }
         // keyframes
-        drawKeyframe(ctx, 0, 2000);
+        if (keyLists !== null) {
+            if (keyLists.length != this.laneNum) {
+                throw 'ERROR';
+            }
+            for (let k in keyLists) {
+                for (let f in keyLists[k].keyframes) {
+                    drawKeyframe(ctx, parseInt(k), keyLists[k].keyframes[f].time);
+                }
+            }
+        }
 
         /* time area */
         ctx.beginPath();
@@ -422,71 +435,5 @@ export function Timeline() {
         ctx.rect(this.posX, this.posY, this.width, this.height);
         ctx.strokeStyle = '#fff';
         ctx.stroke();
-    }
-}
-
-export const keyframeTypes = {
-    instant: {
-        name: 'Instant',
-        func: (a, b, f) => a,
-        funcArr: (a, b, f) => a
-    },
-    linear: {
-        name: 'Linear',
-        func: (a, b, f) => a + (b - a) * f,
-        funcArr: (a, b, f) => {
-            let col = [];
-            for (let x in a) {
-                col.push(a[x] + (b[x] - a[x]) * f);
-            }
-            return col;
-        }
-    },
-    cosine: {
-        name: 'Cosine',
-        func: (a, b, f) => {
-            let fCosine = (1 - Math.cos(f * Math.PI)) / 2;
-            return (a * (1 - fCosine) + b * fCosine);
-        },
-        funcArr: (a, b, f) => {
-            let fCosine = (1 - Math.cos(f * Math.PI)) / 2;
-            let col = [];
-            for (let x in a) {
-                col.push((a[x] * (1 - fCosine) + b[x] * fCosine));
-            }
-            return col;
-        }
-    }
-};
-
-export function Keyframe(time, type, val) {
-    this.time = time;
-    this.type = type;
-    this.val = val;
-}
-
-export function Animation(kType) {
-
-    var type = 'func';
-    if (kType == 'number') type = 'func';
-    else if (kType == 'color') type = 'funcArr';
-    this.keyframes = [];
-    this.getValue = (time) => {
-        let k = 0;
-        while (k < this.keyframes.length) {
-            if (this.keyframes[k].time > time) {
-                k -= 1;
-                break;
-            }
-            k++;
-        }
-        if (k >= this.keyframes.length - 1) {
-            return this.keyframes[k - 1].val;
-        }
-        else {
-            let dt = time - this.keyframes[k].time;
-            let keyDiff = this.keyframes[k + 1].time - this.keyframes[k].time;
-            return this.keyframes[k + 1].type[type](this.keyframes[k].val, this.keyframes[k + 1].val, dt / keyDiff);
-        }
     }
 }

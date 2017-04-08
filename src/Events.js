@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, initHitboxEvents } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
+import { Keyframe, KeyframeList, keyframeTypes } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
 import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName, setPropWindow } from './UI.js'
 import { selectedPoint, selectedShape, grabbedPoint } from './UI.js'

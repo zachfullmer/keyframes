@@ -1,6 +1,88 @@
-import { polarToCart, cartToPolar, opList, colorNameToHex, copyList } from './Helpers.js'
+import { polarToCart, cartToPolar, opList, colorNameToHex, copyList, hexToRgb, rgbToHex } from './Helpers.js'
 import { Hitbox, addHitbox, removeHitbox } from './Canvas.js'
+import { propTypes } from './UI.js';
 
+
+export const keyframeTypes = {
+    instant: {
+        name: 'Instant',
+        func: (a, b, f) => a,
+        funcArr: (a, b, f) => a
+    },
+    linear: {
+        name: 'Linear',
+        func: (a, b, f) => a + (b - a) * f,
+        funcArr: (a, b, f) => {
+            let col = [];
+            for (let x in a) {
+                col.push(a[x] + (b[x] - a[x]) * f);
+            }
+            return col;
+        }
+    },
+    cosine: {
+        name: 'Cosine',
+        func: (a, b, f) => {
+            let fCosine = (1 - Math.cos(f * Math.PI)) / 2;
+            return (a * (1 - fCosine) + b * fCosine);
+        },
+        funcArr: (a, b, f) => {
+            let fCosine = (1 - Math.cos(f * Math.PI)) / 2;
+            let col = [];
+            for (let x in a) {
+                col.push((a[x] * (1 - fCosine) + b[x] * fCosine));
+            }
+            return col;
+        }
+    }
+};
+
+export function Keyframe(time, type, val) {
+    this.time = time;
+    this.type = type;
+    this.val = val;
+}
+
+export function KeyframeList(kType, name) {
+    this.name = name;
+    var _type = kType;
+    Object.defineProperties(this, {
+        "type": {
+            "get": function () { return _type; }
+        },
+    });
+    var funcName = 'func';
+    if (kType == 'num') funcName = 'func';
+    else if (kType == 'col') funcName = 'funcArr';
+    this.keyframes = [];
+    this.addKeyframe = (keyframe) => {
+        for (let k in this.keyframes) {
+            if (keyframe.time < this.keyframes[k].time) {
+                this.keyframes.splice(k - 1, 0, keyframe);
+                return;
+            }
+        }
+        this.keyframes.push(keyframe);
+    }
+    this.getValue = (time) => {
+        let k = 0;
+        while (k < this.keyframes.length) {
+            if (this.keyframes[k].time > time) {
+                k -= 1;
+                break;
+            }
+            k++;
+        }
+        if (k >= this.keyframes.length - 1) {
+            return this.keyframes[k - 1].val;
+        }
+        else {
+            let dt = time - this.keyframes[k].time;
+            let keyDiff = this.keyframes[k + 1].time - this.keyframes[k].time;
+            return this.keyframes[k + 1].type[funcName](this.keyframes[k].val, this.keyframes[k + 1].val, dt / keyDiff);
+        }
+    }
+}
 
 export function pnt() {
     this.name = '';
@@ -13,21 +95,49 @@ export function pnt() {
     addHitbox(this.hitbox);
     // getters and setters
     Object.defineProperties(this, {
-        "p": {
-            "get": function () { return _p; },
-            "set": function (p) { _p[0] = parseFloat(p[0]); _p[1] = parseFloat(p[1]); }
+        "px": {
+            "get": function () { return _p[0]; },
+            "set": function (px2) { _p[0] = parseFloat(px2); }
         },
-        "o": {
-            "get": function () { return _o; },
-            "set": function (o) { _o[0] = parseFloat(o[0]); _o[1] = parseFloat(o[1]); }
+        "py": {
+            "get": function () { return _p[1]; },
+            "set": function (py2) { _p[1] = parseFloat(py2); }
+        },
+        "ox": {
+            "get": function () { return _o[0]; },
+            "set": function (ox2) { _o[0] = parseFloat(ox2); }
+        },
+        "oy": {
+            "get": function () { return _o[1]; },
+            "set": function (oy2) { _o[1] = parseFloat(oy2); }
         },
         "r": {
             "get": function () { return _r; },
-            "set": function (r) { _r = parseFloat(r); }
+            "set": function (r2) { _r = parseFloat(r2); }
+        },
+        "sx": {
+            "get": function () { return _s[0]; },
+            "set": function (sx2) { _s[0] = parseFloat(sx2); }
+        },
+        "sy": {
+            "get": function () { return _s[1]; },
+            "set": function (sy2) { _s[1] = parseFloat(sy2); }
+        },
+        "p": {
+            "get": function () { return _p; },
+            "set": function (p2) { _p[0] = parseFloat(p2[0]); _p[1] = parseFloat(p2[1]); }
+        },
+        "o": {
+            "get": function () { return _o; },
+            "set": function (o2) { _o[0] = parseFloat(o2[0]); _o[1] = parseFloat(o2[1]); }
+        },
+        "r": {
+            "get": function () { return _r; },
+            "set": function (r2) { _r = parseFloat(r2); }
         },
         "s": {
             "get": function () { return _s; },
-            "set": function (s) { _s[0] = parseFloat(s[0]); _s[1] = parseFloat(s[1]); }
+            "set": function (s2) { _s[0] = parseFloat(s2[0]); _s[1] = parseFloat(s2[1]); }
         }
     });
     this.pf = [0.0, 0.0];
@@ -183,41 +293,23 @@ export const shapeTypes = {
 }
 
 
-export const propTypes = {
-    point: [
-        { name: 'position x', type: 'num' },
-        { name: 'position y', type: 'num' },
-        { name: 'origin x', type: 'num' },
-        { name: 'origin y', type: 'num' },
-        { name: 'rotation', type: 'num' },
-        { name: 'scale x', type: 'num' },
-        { name: 'scale y', type: 'num' }
-    ],
-    polygon: [
-        { name: 'color', type: 'col' }
-    ],
-    polygon: [
-        { name: 'color', type: 'col' }
-    ],
-    circleF: [
-        { name: 'radius', type: 'num' },
-        { name: 'color', type: 'col' }
-    ],
-    circleO: [
-        { name: 'radius', type: 'num' },
-        { name: 'color', type: 'col' }
-    ],
-    bezier: [
-        { name: 'color', type: 'col' }
-    ]
-}
-
-
 export function shape(type, points, color = 'white', radius = 20) {
+    var _color = '';
+    var _colorRGB = [0, 0, 0];
+    Object.defineProperties(this, {
+        "colorRGB": {
+            "get": function () { return _colorRGB; },
+            "set": function (c) { _colorRGB = c; _color = rgbToHex(c[0], c[1], c[2]); }
+        },
+        "color": {
+            "get": function () { return _color; },
+            "set": function (c) { _color = colorNameToHex(c); _colorRGB = hexToRgb(_color); }
+        }
+    });
     this.name = '';
     this.type = type;
     this.points = points;
-    this.color = colorNameToHex(color);
+    this.color = color;
     this.radius = radius;
     this.getPointsByName = (name) => {
         let result = [];
@@ -291,7 +383,9 @@ export function shape(type, points, color = 'white', radius = 20) {
 export function VectorDrawing() {
     this.rootPnt = null;
     var highlightedPoints = [];
-    this.elements = [];
+    this.shapes = [];
+    this.anims = [[]];
+    this.currentAnim = this.anims[0];
     this.hiPoint = (point) => {
         highlightedPoints.push(point);
     }
@@ -300,8 +394,8 @@ export function VectorDrawing() {
         highlightedPoints.splice(index, 1);
     }
     this.draw = (ctx) => {
-        for (let e in this.elements) {
-            this.elements[e].draw(ctx);
+        for (let e in this.shapes) {
+            this.shapes[e].draw(ctx);
         }
     }
     this.update = () => {
@@ -314,14 +408,88 @@ export function VectorDrawing() {
         return this.rootPnt.getPointByName(name);
     }
     this.getShapeByName = (name) => {
-        for (let e in this.elements) {
-            if (this.elements[e].name == name) {
-                return this.elements[e];
+        for (let e in this.shapes) {
+            if (this.shapes[e].name == name) {
+                return this.shapes[e];
             }
         }
         return null;
     }
+    this.addPoint = (point, parent) => {
+        if (parent === null) {
+            this.rootPnt = point;
+        }
+        else {
+            parent.addChild(point);
+        }
+        let pointInfo = [point];
+        let propInfo = [];
+        let pointType = propTypes['point'];
+        for (let p in pointType) {
+            let kl = new KeyframeList(pointType[p].type, pointType[p].varName);
+            kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, point[pointType[p].varName]));
+            propInfo.push(kl);
+        }
+        pointInfo.push(propInfo);
+        for (let a in this.anims) {
+            this.anims[a].push(pointInfo);
+        }
+    }
     this.removePoint = (point) => {
-        return this.rootPnt.removePoint(point);
+        let result = this.rootPnt.removePoint(point);
+        if (result !== null) {
+            for (let a in this.anims) {
+                for (let k in this.anims[a]) {
+                    if (this.anims[a][k][0] === point) {
+                        this.anims[a].splice(k, 1);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    this.addShape = (shape) => {
+        let shapeInfo = [shape];
+        let propInfo = [];
+        let shapeType = propTypes[shape.type];
+        for (let p in shapeType) {
+            let kl = new KeyframeList(shapeType[p].type, shapeType[p].varName);
+            kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
+            propInfo.push(kl);
+        }
+        shapeInfo.push(propInfo);
+        for (let a in this.anims) {
+            this.anims[a].push(shapeInfo);
+        }
+        this.shapes.push(shape);
+    }
+    this.removeShape = (shape) => {
+        let index = this.shapes.indexOf(shape);
+        if (index > -1) {
+            this.shapes.splice(index, 1);
+            for (let a in this.anims) {
+                for (let k in this.anims[a]) {
+                    if (this.anims[a][k][0] === shape) {
+                        this.anims[a].splice(k, 1);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    this.getElementKeyLists = (element) => {
+        for (let k in this.currentAnim) {
+            if (this.currentAnim[k][0] === element) {
+                return this.currentAnim[k][1];
+            }
+        }
+        return null;
+    }
+    this.updateKeyLists = (element) => {
+        let keyLists = this.getElementKeyLists(element);
+        for (let k in keyLists) {
+            console.log(keyLists[k].keyframes[0].val);
+        }
     }
 }

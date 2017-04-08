@@ -1,12 +1,43 @@
 import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline } from './Canvas.js'
+import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, globalTime } from './Canvas.js'
 import { opList, degrees, cartToPolar, polarToCart } from './Helpers.js'
-import { shape, pnt, shapeTypes, propTypes } from './VectorDrawing.js'
+import { shape, pnt, shapeTypes } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
 export var selectedShape = null;
 export var editedShape = null;
+export var activeKeyframeList = null;
+
+
+export const propTypes = {
+    point: [
+        { name: 'position x', type: 'num', varName: 'px' },
+        { name: 'position y', type: 'num', varName: 'py' },
+        { name: 'origin x', type: 'num', varName: 'ox' },
+        { name: 'origin y', type: 'num', varName: 'oy' },
+        { name: 'rotation', type: 'num', varName: 'r' },
+        { name: 'scale x', type: 'num', varName: 'sx' },
+        { name: 'scale y', type: 'num', varName: 'sy' }
+    ],
+    polygon: [
+        { name: 'color', type: 'col', varName: 'colorRGB' }
+    ],
+    polygon: [
+        { name: 'color', type: 'col', varName: 'colorRGB' }
+    ],
+    circleF: [
+        { name: 'radius', type: 'num', varName: 'radius' },
+        { name: 'color', type: 'col', varName: 'colorRGB' }
+    ],
+    circleO: [
+        { name: 'radius', type: 'num', varName: 'radius' },
+        { name: 'color', type: 'col', varName: 'colorRGB' }
+    ],
+    bezier: [
+        { name: 'color', type: 'col', varName: 'colorRGB' }
+    ]
+}
 
 function initRenameInput(item, isShape) {
     let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + item.name);
@@ -128,21 +159,27 @@ export function genShapeListName(isShape) {
 export function setPropWindow(type) {
     let shape = null;
     let shapeTypeSelect = $('#shapeTypeSelect');
+    let keyLists = null;
     if (selectedShape !== null) {
         shape = selectedShape;
+        keyLists = vec.getElementKeyLists(shape);
     }
     else {
         shape = editedShape;
+        keyLists = vec.getElementKeyLists(shape);
+    }
+    if (selectedPoint !== null) {
+        keyLists = vec.getElementKeyLists(selectedPoint);
     }
     $('.props-box').hide();
     if (type == 'point') {
-        $('#pxProp').val(selectedPoint.p[0]);
-        $('#pyProp').val(selectedPoint.p[1]);
-        $('#oxProp').val(selectedPoint.o[0]);
-        $('#oyProp').val(selectedPoint.o[1]);
+        $('#pxProp').val(selectedPoint.px);
+        $('#pyProp').val(selectedPoint.py);
+        $('#oxProp').val(selectedPoint.ox);
+        $('#oyProp').val(selectedPoint.oy);
         $('#rProp').val(selectedPoint.r * degrees);
-        $('#sxProp').val(selectedPoint.s[0]);
-        $('#syProp').val(selectedPoint.s[1]);
+        $('#sxProp').val(selectedPoint.sx);
+        $('#syProp').val(selectedPoint.sy);
         $('#pointPropsBox').show();
         shapeTypeSelect.hide();
         timeline.setObjType(type);
@@ -198,6 +235,7 @@ export function selectPoint(point) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
+    activeKeyframeList = vec.getElementKeyLists(point);
     selectedPoint = point;
     selectedShape = null;
     editedShape = null;
@@ -219,6 +257,7 @@ export function selectShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
+    activeKeyframeList = vec.getElementKeyLists(shape);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = null;
@@ -240,6 +279,7 @@ export function editShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
+    activeKeyframeList = vec.getElementKeyLists(shape);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = shape;
@@ -277,12 +317,12 @@ export function removePointRefs(pointToRemove) {
     let pointRefDiv = '.point-ref-div-' + pointToRemove.name;
     // remove references to point
     $(pointRefDiv).remove();
-    for (let e in vec.elements) {
-        let result = vec.elements[e].getPointsByName(pointToRemove.name);
+    for (let e in vec.shapes) {
+        let result = vec.shapes[e].getPointsByName(pointToRemove.name);
         for (let r in result) {
-            let index = vec.elements[e].points.indexOf(result[r]);
+            let index = vec.shapes[e].points.indexOf(result[r]);
             if (index > -1) {
-                vec.elements[e].points.splice(index, 1);
+                vec.shapes[e].points.splice(index, 1);
             }
         }
     }
@@ -303,11 +343,8 @@ export function removePointRefs(pointToRemove) {
 export function removeShape(shapeToRemove) {
     let divId = '#shapeDiv-' + shapeToRemove.name;
     $(divId).remove();
-    let index = vec.elements.indexOf(shapeToRemove);
-    if (index > -1) {
-        vec.elements.splice(index, 1);
-    }
-    if (shapeToRemove === selectedShape || shapeToRemove === editedShape || vec.elements.length == 0) {
+    vec.removeShape(shapeToRemove);
+    if (shapeToRemove === selectedShape || shapeToRemove === editedShape || vec.shapes.length == 0) {
         selectedShape = null;
         editedShape = null;
         setPropWindow('none');
@@ -381,13 +418,13 @@ export function addPoint(point, parent = selectedPoint, name = null) {
     let parentListId = '';
     if (parent === null) {
         parentListId = '#pointListBox';
-        vec.rootPnt = point;
     }
     else {
         parentListId = '#pointList-' + parent.name;
         point.p = opList(point.p, parent.pf, (a, b) => a - b);
-        parent.addChild(point);
     }
+    vec.addPoint(point, parent);
+    vec.updateKeyLists(point);
     if (name === null) {
         point.name = 'p' + currentPointID;
     }
@@ -472,7 +509,7 @@ export function addShape(shape) {
         }
     });
     $(id).contextmenu(() => { return false; });
-    vec.elements.push(shape);
+    vec.addShape(shape);
     currentShapeID += 1;
 }
 
@@ -537,8 +574,8 @@ export function dragPoint(screenPos) {
         screenPos = grabbedPoint.parent.inverseTransform(screenPos);
     }
     grabbedPoint.p = screenPos;
-    $('#pxProp').val(grabbedPoint.p[0]);
-    $('#pyProp').val(grabbedPoint.p[1]);
+    $('#pxProp').val(grabbedPoint.px);
+    $('#pyProp').val(grabbedPoint.py);
 }
 
 
@@ -563,8 +600,8 @@ export function initUI() {
     for (let a = 0; a < 4; a++) {
         let p = new pnt();
         points.push(p);
-        addPoint(p, vec.rootPnt);
         p.p = pos[a];
+        addPoint(p, vec.rootPnt);
     }
     let s = new shape('bezier', [], 'white');
     addShape(s);
