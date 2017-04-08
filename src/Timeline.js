@@ -42,9 +42,9 @@ function formatTime(ms, decimals) {
 export function Timeline() {
     var pThis = this;
     // hitbox
-    var hitbox = new Hitbox();
+    this.hitbox = new Hitbox();
     var grabbed = false;
-    hitbox.mousedown((event) => {
+    this.hitbox.mousedown((event) => {
         if (event.which == 3) { // left button
             grabbed = true;
         }
@@ -52,19 +52,21 @@ export function Timeline() {
             pThis.timelinePeriod = defaultTimelinePeriod;
         }
     });
-    hitbox.click((event) => {
+    this.hitbox.click((event) => {
         if (event.which == 1) { // left button
-            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
             if (keyLists !== null) {
                 let l = Math.floor((event.pageY - (this.top + timeAreaHeight)) / this.laneSize);
-                let uPos = event.pageX - this.posX - infoAreaWidth;
-                for (let f in keyLists[l].keyframes) {
-                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
-                        setGlobalTime(keyLists[l].keyframes[f].time);
-                        return;
+                if (l >= 0) {
+                    let uPos = event.pageX - this.posX - infoAreaWidth;
+                    for (let f in keyLists[l].keyframes) {
+                        if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
+                            setGlobalTime(keyLists[l].keyframes[f].time);
+                            return;
+                        }
                     }
                 }
             }
+            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
             if (t >= 0) {
                 setGlobalTime(t);
             }
@@ -80,7 +82,7 @@ export function Timeline() {
             pThis.pixelOffset -= moved[0];
         }
         this.lastMouse = [event.pageX, event.pageY];
-        if (hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
+        if (pThis.hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
             let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
             if (t < 0) {
                 hideTooltip();
@@ -93,7 +95,7 @@ export function Timeline() {
             hideTooltip();
         }
     });
-    hitbox.mousewheel((e) => {
+    this.hitbox.mousewheel((e) => {
         if (e.originalEvent.wheelDelta > 0) {
             pThis.timelinePeriod *= 1.2;
         }
@@ -101,7 +103,7 @@ export function Timeline() {
             pThis.timelinePeriod /= 1.2;
         }
     });
-    addHitbox(hitbox);
+    addHitbox(this.hitbox);
     // text
     const stampFontSize = 10;
     const propFontSize = 12;
@@ -185,7 +187,7 @@ export function Timeline() {
             "get": function () { return _pos[0]; },
             "set": function (px) {
                 _pos[0] = px;
-                hitbox.setPos(_pos[0], _pos[1]);
+                this.hitbox.setPos(_pos[0], _pos[1]);
                 playButtonLeft = this.left + infoAreaWidth - (buttonWidth + 5);
                 playHitbox.setPos(playButtonLeft, playButtonTop);
                 stopButtonLeft = this.left + infoAreaWidth - (buttonWidth + 5) * 2;
@@ -196,7 +198,7 @@ export function Timeline() {
             "get": function () { return _pos[1]; },
             "set": function (py) {
                 _pos[1] = py;
-                hitbox.setPos(_pos[0], _pos[1]);
+                this.hitbox.setPos(_pos[0], _pos[1]);
                 playButtonTop = this.top + timeAreaHeight * buttonPadding;
                 playHitbox.setPos(playButtonLeft, playButtonTop);
                 stopButtonTop = this.top + timeAreaHeight * buttonPadding;
@@ -233,7 +235,7 @@ export function Timeline() {
             "get": function () { return _size[0]; },
             "set": function (w) {
                 _size[0] = w;
-                hitbox.setBox(_size[0], _size[1]);
+                this.hitbox.setBox(_size[0], _size[1]);
                 _pixelOffset = this.timeOffset / this.timelinePeriod * this.timeAreaWidth;
             }
         },
@@ -241,7 +243,7 @@ export function Timeline() {
             "get": function () { return _size[1]; },
             "set": function (h) {
                 _size[1] = h;
-                hitbox.setBox(_size[0], _size[1]);
+                this.hitbox.setBox(_size[0], _size[1]);
                 _laneSize = (this.height - timeAreaHeight) / _laneNum;
             }
         },
