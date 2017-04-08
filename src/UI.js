@@ -167,6 +167,10 @@ export function updatePropWindow() {
             let col = element[props[p].varName];
             $(props[p].propId).val(rgbToHex(col[0], col[1], col[2]));
         }
+        else if (props[p].type == 'deg') {
+            let col = element[props[p].varName];
+            $(props[p].propId).val(element[props[p].varName] *= degrees);
+        }
         else {
             $(props[p].propId).val(element[props[p].varName]);
         }

@@ -175,9 +175,6 @@ export function setGlobalTime(newTime) {
         for (let k in vec.currentAnim[e][1]) {
             let keyList = vec.currentAnim[e][1][k];
             let finalVal = keyList.getValue(globalTime);
-            if (keyList.propInfo.type == 'deg') {
-                finalVal *= degrees;
-            }
             vec.currentAnim[e][0][keyList.propInfo.varName] = finalVal;
         }
     }

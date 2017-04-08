@@ -199,8 +199,6 @@ export function Timeline() {
                         }
                     }
                 }
-                if (this.hiKeyframes.length > 0)
-                    console.log(this.hiKeyframes);
             }
         },
         "laneNum": {
