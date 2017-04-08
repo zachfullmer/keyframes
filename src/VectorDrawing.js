@@ -89,6 +89,12 @@ export function KeyframeList(propInfo) {
         }
         this.keyframes.push(keyframe);
     }
+    this.removeKeyframe = (keyframe) => {
+        let index = this.keyframes.indexOf(keyframe);
+        if (index >= 0) {
+            this.keyframes.splice(index, 1);
+        }
+    }
     this.getValue = (time) => {
         let k = 0;
         while (k < this.keyframes.length) {

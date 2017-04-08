@@ -55,8 +55,13 @@ export function Timeline() {
                     if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
                         setGlobalTime(keyLists[l].keyframes[f].time);
                         if (event.type == 'mousedown') {
-                            // clicked
-                            pThis.selectedKeyframe = keyLists[l].keyframes[f];
+                            if (event.which == 1) { // left button
+                                pThis.selectedKeyframe = keyLists[l].keyframes[f];
+                            }
+                            else if (event.which == 2) { // middle button
+                                console.log('removed');
+                                keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
+                            }
                         }
                         return;
                     }
@@ -89,6 +94,11 @@ export function Timeline() {
         else if (event.which == 3) { // right button
             movingCursor = false;
             grabbed = true;
+        }
+        else if (event.which == 2) { // middle button
+            moveTimeCursor(event);
+            movingCursor = false;
+            grabbed = false;
         }
     });
     $(document).mouseup(() => {
