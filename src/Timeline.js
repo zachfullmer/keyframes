@@ -62,6 +62,9 @@ export function Timeline() {
                                 keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
                             }
                         }
+                        else if (event.type == 'mousemove') {
+                            pThis.selectedKeyframe = keyLists[l].keyframes[f];
+                        }
                         return;
                     }
                 }
