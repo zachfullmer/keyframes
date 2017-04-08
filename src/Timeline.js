@@ -119,10 +119,10 @@ export function Timeline() {
     });
     this.hitbox.mousewheel((e) => {
         if (e.originalEvent.wheelDelta > 0) {
-            pThis.timelinePeriod *= 1.2;
+            this.magnification *= 0.9;
         }
         else {
-            pThis.timelinePeriod /= 1.2;
+            this.magnification /= 0.9;
         }
     });
     addHitbox(this.hitbox);
@@ -134,6 +134,7 @@ export function Timeline() {
     const markersPerStamp = 3;
     const defaultTimelinePeriod = 3000;
     var _displayDecimals = 1;
+    var _magnification = 1.0;
     this.stampText = Object.create(Text).init('');
     this.stampText.originX = 0.0;
     this.stampText.originY = 0.5;
@@ -198,6 +199,13 @@ export function Timeline() {
     addHitbox(stopHitbox);
     //
     Object.defineProperties(this, {
+        "magnification": {
+            "get": function () { return _magnification; },
+            "set": function (m) {
+                _magnification = m;
+                this.timelinePeriod = defaultTimelinePeriod * _magnification;
+            }
+        },
         "curTime": {
             "get": function () { return _curTime; },
             "set": function (ct) {
