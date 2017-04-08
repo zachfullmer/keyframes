@@ -55,6 +55,16 @@ export function Timeline() {
     hitbox.click((event) => {
         if (event.which == 1) { // left button
             let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
+            if (keyLists !== null) {
+                let l = Math.floor((event.pageY - (this.top + timeAreaHeight)) / this.laneSize);
+                let uPos = event.pageX - this.posX - infoAreaWidth;
+                for (let f in keyLists[l].keyframes) {
+                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
+                        setGlobalTime(keyLists[l].keyframes[f].time);
+                        return;
+                    }
+                }
+            }
             if (t >= 0) {
                 setGlobalTime(t);
             }
@@ -118,6 +128,7 @@ export function Timeline() {
     var _timeOffset = 0;
     var _advance = 0;
     var _timelinePeriod = defaultTimelinePeriod;
+    var keyLists = null;
     // drawing
     const timeAreaHeight = 20;
     const infoAreaWidth = 100;
@@ -332,6 +343,9 @@ export function Timeline() {
             laneNames.push(propTypes[type][p].name);
         }
     }
+    this.setKeyLists = (keys) => {
+        keyLists = keys;
+    }
     var getPixelPos = (time) => {
         let oTime = time - this.timeOffset;
         return oTime * this.timeAreaWidth / this.timelinePeriod;
@@ -380,7 +394,7 @@ export function Timeline() {
         ctx.strokeStyle = '#ff9';
         ctx.stroke();
     }
-    this.draw = (ctx, time, keyLists) => {
+    this.draw = (ctx, time) => {
         ctx.strokeStyle = '#fff';
 
         /* timeline area */

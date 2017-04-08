@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { pnt, VectorDrawing, shape } from './VectorDrawing.js'
 import { keyframeTypes, Keyframe, KeyframeList } from './VectorDrawing.js'
 import { Timeline } from './Timeline.js'
-import { propTypes, activeKeyframeList, updatePropWindow } from './UI.js'
+import { propTypes, updatePropWindow } from './UI.js'
 
 
 export function Hitbox(circle = false) {
@@ -223,7 +223,7 @@ function drawCanvas(timestamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     vec.draw(ctx);
     vec.debugDraw(ctx);
-    timeline.draw(ctx, globalTime, activeKeyframeList);
+    timeline.draw(ctx, globalTime);
     //
     window.requestAnimationFrame(drawCanvas);
 }

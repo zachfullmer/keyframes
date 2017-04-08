@@ -251,7 +251,7 @@ export function selectPoint(point) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    activeKeyframeList = vec.getElementKeyLists(point);
+    timeline.setKeyLists(vec.getElementKeyLists(point));
     selectedPoint = point;
     selectedShape = null;
     editedShape = null;
@@ -273,7 +273,7 @@ export function selectShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    activeKeyframeList = vec.getElementKeyLists(shape);
+    timeline.setKeyLists(vec.getElementKeyLists(shape));
     selectedPoint = null;
     selectedShape = shape;
     editedShape = null;
@@ -295,7 +295,7 @@ export function editShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    activeKeyframeList = vec.getElementKeyLists(shape);
+    timeline.setKeyLists(vec.getElementKeyLists(shape));
     selectedPoint = null;
     selectedShape = shape;
     editedShape = shape;
