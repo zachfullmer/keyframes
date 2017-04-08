@@ -387,6 +387,13 @@ export function VectorDrawing() {
     var highlightedPoints = [];
     this.shapes = [];
     this.anims = [[]];
+    var _currentAnim = null;
+    Object.defineProperties(this, {
+        "currentAnim": {
+            "get": function () { return _currentAnim; },
+            "set": function (a) { _currentAnim = a; }
+        },
+    });
     this.currentAnim = this.anims[0];
     this.hiPoint = (point) => {
         highlightedPoints.push(point);

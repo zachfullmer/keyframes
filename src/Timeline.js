@@ -284,7 +284,7 @@ export function Timeline() {
             }
         }
     });
-    this.period = 10000;
+    this.period = 2000;
 
     this.setObjType = (type) => {
         objType = type;

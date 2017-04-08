@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { pnt, VectorDrawing, shape } from './VectorDrawing.js'
 import { keyframeTypes, Keyframe, KeyframeList } from './VectorDrawing.js'
 import { Timeline } from './Timeline.js'
-import { propTypes, activeKeyframeList } from './UI.js'
+import { propTypes, activeKeyframeList, updatePropWindow } from './UI.js'
 
 
 export function Hitbox(circle = false) {
@@ -167,24 +167,14 @@ export function initCanvas(context) {
 }
 
 export function setGlobalTime(newTime) {
+    globalTime = newTime;
     for (let e in vec.currentAnim) {
         for (let k in vec.currentAnim[e][1]) {
             let keyList = vec.currentAnim[e][1][k];
             vec.currentAnim[e][0][keyList.name] = keyList.getValue(globalTime);
         }
     }
-    globalTime = newTime;
-    return;
-    // let keyLists = null;
-    // if (selectedPoint !== null) {
-    //     keyLists = vec.getElementKeyLists(selectedPoint);
-    // }
-    // else if (selectedShape !== null) {
-    //     keyLists = vec.getElementKeyLists(shape);
-    // }
-    // else {
-    //     keyLists = vec.getElementKeyLists(shape);
-    // }
+    updatePropWindow();
 }
 
 function updateTimelinePos() {
@@ -216,6 +206,7 @@ function drawCanvas(timestamp) {
     resizeCanvas();
     // animation
     vec.update();
+    setGlobalTime((globalTime + delta) % timeline.period);
     //
     // drawing
     ctx.clearRect(0, 0, canvas.width, canvas.height);

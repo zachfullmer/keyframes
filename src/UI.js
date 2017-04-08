@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, globalTime } from './Canvas.js'
-import { opList, degrees, cartToPolar, polarToCart } from './Helpers.js'
+import { opList, degrees, cartToPolar, polarToCart, rgbToHex } from './Helpers.js'
 import { shape, pnt, shapeTypes } from './VectorDrawing.js'
 
 
@@ -12,30 +12,30 @@ export var activeKeyframeList = null;
 
 export const propTypes = {
     point: [
-        { name: 'position x', type: 'num', varName: 'px' },
-        { name: 'position y', type: 'num', varName: 'py' },
-        { name: 'origin x', type: 'num', varName: 'ox' },
-        { name: 'origin y', type: 'num', varName: 'oy' },
-        { name: 'rotation', type: 'num', varName: 'r' },
-        { name: 'scale x', type: 'num', varName: 'sx' },
-        { name: 'scale y', type: 'num', varName: 'sy' }
+        { name: 'position x', type: 'num', varName: 'px', propId: '#pxProp' },
+        { name: 'position y', type: 'num', varName: 'py', propId: '#pyProp' },
+        { name: 'origin x', type: 'num', varName: 'ox', propId: '#oxProp' },
+        { name: 'origin y', type: 'num', varName: 'oy', propId: '#oyProp' },
+        { name: 'rotation', type: 'num', varName: 'r', propId: '#rProp' },
+        { name: 'scale x', type: 'num', varName: 'sx', propId: '#sxProp' },
+        { name: 'scale y', type: 'num', varName: 'sy', propId: '#syProp' }
     ],
     polygon: [
-        { name: 'color', type: 'col', varName: 'colorRGB' }
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#pcProp' }
     ],
     polygon: [
-        { name: 'color', type: 'col', varName: 'colorRGB' }
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#lcProp' }
     ],
     circleF: [
-        { name: 'radius', type: 'num', varName: 'radius' },
-        { name: 'color', type: 'col', varName: 'colorRGB' }
+        { name: 'radius', type: 'num', varName: 'radius', propId: '#cfrProp' },
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#cfcProp' }
     ],
     circleO: [
-        { name: 'radius', type: 'num', varName: 'radius' },
-        { name: 'color', type: 'col', varName: 'colorRGB' }
+        { name: 'radius', type: 'num', varName: 'radius', propId: '#corProp' },
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#cocProp' }
     ],
     bezier: [
-        { name: 'color', type: 'col', varName: 'colorRGB' }
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#bcProp' }
     ]
 }
 
@@ -155,8 +155,23 @@ export function genShapeListName(isShape) {
     return genListNameSpan(isShape.name, true) + '<span id="' + spanId + '" style="color:' + isShape.color + ';float:right;">' + itemSymbol + '</span>';
 }
 
+var propWindowType = 'none';
+export function updatePropWindow() {
+    let element = selectedPoint || selectedShape || editedShape;
+    let props = propTypes[propWindowType];
+    for (let p in props) {
+        if (props[p].type == 'col') {
+            let col = element[props[p].varName];
+            $(props[p].propId).val(rgbToHex(col[0], col[1], col[2]));
+        }
+        else {
+            $(props[p].propId).val(element[props[p].varName]);
+        }
+    }
+}
 
 export function setPropWindow(type) {
+    propWindowType = type;
     let shape = null;
     let shapeTypeSelect = $('#shapeTypeSelect');
     let keyLists = null;
@@ -173,43 +188,41 @@ export function setPropWindow(type) {
     }
     $('.props-box').hide();
     if (type == 'point') {
-        $('#pxProp').val(selectedPoint.px);
-        $('#pyProp').val(selectedPoint.py);
-        $('#oxProp').val(selectedPoint.ox);
-        $('#oyProp').val(selectedPoint.oy);
-        $('#rProp').val(selectedPoint.r * degrees);
-        $('#sxProp').val(selectedPoint.sx);
-        $('#syProp').val(selectedPoint.sy);
+        for (let p in propTypes[type]) {
+            $(propTypes[type][p].propId).val(selectedPoint[propTypes[type][p].varName]);
+        }
         $('#pointPropsBox').show();
         shapeTypeSelect.hide();
         timeline.setObjType(type);
     }
     else {
+        for (let p in propTypes[type]) {
+            if (propTypes[type][p].type == 'col') {
+                let col = shape[propTypes[type][p].varName];
+                $(propTypes[type][p].propId).val(rgbToHex(col[0], col[1], col[2]));
+            }
+            else {
+                $(propTypes[type][p].propId).val(shape[propTypes[type][p].varName]);
+            }
+        }
         shapeTypeSelect.show();
         if (type == 'polygon') {
-            $('#pcProp').val(shape.color);
             $('#polygonPropsBox').show();
             timeline.setObjType(type);
         }
         else if (type == 'line') {
-            $('#lcProp').val(shape.color);
             $('#linePropsBox').show();
             timeline.setObjType(type);
         }
         else if (type == 'circleF') {
-            $('#cfrProp').val(shape.radius);
-            $('#cfcProp').val(shape.color);
             $('#circleFPropsBox').show();
             timeline.setObjType(type);
         }
         else if (type == 'circleO') {
-            $('#corProp').val(shape.radius);
-            $('#cocProp').val(shape.color);
             $('#circleOPropsBox').show();
             timeline.setObjType(type);
         }
         else if (type == 'bezier') {
-            $('#bcProp').val(shape.color);
             $('#bezierPropsBox').show();
             timeline.setObjType(type);
         }
@@ -592,8 +605,9 @@ export function initUI() {
         }));
     });
     // init point list
-    addPoint(new pnt(), null, 'rootPoint');
-    vec.rootPnt.p = [$(window).width() / 2, $(window).height() / 2];
+    let root = new pnt();
+    root.p = [$(window).width() / 2, $(window).height() / 2];
+    addPoint(root, null, 'rootPoint');
     selectPoint(vec.rootPnt);
     let points = [];
     let pos = [[20, 40], [50, -70], [-10, -80], [-30, -30]];
