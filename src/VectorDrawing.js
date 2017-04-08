@@ -46,7 +46,12 @@ export function Keyframe(time, type, val = null) {
         "val": {
             "get": function () { return _val; },
             "set": function (v) {
-                if (typeof v == 'string') {
+                if (this.propInfo.type == 'col') {
+                    if (typeof v == 'string') {
+                        v = hexToRgb(v);
+                    }
+                }
+                else {
                     v = parseFloat(v);
                 }
                 _val = v;
@@ -319,7 +324,10 @@ export function shape(type, points, color = 'white', radius = 20) {
     Object.defineProperties(this, {
         "colorRGB": {
             "get": function () { return _colorRGB; },
-            "set": function (c) { _colorRGB = c; _color = rgbToHex(c[0], c[1], c[2]); }
+            "set": function (c) {
+                _colorRGB = c;
+                _color = rgbToHex(c[0], c[1], c[2]);
+            }
         },
         "color": {
             "get": function () { return _color; },
@@ -485,7 +493,6 @@ export function VectorDrawing() {
         let shapeType = propTypes[shape.type];
         for (let p in shapeType) {
             let kl = new KeyframeList(shapeType[p]);
-            console.log(shape[shapeType[p].varName]);
             kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
             propInfo.push(kl);
         }
