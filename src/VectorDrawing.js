@@ -58,11 +58,13 @@ export function KeyframeList(kType, name) {
     this.addKeyframe = (keyframe) => {
         for (let k in this.keyframes) {
             if (keyframe.time < this.keyframes[k].time) {
-                this.keyframes.splice(k - 1, 0, keyframe);
+                this.keyframes.splice(k, 0, keyframe);
                 return;
             }
         }
         this.keyframes.push(keyframe);
+        if (this.keyframes.length > 1)
+            console.log(this.keyframes);
     }
     this.getValue = (time) => {
         let k = 0;
@@ -489,7 +491,7 @@ export function VectorDrawing() {
     this.updateKeyLists = (element) => {
         let keyLists = this.getElementKeyLists(element);
         for (let k in keyLists) {
-            console.log(keyLists[k].keyframes[0].val);
+            //console.log(keyLists[k].keyframes[0].val);
         }
     }
 }
