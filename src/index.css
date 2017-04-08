@@ -142,6 +142,10 @@ p.prop-header {
   margin-bottom: 10px;
 }
 
+.prop-window-item:disabled {
+  background-color: #391717;
+}
+
 
 /* debugBox */
 

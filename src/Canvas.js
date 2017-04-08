@@ -156,7 +156,7 @@ export function checkHitboxEvents(event) {
     }
 }
 
-export var playing = false;
+export var globalPlaying = false;
 export var globalTime = 0;
 export var timeline = new Timeline();
 export var vec = new VectorDrawing();
@@ -178,10 +178,12 @@ export function setGlobalTime(newTime) {
     updatePropWindow();
 }
 export function pauseGlobalTime() {
-    playing = false;
+    globalPlaying = false;
+    $('.prop-window-item').prop('disabled', false);
 }
 export function playGlobalTime() {
-    playing = true;
+    globalPlaying = true;
+    $('.prop-window-item').prop('disabled', true);
 }
 
 function updateTimelinePos() {
@@ -213,7 +215,7 @@ function drawCanvas(timestamp) {
     resizeCanvas();
     // animation
     vec.update();
-    if (playing) {
+    if (globalPlaying) {
         setGlobalTime((globalTime + delta) % timeline.period);
     }
     //

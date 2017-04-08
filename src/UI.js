@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, globalTime } from './Canvas.js'
+import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, globalTime, globalPlaying } from './Canvas.js'
 import { opList, degrees, cartToPolar, polarToCart, rgbToHex } from './Helpers.js'
 import { shape, pnt, shapeTypes } from './VectorDrawing.js'
 
@@ -55,6 +55,9 @@ function initRenameInput(item, isShape) {
     });
     let id = (isShape ? '#shapeItem-' : '#pointItem-') + item.name;
     $(id).dblclick(() => {
+        if (globalPlaying) {
+            return;
+        }
         if (editedShape !== null) {
             return;
         }
@@ -399,6 +402,9 @@ export function pushPointToShape(point) {
     div.append(li);
     $('#shapeList-' + editedShape.name).append(div);
     li.mousedown((event) => {
+        if (globalPlaying) {
+            return;
+        }
         if (event.which == 1) { // left click
             grabPointRef(li.parent());
         }
@@ -409,6 +415,9 @@ export function pushPointToShape(point) {
         }
     });
     li.mouseup((event) => {
+        if (globalPlaying) {
+            return;
+        }
         if (event.which == 1) { // left click
             dropPointRef();
         }
@@ -457,10 +466,16 @@ export function addPoint(point, parent = selectedPoint, name = null) {
                 select();
             }
             else {
+                if (globalPlaying) {
+                    return;
+                }
                 pushPointToShape(point);
             }
         }
         else if (event.which == 2) { // middle click
+            if (globalPlaying) {
+                return;
+            }
             if (point !== vec.rootPnt) {
                 removePointRefs(point);
                 pointRefsLo(point);
@@ -482,6 +497,9 @@ export function addPoint(point, parent = selectedPoint, name = null) {
         pointRefsLo(point);
     });
     point.hitbox.mousedown((event) => {
+        if (globalPlaying) {
+            return;
+        }
         if (event.which == 1) { // left
             if (editedShape === null) {
                 grabPoint(point);
@@ -515,9 +533,15 @@ export function addShape(shape) {
             select();
         }
         else if (event.which == 2) {
+            if (globalPlaying) {
+                return;
+            }
             removeShape(shape);
         }
         else if (event.which == 3) {
+            if (globalPlaying) {
+                return;
+            }
             edit();
         }
     });

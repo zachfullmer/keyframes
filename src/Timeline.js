@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import { Text } from './Text.js'
-import { Hitbox, addHitbox, setGlobalTime, playGlobalTime, pauseGlobalTime, playing } from './Canvas.js'
+import { Hitbox, addHitbox, setGlobalTime, playGlobalTime, pauseGlobalTime, globalPlaying } from './Canvas.js'
 import { showTooltip, hideTooltip } from './Events.js'
 import { propTypes } from './UI.js'
 
@@ -140,7 +140,7 @@ export function Timeline() {
     var playHitbox = new Hitbox();
     playHitbox.setBox(buttonWidth, buttonHeight);
     playHitbox.click(() => {
-        if (playing) {
+        if (globalPlaying) {
             pauseGlobalTime();
         }
         else {
@@ -474,7 +474,7 @@ export function Timeline() {
         ctx.strokeStyle = '#fff';
         ctx.stroke();
         // buttons
-        if (playing) {
+        if (globalPlaying) {
             ctx.beginPath();
             ctx.rect(playButtonLeft, playButtonTop, buttonWidth * 0.3, buttonHeight);
             ctx.fillStyle = '#776622';
