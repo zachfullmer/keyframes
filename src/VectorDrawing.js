@@ -68,8 +68,8 @@ export function KeyframeList(propInfo) {
         }
     });
     var funcName = 'func';
-    if (this.propInfo.kType == 'num' || this.propInfo.kType == 'deg') funcName = 'func';
-    else if (this.propInfo.kType == 'col') funcName = 'funcArr';
+    if (this.propInfo.type == 'num' || this.propInfo.type == 'deg') funcName = 'func';
+    else if (this.propInfo.type == 'col') funcName = 'funcArr';
     this.keyframes = [];
     this.addKeyframe = (keyframe) => {
         keyframe.propInfo = this.propInfo;

@@ -71,7 +71,7 @@ export function Timeline() {
         let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
         if (l >= 0) {
             let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
-            let newKey = new Keyframe(t, keyframeTypes.instant);
+            let newKey = new Keyframe(t, keyframeTypes.linear);
             keyLists[l].addKeyframe(newKey);
             this.hiKeyframes.push(newKey);
         }
