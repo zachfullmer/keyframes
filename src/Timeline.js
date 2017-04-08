@@ -134,9 +134,9 @@ export function Timeline() {
     // buttons
     var buttonPadding = 0.2;
     var buttonHeight = timeAreaHeight * (1.0 - buttonPadding * 2);
-    var buttonWidth = buttonHeight * 0.7;
-    var buttonTop = 0;
-    var buttonLeft = 0;
+    var buttonWidth = buttonHeight;
+    var playButtonTop = 0;
+    var playButtonLeft = 0;
     var playHitbox = new Hitbox();
     playHitbox.setBox(buttonWidth, buttonHeight);
     playHitbox.click(() => {
@@ -148,6 +148,17 @@ export function Timeline() {
         }
     });
     addHitbox(playHitbox);
+    //
+    var stopHitbox = new Hitbox();
+    var stopButtonTop = 0;
+    var stopButtonLeft = 0;
+    stopHitbox.setBox(buttonWidth, buttonHeight);
+    stopHitbox.click(() => {
+        pauseGlobalTime();
+        setGlobalTime(0);
+    });
+    addHitbox(stopHitbox);
+    //
     Object.defineProperties(this, {
         "laneNum": {
             "get": function () {
@@ -164,8 +175,10 @@ export function Timeline() {
             "set": function (px) {
                 _pos[0] = px;
                 hitbox.setPos(_pos[0], _pos[1]);
-                buttonLeft = this.left + infoAreaWidth - buttonWidth - 5;
-                playHitbox.setPos(buttonLeft, buttonTop);
+                playButtonLeft = this.left + infoAreaWidth - (buttonWidth + 5);
+                playHitbox.setPos(playButtonLeft, playButtonTop);
+                stopButtonLeft = this.left + infoAreaWidth - (buttonWidth + 5) * 2;
+                stopHitbox.setPos(stopButtonLeft, stopButtonTop);
             }
         },
         "posY": {
@@ -173,8 +186,10 @@ export function Timeline() {
             "set": function (py) {
                 _pos[1] = py;
                 hitbox.setPos(_pos[0], _pos[1]);
-                buttonTop = this.top + timeAreaHeight * buttonPadding;
-                playHitbox.setPos(buttonLeft, buttonTop);
+                playButtonTop = this.top + timeAreaHeight * buttonPadding;
+                playHitbox.setPos(playButtonLeft, playButtonTop);
+                stopButtonTop = this.top + timeAreaHeight * buttonPadding;
+                stopHitbox.setPos(stopButtonLeft, stopButtonTop);
             }
         },
         "timeAreaWidth": {
@@ -461,26 +476,32 @@ export function Timeline() {
         // buttons
         if (playing) {
             ctx.beginPath();
-            ctx.rect(buttonLeft, buttonTop, buttonWidth * 0.3, buttonHeight);
+            ctx.rect(playButtonLeft, playButtonTop, buttonWidth * 0.3, buttonHeight);
             ctx.fillStyle = '#776622';
             ctx.strokeStyle = '#ffb933';
             ctx.fill();
             ctx.stroke();
             ctx.beginPath();
-            ctx.rect(buttonLeft + buttonWidth * 0.7, buttonTop, buttonWidth * 0.3, buttonHeight);
+            ctx.rect(playButtonLeft + buttonWidth * 0.7, playButtonTop, buttonWidth * 0.3, buttonHeight);
             ctx.fill();
             ctx.stroke();
         }
         else {
             ctx.beginPath();
-            ctx.moveTo(buttonLeft, buttonTop);
-            ctx.lineTo(buttonLeft, buttonTop + buttonHeight);
-            ctx.lineTo(buttonLeft + buttonWidth, buttonTop + buttonHeight / 2);
+            ctx.moveTo(playButtonLeft, playButtonTop);
+            ctx.lineTo(playButtonLeft, playButtonTop + buttonHeight);
+            ctx.lineTo(playButtonLeft + buttonWidth, playButtonTop + buttonHeight / 2);
             ctx.closePath();
             ctx.fillStyle = '#227722';
             ctx.strokeStyle = '#33ff33';
             ctx.fill();
             ctx.stroke();
         }
+        ctx.beginPath();
+        ctx.rect(stopButtonLeft, stopButtonTop, buttonWidth, buttonHeight);
+        ctx.fillStyle = '#772222';
+        ctx.strokeStyle = '#ff3333';
+        ctx.fill();
+        ctx.stroke();
     }
 }
