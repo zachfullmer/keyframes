@@ -86,9 +86,6 @@ export function Timeline() {
             movingCursor = false;
             grabbed = true;
         }
-        else if (event.which == 2) { // middle button
-            pThis.timelinePeriod = defaultTimelinePeriod;
-        }
     });
     $(document).mouseup(() => {
         movingCursor = false;
@@ -135,6 +132,8 @@ export function Timeline() {
     const defaultTimelinePeriod = 3000;
     var _displayDecimals = 1;
     var _magnification = 1.0;
+    const minMagnification = 0.01;
+    const maxMagnification = 100;
     this.stampText = Object.create(Text).init('');
     this.stampText.originX = 0.0;
     this.stampText.originY = 0.5;
@@ -147,6 +146,11 @@ export function Timeline() {
     this.propText.fontSize = propFontSize;
     this.propText.fontFamily = fontFace;
     this.propText.update();
+    this.magText = Object.create(Text).init('100%');
+    this.magText.originX = 0.5;
+    this.magText.originY = 0.5;
+    this.magText.fontSize = stampFontSize;
+    this.magText.fontFamily = fontFace;
     var laneNames = [];
     // time
     var _period = 0;
@@ -171,7 +175,8 @@ export function Timeline() {
     var _laneSize = 10;
     var objType = 'none';
     // buttons
-    var buttonPadding = 0.2;
+    const buttonSpacing = 5;
+    const buttonPadding = 0.2;
     var buttonHeight = timeAreaHeight * (1.0 - buttonPadding * 2);
     var buttonWidth = buttonHeight;
     var playButtonTop = 0;
@@ -198,12 +203,37 @@ export function Timeline() {
     });
     addHitbox(stopHitbox);
     //
+    var magHitbox = new Hitbox();
+    var magButtonPadding = 2;
+    var magButtonTop = 0;
+    var magButtonLeft = 0;
+    var _magButtonWidth = 0;
+    var magButtonHeight = buttonHeight;
+    magHitbox.click(() => {
+        this.magnification = 1.0;
+    });
+    addHitbox(magHitbox);
+    //
     Object.defineProperties(this, {
+        "magButtonWidth": {
+            "get": function () { return _magButtonWidth; },
+            "set": function (mbw) {
+                _magButtonWidth = mbw;
+                magButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing) * 2 - (_magButtonWidth + buttonSpacing);
+                magHitbox.setPos(magButtonLeft, magButtonTop);
+                magHitbox.setBox(_magButtonWidth, magButtonHeight);
+            }
+        },
         "magnification": {
             "get": function () { return _magnification; },
             "set": function (m) {
-                _magnification = m;
+                if (m > minMagnification && m < maxMagnification) {
+                    _magnification = m;
+                }
                 this.timelinePeriod = defaultTimelinePeriod * _magnification;
+                this.magText.text = Math.round(1 / _magnification * 100) + '%';
+                this.magText.update();
+                this.magButtonWidth = this.magText.c.width + magButtonPadding * 2;
             }
         },
         "curTime": {
@@ -237,10 +267,11 @@ export function Timeline() {
             "set": function (px) {
                 _pos[0] = px;
                 this.hitbox.setPos(_pos[0], _pos[1]);
-                playButtonLeft = this.left + infoAreaWidth - (buttonWidth + 5);
+                playButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing);
                 playHitbox.setPos(playButtonLeft, playButtonTop);
-                stopButtonLeft = this.left + infoAreaWidth - (buttonWidth + 5) * 2;
+                stopButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing) * 2;
                 stopHitbox.setPos(stopButtonLeft, stopButtonTop);
+                this.magButtonWidth = this.magButtonWidth;
             }
         },
         "posY": {
@@ -252,6 +283,8 @@ export function Timeline() {
                 playHitbox.setPos(playButtonLeft, playButtonTop);
                 stopButtonTop = this.top + timeAreaHeight * buttonPadding;
                 stopHitbox.setPos(stopButtonLeft, stopButtonTop);
+                magButtonTop = this.top + timeAreaHeight * buttonPadding;
+                magHitbox.setPos(magButtonLeft, magButtonTop);
             }
         },
         "timeAreaWidth": {
@@ -384,6 +417,7 @@ export function Timeline() {
     });
     this.left = 0;
     this.top = 0;
+    this.magnification = 1.0;
     this.period = 2000;
 
     this.setObjType = (type) => {
@@ -577,5 +611,16 @@ export function Timeline() {
         ctx.strokeStyle = '#ff3333';
         ctx.fill();
         ctx.stroke();
+        // mag button
+        ctx.beginPath();
+        ctx.rect(magButtonLeft, magButtonTop, this.magButtonWidth, magButtonHeight);
+        ctx.fillStyle = '#224c77';
+        ctx.strokeStyle = '#3363ff';
+        ctx.fill();
+        ctx.stroke();
+        this.magText.x = magButtonLeft + this.magButtonWidth / 2;
+        this.magText.y = magButtonTop + magButtonHeight / 2;
+        ctx.fillStyle = '#fff';
+        this.magText.draw(ctx);
     }
 }
