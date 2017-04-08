@@ -402,13 +402,17 @@ export function pushPointToShape(point) {
     div.append(li);
     $('#shapeList-' + editedShape.name).append(div);
     li.mousedown((event) => {
-        if (globalPlaying) {
-            return;
-        }
         if (event.which == 1) { // left click
+            selectPoint(point);
+            if (globalPlaying) {
+                return;
+            }
             grabPointRef(li.parent());
         }
         else if (event.which == 2) { // middle click
+            if (globalPlaying) {
+                return;
+            }
             li.parent().remove();
             removePointFromShape(point, shape);
             pointRefsLo(point);
