@@ -45,7 +45,7 @@ export function Timeline() {
     var hitbox = new Hitbox();
     var grabbed = false;
     hitbox.mousedown((event) => {
-        if (event.which == 1) { // left button
+        if (event.which == 3) { // left button
             grabbed = true;
         }
         else if (event.which == 2) { // middle button
