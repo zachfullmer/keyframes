@@ -37,7 +37,7 @@ export const keyframeTypes = {
     }
 };
 
-export function Keyframe(time, type, val) {
+export function Keyframe(time, type, val = null) {
     this.time = time;
     this.type = type;
     var _val = val;
@@ -68,6 +68,14 @@ export function KeyframeList(propInfo) {
     this.keyframes = [];
     this.addKeyframe = (keyframe) => {
         keyframe.propInfo = this.propInfo;
+        if (keyframe.val === null) {
+            if (this.propInfo.type == 'col') {
+                keyframe.val = [255, 255, 255];
+            }
+            else {
+                keyframe.val = 0;
+            }
+        }
         for (let k in this.keyframes) {
             if (keyframe.time < this.keyframes[k].time) {
                 this.keyframes.splice(k, 0, keyframe);

@@ -3,6 +3,7 @@ import { Text } from './Text.js'
 import { Hitbox, addHitbox, setGlobalTime, playGlobalTime, pauseGlobalTime, globalPlaying } from './Canvas.js'
 import { showTooltip, hideTooltip } from './Events.js'
 import { propTypes } from './UI.js'
+import { Keyframe, keyframeTypes } from './VectorDrawing.js'
 
 function clr() {
     $('#debugBox').text('');
@@ -63,6 +64,16 @@ export function Timeline() {
             setGlobalTime(t);
         }
     }
+    this.hitbox.dblclick((event) => {
+        if (keyLists === null) {
+            return;
+        }
+        let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+        if (l >= 0) {
+            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
+            keyLists[l].addKeyframe(new Keyframe(t, keyframeTypes.instant));
+        }
+    });
     this.hitbox.mousedown((event) => {
         if (event.which == 1) { // left button
             moveTimeCursor(event);
