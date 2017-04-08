@@ -72,6 +72,14 @@ export function Timeline() {
             setGlobalTime(t);
         }
     }
+    $(document).keydown((event) => {
+        if (event.which == 192) { // `
+            stopHitbox.click();
+        }
+        else if (event.which == 32) { // space
+            playHitbox.click();
+        }
+    });
     this.hitbox.dblclick((event) => {
         if (keyLists === null) {
             return;
