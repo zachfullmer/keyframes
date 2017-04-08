@@ -91,7 +91,7 @@ export function KeyframeList(propInfo) {
     }
     this.removeKeyframe = (keyframe) => {
         let index = this.keyframes.indexOf(keyframe);
-        if (index >= 0) {
+        if (index > 0) {
             this.keyframes.splice(index, 1);
         }
     }
