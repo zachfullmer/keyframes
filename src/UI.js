@@ -23,7 +23,7 @@ export const propTypes = {
     polygon: [
         { name: 'color', type: 'col', varName: 'colorRGB', propId: '#pcProp' }
     ],
-    polygon: [
+    line: [
         { name: 'color', type: 'col', varName: 'colorRGB', propId: '#lcProp' }
     ],
     circleF: [

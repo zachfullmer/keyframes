@@ -409,9 +409,6 @@ export function Timeline() {
         }
         // keyframes
         if (keyLists !== null) {
-            if (keyLists.length != this.laneNum) {
-                throw 'ERROR';
-            }
             for (let k in keyLists) {
                 for (let f in keyLists[k].keyframes) {
                     drawKeyframe(ctx, parseInt(k), keyLists[k].keyframes[f].time);
