@@ -379,10 +379,18 @@ export function Timeline() {
         }
     }
     const keyframeSize = 5;
-    var drawKeyframe = (ctx, lane, time) => {
+    var drawKeyframe = (ctx, lane, time, active) => {
         let pixPos = getPixelPos(time);
         if (pixPos + keyframeSize < 0 || pixPos - keyframeSize >= this.width) {
             return;
+        }
+        if (active) {
+            ctx.fillStyle = '#663222';
+            ctx.strokeStyle = '#ffa599';
+        }
+        else {
+            ctx.fillStyle = '#662';
+            ctx.strokeStyle = '#ff9';
         }
         let kPos = [this.left + infoAreaWidth + pixPos, this.top + timeAreaHeight + this.laneSize * (lane + 0.5)];
         ctx.beginPath();
@@ -391,9 +399,7 @@ export function Timeline() {
         ctx.lineTo(kPos[0], kPos[1] + keyframeSize);
         ctx.lineTo(kPos[0] - keyframeSize, kPos[1]);
         ctx.closePath();
-        ctx.fillStyle = '#662';
         ctx.fill();
-        ctx.strokeStyle = '#ff9';
         ctx.stroke();
     }
     this.draw = (ctx, time) => {
@@ -427,7 +433,8 @@ export function Timeline() {
         if (keyLists !== null) {
             for (let k in keyLists) {
                 for (let f in keyLists[k].keyframes) {
-                    drawKeyframe(ctx, parseInt(k), keyLists[k].keyframes[f].time);
+                    let kTime = keyLists[k].keyframes[f].time;
+                    drawKeyframe(ctx, parseInt(k), kTime, (kTime == time && !globalPlaying));
                 }
             }
         }
