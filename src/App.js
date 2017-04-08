@@ -74,7 +74,7 @@ class CanvasComponent extends React.Component {
               <label><input type="color" id="bcProp" className="prop-window-item"></input>color</label><br />
             </div>
           </div>
-          <div id="debugBox" className="ui-panel">
+          <div id="keyframeBox" className="ui-panel">
           </div>
         </div>
       </div>

@@ -147,9 +147,9 @@ p.prop-header {
 }
 
 
-/* debugBox */
+/* keyframeBox */
 
-#debugBox {
+#keyframeBox {
   position: relative;
   float: right;
   top: 0px;
