@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, initHitboxEvents } from './Canvas.js'
+import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, initHitboxEvents, globalPlaying } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { Keyframe, KeyframeList, keyframeTypes } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
@@ -38,6 +38,9 @@ export function initEvents() {
         }
     });
     canvas.dblclick((event) => {
+        if (globalPlaying) {
+            return;
+        }
         if (selectedPoint === null) {
             return;
         }
