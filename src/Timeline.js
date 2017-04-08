@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import { Text } from './Text.js'
-import { Hitbox, addHitbox, setGlobalTime } from './Canvas.js'
+import { Hitbox, addHitbox, setGlobalTime, playGlobalTime, pauseGlobalTime, playing } from './Canvas.js'
 import { showTooltip, hideTooltip } from './Events.js'
 import { propTypes } from './UI.js'
 
@@ -131,6 +131,23 @@ export function Timeline() {
     var _laneNum = 5;
     var _laneSize = 10;
     var objType = 'none';
+    // buttons
+    var buttonPadding = 0.2;
+    var buttonHeight = timeAreaHeight * (1.0 - buttonPadding * 2);
+    var buttonWidth = buttonHeight * 0.7;
+    var buttonTop = 0;
+    var buttonLeft = 0;
+    var playHitbox = new Hitbox();
+    playHitbox.setBox(buttonWidth, buttonHeight);
+    playHitbox.click(() => {
+        if (playing) {
+            pauseGlobalTime();
+        }
+        else {
+            playGlobalTime();
+        }
+    });
+    addHitbox(playHitbox);
     Object.defineProperties(this, {
         "laneNum": {
             "get": function () {
@@ -147,6 +164,8 @@ export function Timeline() {
             "set": function (px) {
                 _pos[0] = px;
                 hitbox.setPos(_pos[0], _pos[1]);
+                buttonLeft = this.left + infoAreaWidth - buttonWidth - 5;
+                playHitbox.setPos(buttonLeft, buttonTop);
             }
         },
         "posY": {
@@ -154,6 +173,8 @@ export function Timeline() {
             "set": function (py) {
                 _pos[1] = py;
                 hitbox.setPos(_pos[0], _pos[1]);
+                buttonTop = this.top + timeAreaHeight * buttonPadding;
+                playHitbox.setPos(buttonLeft, buttonTop);
             }
         },
         "timeAreaWidth": {
@@ -284,6 +305,8 @@ export function Timeline() {
             }
         }
     });
+    this.left = 0;
+    this.top = 0;
     this.period = 2000;
 
     this.setObjType = (type) => {
@@ -435,5 +458,29 @@ export function Timeline() {
         ctx.rect(this.posX, this.posY, this.width, this.height);
         ctx.strokeStyle = '#fff';
         ctx.stroke();
+        // buttons
+        if (playing) {
+            ctx.beginPath();
+            ctx.rect(buttonLeft, buttonTop, buttonWidth * 0.3, buttonHeight);
+            ctx.fillStyle = '#776622';
+            ctx.strokeStyle = '#ffb933';
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.rect(buttonLeft + buttonWidth * 0.7, buttonTop, buttonWidth * 0.3, buttonHeight);
+            ctx.fill();
+            ctx.stroke();
+        }
+        else {
+            ctx.beginPath();
+            ctx.moveTo(buttonLeft, buttonTop);
+            ctx.lineTo(buttonLeft, buttonTop + buttonHeight);
+            ctx.lineTo(buttonLeft + buttonWidth, buttonTop + buttonHeight / 2);
+            ctx.closePath();
+            ctx.fillStyle = '#227722';
+            ctx.strokeStyle = '#33ff33';
+            ctx.fill();
+            ctx.stroke();
+        }
     }
 }
