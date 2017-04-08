@@ -43,27 +43,34 @@ export function Timeline() {
     var pThis = this;
     // hitbox
     this.hitbox = new Hitbox();
+    var movingCursor = false;
     var grabbed = false;
-    this.hitbox.mousedown((event) => {
-        if (event.which == 1) { // left button
-            if (keyLists !== null) {
-                let l = Math.floor((event.pageY - (this.top + timeAreaHeight)) / this.laneSize);
-                if (l >= 0) {
-                    let uPos = event.pageX - this.posX - infoAreaWidth;
-                    for (let f in keyLists[l].keyframes) {
-                        if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
-                            setGlobalTime(keyLists[l].keyframes[f].time);
-                            return;
-                        }
+    function moveTimeCursor(event) {
+        if (keyLists !== null) {
+            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+            if (l >= 0) {
+                let uPos = event.pageX - pThis.posX - infoAreaWidth;
+                for (let f in keyLists[l].keyframes) {
+                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
+                        setGlobalTime(keyLists[l].keyframes[f].time);
+                        return;
                     }
                 }
             }
-            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
-            if (t >= 0) {
-                setGlobalTime(t);
-            }
+        }
+        let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
+        if (t >= 0) {
+            setGlobalTime(t);
+        }
+    }
+    this.hitbox.mousedown((event) => {
+        if (event.which == 1) { // left button
+            moveTimeCursor(event);
+            movingCursor = true;
+            grabbed = false;
         }
         else if (event.which == 3) { // right button
+            movingCursor = false;
             grabbed = true;
         }
         else if (event.which == 2) { // middle button
@@ -71,11 +78,15 @@ export function Timeline() {
         }
     });
     $(document).mouseup(() => {
+        movingCursor = false;
         grabbed = false;
     });
     $(document).mousemove(function (event) {
         if (!this.lastMouse) this.lastMouse = [0, 0];
-        if (grabbed) {
+        if (movingCursor) {
+            moveTimeCursor(event);
+        }
+        else if (grabbed) {
             let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
             pThis.pixelOffset -= moved[0];
         }
