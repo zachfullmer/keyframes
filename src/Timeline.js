@@ -6,10 +6,10 @@ import { propTypes } from './UI.js'
 import { Keyframe, keyframeTypes } from './VectorDrawing.js'
 
 function clr() {
-    $('#debugBox').text('');
+    $('#keyframeBox').text('');
 }
 function log(str) {
-    $('#debugBox').append(str + '<br/>');
+    $('#keyframeBox').append(str + '<br/>');
 }
 
 function pad(num, size) {
