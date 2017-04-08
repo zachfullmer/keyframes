@@ -45,14 +45,6 @@ export function Timeline() {
     this.hitbox = new Hitbox();
     var grabbed = false;
     this.hitbox.mousedown((event) => {
-        if (event.which == 3) { // left button
-            grabbed = true;
-        }
-        else if (event.which == 2) { // middle button
-            pThis.timelinePeriod = defaultTimelinePeriod;
-        }
-    });
-    this.hitbox.click((event) => {
         if (event.which == 1) { // left button
             if (keyLists !== null) {
                 let l = Math.floor((event.pageY - (this.top + timeAreaHeight)) / this.laneSize);
@@ -70,6 +62,12 @@ export function Timeline() {
             if (t >= 0) {
                 setGlobalTime(t);
             }
+        }
+        else if (event.which == 3) { // right button
+            grabbed = true;
+        }
+        else if (event.which == 2) { // middle button
+            pThis.timelinePeriod = defaultTimelinePeriod;
         }
     });
     $(document).mouseup(() => {

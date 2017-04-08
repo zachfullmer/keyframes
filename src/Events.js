@@ -44,6 +44,9 @@ export function initEvents() {
         if (selectedPoint === null) {
             return;
         }
+        if (timeline.hitbox.contains(event.pageX, event.pageY)) {
+            return;
+        }
         let p1 = new pnt();
         p1.p = [event.pageX, event.pageY];
         addPoint(p1, selectedPoint);
@@ -77,6 +80,12 @@ export function initEvents() {
         if (selectedPoint === null) {
             return;
         }
+        // for (let k in keyLists) {
+        //     for (let f in keyLists[k].keyframes) {
+        //         let kTime = keyLists[k].keyframes[f].time;
+        //         drawKeyframe(ctx, parseInt(k), kTime, (kTime == time && !globalPlaying));
+        //     }
+        // }
         selectedPoint.p = [$('#pxProp').val(), $('#pyProp').val()];
     });
     $('#oxProp, #oyProp').on('input', () => {
