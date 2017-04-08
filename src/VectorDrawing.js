@@ -323,7 +323,10 @@ export function shape(type, points, color = 'white', radius = 20) {
         },
         "color": {
             "get": function () { return _color; },
-            "set": function (c) { _color = colorNameToHex(c); _colorRGB = hexToRgb(_color); }
+            "set": function (c) {
+                _color = colorNameToHex(c) || c;
+                _colorRGB = hexToRgb(_color);
+            }
         }
     });
     this.name = '';
@@ -482,6 +485,7 @@ export function VectorDrawing() {
         let shapeType = propTypes[shape.type];
         for (let p in shapeType) {
             let kl = new KeyframeList(shapeType[p]);
+            console.log(shape[shapeType[p].varName]);
             kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
             propInfo.push(kl);
         }
