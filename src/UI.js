@@ -16,7 +16,7 @@ export const propTypes = {
         { name: 'position y', type: 'num', varName: 'py', propId: '#pyProp' },
         { name: 'origin x', type: 'num', varName: 'ox', propId: '#oxProp' },
         { name: 'origin y', type: 'num', varName: 'oy', propId: '#oyProp' },
-        { name: 'rotation', type: 'num', varName: 'r', propId: '#rProp' },
+        { name: 'rotation', type: 'deg', varName: 'r', propId: '#rProp' },
         { name: 'scale x', type: 'num', varName: 'sx', propId: '#sxProp' },
         { name: 'scale y', type: 'num', varName: 'sy', propId: '#syProp' }
     ],
@@ -251,7 +251,8 @@ export function selectPoint(point) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    timeline.setKeyLists(vec.getElementKeyLists(point));
+    activeKeyframeList = vec.getElementKeyLists(point);
+    timeline.setKeyLists(activeKeyframeList);
     selectedPoint = point;
     selectedShape = null;
     editedShape = null;
@@ -273,7 +274,8 @@ export function selectShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    timeline.setKeyLists(vec.getElementKeyLists(shape));
+    activeKeyframeList = vec.getElementKeyLists(shape);
+    timeline.setKeyLists(activeKeyframeList);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = null;
@@ -295,7 +297,8 @@ export function editShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    timeline.setKeyLists(vec.getElementKeyLists(shape));
+    activeKeyframeList = vec.getElementKeyLists(shape);
+    timeline.setKeyLists(activeKeyframeList);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = shape;
@@ -617,6 +620,8 @@ export function dragPoint(screenPos) {
     grabbedPoint.p = screenPos;
     $('#pxProp').val(grabbedPoint.px);
     $('#pyProp').val(grabbedPoint.py);
+    $('#pxProp').trigger('input');
+    $('#pyProp').trigger('input');
 }
 
 

@@ -139,7 +139,10 @@ export function Timeline() {
     var _timeOffset = 0;
     var _advance = 0;
     var _timelinePeriod = defaultTimelinePeriod;
+    var _curTime = 0;
+    // keyframes
     var keyLists = null;
+    this.hiKeyframes = [];
     // drawing
     const timeAreaHeight = 20;
     const infoAreaWidth = 100;
@@ -182,6 +185,24 @@ export function Timeline() {
     addHitbox(stopHitbox);
     //
     Object.defineProperties(this, {
+        "curTime": {
+            "get": function () { return _curTime; },
+            "set": function (ct) {
+                _curTime = ct;
+                this.hiKeyframes.length = 0;
+                for (let k in keyLists) {
+                    for (let f in keyLists[k].keyframes) {
+                        let kTime = keyLists[k].keyframes[f].time;
+                        let highlight = (kTime == this.curTime && !globalPlaying);
+                        if (highlight) {
+                            this.hiKeyframes.push(keyLists[k].keyframes[f]);
+                        }
+                    }
+                }
+                if (this.hiKeyframes.length > 0)
+                    console.log(this.hiKeyframes);
+            }
+        },
         "laneNum": {
             "get": function () {
                 return _laneNum;
@@ -356,6 +377,7 @@ export function Timeline() {
     }
     this.setKeyLists = (keys) => {
         keyLists = keys;
+        this.curTime = this.curTime;
     }
     var getPixelPos = (time) => {
         let oTime = time - this.timeOffset;
@@ -411,7 +433,7 @@ export function Timeline() {
         ctx.fill();
         ctx.stroke();
     }
-    this.draw = (ctx, time) => {
+    this.draw = (ctx) => {
         ctx.strokeStyle = '#fff';
 
         /* timeline area */
@@ -421,7 +443,7 @@ export function Timeline() {
         ctx.fillStyle = '#000';
         ctx.fill();
         // current time
-        let linePixelPos = getPixelPos(time) + this.left + infoAreaWidth;
+        let linePixelPos = getPixelPos(this.curTime) + this.left + infoAreaWidth;
         if (linePixelPos >= this.left + infoAreaWidth && linePixelPos < this.right) {
             ctx.beginPath();
             ctx.moveTo(linePixelPos, this.top + timeAreaHeight);
@@ -443,7 +465,11 @@ export function Timeline() {
             for (let k in keyLists) {
                 for (let f in keyLists[k].keyframes) {
                     let kTime = keyLists[k].keyframes[f].time;
-                    drawKeyframe(ctx, parseInt(k), kTime, (kTime == time && !globalPlaying));
+                    let highlight = (kTime == this.curTime && !globalPlaying);
+                    if (highlight) {
+
+                    }
+                    drawKeyframe(ctx, parseInt(k), kTime, highlight);
                 }
             }
         }

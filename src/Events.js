@@ -1,9 +1,9 @@
 import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, initHitboxEvents, globalPlaying } from './Canvas.js'
+import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, initHitboxEvents, globalPlaying, globalTime } from './Canvas.js'
 import { pnt, shape } from './VectorDrawing.js'
 import { Keyframe, KeyframeList, keyframeTypes } from './VectorDrawing.js'
 import { opList, degrees } from './Helpers.js'
-import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName, setPropWindow } from './UI.js'
+import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName, setPropWindow, activeKeyframeList } from './UI.js'
 import { selectedPoint, selectedShape, grabbedPoint } from './UI.js'
 
 
@@ -75,39 +75,46 @@ export function initEvents() {
         $(itemId).html(genShapeListName(selectedShape));
         setPropWindow(this.value);
     });
+    $('.prop-window-item').on('input', function () {
+        let id = '#' + this.id;
+        for (let h in timeline.hiKeyframes) {
+            if (timeline.hiKeyframes[h].propInfo.propId == id) {
+                let finalVal = this.value;
+                if (timeline.hiKeyframes[h].propInfo.type == 'deg') {
+                    finalVal /= degrees;
+                }
+                timeline.hiKeyframes[h].val = finalVal;
+                break;
+            }
+        }
+    });
     // point properties
-    $('#pxProp, #pyProp').on('input', () => {
+    $('#pxProp, #pyProp').on('input', function () {
         if (selectedPoint === null) {
             return;
         }
-        // for (let k in keyLists) {
-        //     for (let f in keyLists[k].keyframes) {
-        //         let kTime = keyLists[k].keyframes[f].time;
-        //         drawKeyframe(ctx, parseInt(k), kTime, (kTime == time && !globalPlaying));
-        //     }
-        // }
         selectedPoint.p = [$('#pxProp').val(), $('#pyProp').val()];
     });
-    $('#oxProp, #oyProp').on('input', () => {
+    $('#oxProp, #oyProp').on('input', function () {
         if (selectedPoint === null) {
             return;
         }
         selectedPoint.o = [$('#oxProp').val(), $('#oyProp').val()];
     });
-    $('#rProp').on('input', () => {
+    $('#rProp').on('input', function () {
         if (selectedPoint === null) {
             return;
         }
         selectedPoint.r = $('#rProp').val() / degrees;
     });
-    $('#sxProp, #syProp').on('input', () => {
+    $('#sxProp, #syProp').on('input', function () {
         if (selectedPoint === null) {
             return;
         }
         selectedPoint.s = [$('#sxProp').val(), $('#syProp').val()];
     });
     // polygon properties
-    $('#pcProp').on('input', () => {
+    $('#pcProp').on('input', function () {
         if (selectedShape === null) {
             return;
         }
@@ -116,7 +123,7 @@ export function initEvents() {
         $('#' + spanId).css('color', selectedShape.color);
     });
     // line properties
-    $('#lcProp').on('input', () => {
+    $('#lcProp').on('input', function () {
         if (selectedShape === null) {
             return;
         }
@@ -125,7 +132,7 @@ export function initEvents() {
         $('#' + spanId).css('color', selectedShape.color);
     });
     // filled circle properties
-    $('#cfrProp, #cfcProp').on('input', () => {
+    $('#cfrProp, #cfcProp').on('input', function () {
         if (selectedShape === null) {
             return;
         }
@@ -135,7 +142,7 @@ export function initEvents() {
         $('#' + spanId).css('color', selectedShape.color);
     });
     // circle properties
-    $('#corProp, #cocProp').on('input', () => {
+    $('#corProp, #cocProp').on('input', function () {
         if (selectedShape === null) {
             return;
         }
@@ -145,7 +152,7 @@ export function initEvents() {
         $('#' + spanId).css('color', selectedShape.color);
     });
     // bezier properties
-    $('#bcProp').on('input', () => {
+    $('#bcProp').on('input', function () {
         if (selectedShape === null) {
             return;
         }

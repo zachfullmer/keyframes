@@ -40,22 +40,34 @@ export const keyframeTypes = {
 export function Keyframe(time, type, val) {
     this.time = time;
     this.type = type;
-    this.val = val;
+    var _val = val;
+    this.propInfo = null;
+    Object.defineProperties(this, {
+        "val": {
+            "get": function () { return _val; },
+            "set": function (v) {
+                if (typeof v == 'string') {
+                    v = parseFloat(v);
+                }
+                _val = v;
+            }
+        }
+    });
 }
 
-export function KeyframeList(kType, name) {
-    this.name = name;
-    var _type = kType;
+export function KeyframeList(propInfo) {
+    var _propInfo = propInfo;
     Object.defineProperties(this, {
-        "type": {
-            "get": function () { return _type; }
-        },
+        "propInfo": {
+            "get": function () { return _propInfo; }
+        }
     });
     var funcName = 'func';
-    if (kType == 'num') funcName = 'func';
-    else if (kType == 'col') funcName = 'funcArr';
+    if (this.propInfo.kType == 'num' || this.propInfo.kType == 'deg') funcName = 'func';
+    else if (this.propInfo.kType == 'col') funcName = 'funcArr';
     this.keyframes = [];
     this.addKeyframe = (keyframe) => {
+        keyframe.propInfo = this.propInfo;
         for (let k in this.keyframes) {
             if (keyframe.time < this.keyframes[k].time) {
                 this.keyframes.splice(k, 0, keyframe);
@@ -63,8 +75,6 @@ export function KeyframeList(kType, name) {
             }
         }
         this.keyframes.push(keyframe);
-        if (this.keyframes.length > 1)
-            console.log(this.keyframes);
     }
     this.getValue = (time) => {
         let k = 0;
@@ -435,7 +445,7 @@ export function VectorDrawing() {
         let propInfo = [];
         let pointType = propTypes['point'];
         for (let p in pointType) {
-            let kl = new KeyframeList(pointType[p].type, pointType[p].varName);
+            let kl = new KeyframeList(pointType[p]);
             kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, point[pointType[p].varName]));
             propInfo.push(kl);
         }
@@ -463,7 +473,7 @@ export function VectorDrawing() {
         let propInfo = [];
         let shapeType = propTypes[shape.type];
         for (let p in shapeType) {
-            let kl = new KeyframeList(shapeType[p].type, shapeType[p].varName);
+            let kl = new KeyframeList(shapeType[p]);
             kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
             propInfo.push(kl);
         }

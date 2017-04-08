@@ -3,6 +3,7 @@ import { pnt, VectorDrawing, shape } from './VectorDrawing.js'
 import { keyframeTypes, Keyframe, KeyframeList } from './VectorDrawing.js'
 import { Timeline } from './Timeline.js'
 import { propTypes, updatePropWindow } from './UI.js'
+import { degrees } from './Helpers.js'
 
 
 export function Hitbox(circle = false) {
@@ -168,11 +169,16 @@ export function initCanvas(context) {
 }
 
 export function setGlobalTime(newTime) {
+    timeline.curTime = newTime;
     globalTime = newTime;
     for (let e in vec.currentAnim) {
         for (let k in vec.currentAnim[e][1]) {
             let keyList = vec.currentAnim[e][1][k];
-            vec.currentAnim[e][0][keyList.name] = keyList.getValue(globalTime);
+            let finalVal = keyList.getValue(globalTime);
+            if (keyList.propInfo.type == 'deg') {
+                finalVal *= degrees;
+            }
+            vec.currentAnim[e][0][keyList.propInfo.varName] = finalVal;
         }
     }
     updatePropWindow();
@@ -223,7 +229,7 @@ function drawCanvas(timestamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     vec.draw(ctx);
     vec.debugDraw(ctx);
-    timeline.draw(ctx, globalTime);
+    timeline.draw(ctx);
     //
     window.requestAnimationFrame(drawCanvas);
 }
