@@ -75,6 +75,10 @@ export function Hitbox(circle = false) {
         _mousewheel.push(func);
     }
     this.click = (func) => {
+        if (func === undefined) {
+            this.execute({ type: 'click' });
+            return;
+        }
         _click.push(func);
     }
     this.dblclick = (func) => {
