@@ -86,6 +86,7 @@ function componentToHex(c) {
 }
 
 export function rgbToHex(r, g, b) {
+    r = Math.round(r); g = Math.round(g); b = Math.round(b);
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
