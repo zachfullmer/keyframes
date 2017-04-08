@@ -54,6 +54,10 @@ export function Timeline() {
                 for (let f in keyLists[l].keyframes) {
                     if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
                         setGlobalTime(keyLists[l].keyframes[f].time);
+                        if (event.type == 'mousedown') {
+                            // clicked
+                            pThis.selectedKeyframe = keyLists[l].keyframes[f];
+                        }
                         return;
                     }
                 }
@@ -161,6 +165,13 @@ export function Timeline() {
     // keyframes
     var keyLists = null;
     this.hiKeyframes = [];
+    var selectedKeyframe = null;
+    const kSelectedFillColor = '#663222';
+    const kSelectedStrokeColor = '#ffa599';
+    const kActiveFillColor = '#662';
+    const kActiveStrokeColor = '#ff9';
+    const kInactiveFillColor = '#000';
+    const kInactiveStrokeColor = '#ff9';
     // drawing
     const timeAreaHeight = 20;
     const infoAreaWidth = 100;
@@ -240,6 +251,7 @@ export function Timeline() {
             "get": function () { return _curTime; },
             "set": function (ct) {
                 _curTime = ct;
+                this.selectedKeyframe = null;
                 this.hiKeyframes.length = 0;
                 for (let k in keyLists) {
                     for (let f in keyLists[k].keyframes) {
@@ -463,18 +475,22 @@ export function Timeline() {
         }
     }
     const keyframeSize = 5;
-    var drawKeyframe = (ctx, lane, time, active) => {
+    var drawKeyframe = (ctx, lane, time, status) => {
         let pixPos = getPixelPos(time);
         if (pixPos + keyframeSize < 0 || pixPos - keyframeSize >= this.width) {
             return;
         }
-        if (active) {
-            ctx.fillStyle = '#663222';
-            ctx.strokeStyle = '#ffa599';
+        if (status == 'selected') {
+            ctx.fillStyle = kSelectedFillColor;
+            ctx.strokeStyle = kSelectedStrokeColor;
+        }
+        else if (status == 'active') {
+            ctx.fillStyle = kActiveFillColor;
+            ctx.strokeStyle = kActiveStrokeColor;
         }
         else {
-            ctx.fillStyle = '#662';
-            ctx.strokeStyle = '#ff9';
+            ctx.fillStyle = kInactiveFillColor;
+            ctx.strokeStyle = kInactiveStrokeColor;
         }
         let kPos = [this.left + infoAreaWidth + pixPos, this.top + timeAreaHeight + this.laneSize * (lane + 0.5)];
         ctx.beginPath();
@@ -518,11 +534,14 @@ export function Timeline() {
             for (let k in keyLists) {
                 for (let f in keyLists[k].keyframes) {
                     let kTime = keyLists[k].keyframes[f].time;
-                    let highlight = (kTime == this.curTime && !globalPlaying);
-                    if (highlight) {
-
+                    let status = 'inactive';
+                    if (keyLists[k].keyframes[f] === this.selectedKeyframe) {
+                        status = 'selected';
                     }
-                    drawKeyframe(ctx, parseInt(k), kTime, highlight);
+                    else if (kTime == this.curTime && !globalPlaying) {
+                        status = 'active';
+                    }
+                    drawKeyframe(ctx, parseInt(k), kTime, status);
                 }
             }
         }
