@@ -5,11 +5,13 @@ import { propTypes } from './UI.js';
 
 export const keyframeTypes = {
     instant: {
+        id: 'instant',
         name: 'Instant',
         func: (a, b, f) => a,
         funcArr: (a, b, f) => a
     },
     linear: {
+        id: 'linear',
         name: 'Linear',
         func: (a, b, f) => a + (b - a) * f,
         funcArr: (a, b, f) => {
@@ -21,6 +23,7 @@ export const keyframeTypes = {
         }
     },
     cosine: {
+        id: 'cosine',
         name: 'Cosine',
         func: (a, b, f) => {
             let fCosine = (1 - Math.cos(f * Math.PI)) / 2;

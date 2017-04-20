@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, globalTime, globalPlaying } from './Canvas.js'
 import { opList, degrees, cartToPolar, polarToCart, rgbToHex } from './Helpers.js'
-import { shape, pnt, shapeTypes } from './VectorDrawing.js'
+import { shape, pnt, shapeTypes, keyframeTypes } from './VectorDrawing.js'
 
 
 export var selectedPoint = null;
@@ -636,6 +636,14 @@ export function initUI() {
     let shapeTypeSelect = $('#shapeTypeSelect');
     $.each(shapeTypes, (key, val) => {
         shapeTypeSelect.append($('<option/>', {
+            value: key,
+            text: val.name
+        }));
+    });
+    // init keyframe type list
+    let keyframeTypeSelect = $('#keyframeTypeSelect');
+    $.each(keyframeTypes, (key, val) => {
+        keyframeTypeSelect.append($('<option/>', {
             value: key,
             text: val.name
         }));

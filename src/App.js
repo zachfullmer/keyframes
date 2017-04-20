@@ -26,7 +26,8 @@ class CanvasComponent extends React.Component {
           <div id="propsBox" className="ui-panel">
             <select id="shapeTypeSelect"></select>
             <div id="pointPropsBox" className="props-box">
-              <p className="prop-header">Point</p>
+              <label className="prop-header">Point</label>
+              <br /><br />
               <div className="prop-group">
                 <label><input type="number" step="any" id="pxProp" className="prop-window-item"></input>position x</label><br />
                 <label><input type="number" step="any" id="pyProp" className="prop-window-item"></input>position y</label><br />
@@ -75,6 +76,26 @@ class CanvasComponent extends React.Component {
             </div>
           </div>
           <div id="keyframeBox" className="ui-panel">
+            <label className="prop-header">Keyframe</label>
+            <br /><br />
+            <div id="keyframePropsBox">
+              <table>
+                <tbody>
+                  <tr>
+                    <td><label id="kpProp" className="dark-label"></label></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><input type="number" step="1" id="ktProp" className="prop-window-item" min="0"></input></td>
+                    <td><label>time</label></td>
+                  </tr>
+                  <tr>
+                    <td><select id="keyframeTypeSelect"></select></td>
+                    <td><label>type</label></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

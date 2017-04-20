@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { Text } from './Text.js'
 import { Hitbox, addHitbox, setGlobalTime, playGlobalTime, pauseGlobalTime, globalPlaying } from './Canvas.js'
 import { showTooltip, hideTooltip } from './Events.js'
-import { propTypes } from './UI.js'
+import { propTypes, activeKeyframeList } from './UI.js'
 import { Keyframe, keyframeTypes } from './VectorDrawing.js'
 
 function clr() {
@@ -46,6 +46,18 @@ export function Timeline() {
     this.hitbox = new Hitbox();
     var movingCursor = false;
     var grabbed = false;
+    function selectKeyframe(keyframe, lane = -1) {
+        pThis.selectedKeyframe = keyframe;
+        if (keyframe === null) {
+            $('#keyframePropsBox').hide();
+        }
+        else {
+            $('#kpProp').text(activeKeyframeList[lane].propInfo.name);
+            $('#keyframePropsBox').show();
+            $('#ktProp').val(keyframe.time);
+            $('#keyframeTypeSelect').val(keyframe.type.id);
+        }
+    }
     function moveTimeCursor(event) {
         if (keyLists !== null) {
             let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
@@ -56,14 +68,14 @@ export function Timeline() {
                         setGlobalTime(keyLists[l].keyframes[f].time);
                         if (event.type == 'mousedown') {
                             if (event.which == 1) { // left button
-                                pThis.selectedKeyframe = keyLists[l].keyframes[f];
+                                selectKeyframe(keyLists[l].keyframes[f], l);
                             }
                             else if (event.which == 2) { // middle button
                                 keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
                             }
                         }
                         else if (event.type == 'mousemove') {
-                            pThis.selectedKeyframe = keyLists[l].keyframes[f];
+                            selectKeyframe(keyLists[l].keyframes[f], l);
                         }
                         return;
                     }
@@ -271,7 +283,7 @@ export function Timeline() {
             "get": function () { return _curTime; },
             "set": function (ct) {
                 _curTime = ct;
-                this.selectedKeyframe = null;
+                selectKeyframe(null);
                 this.hiKeyframes.length = 0;
                 for (let k in keyLists) {
                     for (let f in keyLists[k].keyframes) {

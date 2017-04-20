@@ -160,6 +160,17 @@ export function initEvents() {
         let spanId = 'shapeSpan-' + selectedShape.name;
         $('#' + spanId).css('color', selectedShape.color);
     });
+    // keyframe properties
+    $('#ktProp').on('input', function () {
+        if (timeline.selectedKeyframe === null) {
+            console.log('no keyframe selected');
+            return;
+        }
+        timeline.selectedKeyframe.time = $('#ktProp').val();
+    });
+    $('#keyframeTypeSelect').on('change', function () {
+        timeline.selectedKeyframe.type = keyframeTypes[$('#keyframeTypeSelect').val()];
+    });
     //
     $(document).keypress((event) => {
         if (event.which == 122) { // z

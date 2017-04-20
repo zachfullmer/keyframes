@@ -130,7 +130,7 @@ select {
   color: #fff;
   border: 1px solid #555;
   background-color: #111;
-  font-size: 110%;
+  margin-right: 5px;
 }
 
 p.prop-header {
@@ -160,6 +160,10 @@ p.prop-header {
 
 
 /* misc */
+
+.dark-label {
+  color: #888;
+}
 
 body, #root, #canvasBox {
   width: 100%;
@@ -196,4 +200,8 @@ canvas {
   user-select: none;
   /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+}
+
+#keyframePropsBox select, #keyframePropsBox input {
+  width: 100px;
 }
