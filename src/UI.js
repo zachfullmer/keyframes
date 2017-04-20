@@ -176,7 +176,7 @@ export function updatePropWindow() {
     }
 }
 
-export function setPropWindow(type) {
+export function setPropWindow(type, elementName) {
     propWindowType = type;
     let shape = null;
     let shapeTypeSelect = $('#shapeTypeSelect');
@@ -238,6 +238,7 @@ export function setPropWindow(type) {
         }
         shapeTypeSelect.val(type);
     }
+    $('#elementTitle').text(elementName);
 }
 
 export function selectPoint(point) {
@@ -260,7 +261,7 @@ export function selectPoint(point) {
     selectedShape = null;
     editedShape = null;
     $('#pointItem-' + point.name).addClass('selected-point');
-    setPropWindow('point');
+    setPropWindow('point', point.name);
 }
 
 export function selectShape(shape) {
@@ -283,7 +284,7 @@ export function selectShape(shape) {
     selectedShape = shape;
     editedShape = null;
     $('#shapeItem-' + shape.name).addClass('selected-shape');
-    setPropWindow(shape.type);
+    setPropWindow(shape.type, shape.name);
 }
 
 export function editShape(shape) {
@@ -306,7 +307,7 @@ export function editShape(shape) {
     selectedShape = shape;
     editedShape = shape;
     $('#shapeItem-' + shape.name).addClass('edited-shape');
-    setPropWindow(shape.type);
+    setPropWindow(shape.type, shape.name);
 }
 
 var currentPointID = 0;
@@ -602,7 +603,7 @@ export var grabbedPoint = null;
 export function grabPoint(point) {
     grabbedPoint = point;
     selectPoint(grabbedPoint);
-    setPropWindow('point');
+    setPropWindow('point', point.name);
 }
 
 export function dropPoint() {

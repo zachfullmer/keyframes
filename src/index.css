@@ -169,6 +169,12 @@ p.prop-header {
   color: #888;
 }
 
+#elementTitle {
+  font-size: 120%;
+  display: block;
+  margin-bottom: 10px;
+}
+
 body, #root, #canvasBox {
   width: 100%;
   height: 100%;

@@ -24,10 +24,9 @@ class CanvasComponent extends React.Component {
         <div id="shapeListBox" className="ui-panel"></div>
         <div id="rightBox">
           <div id="propsBox" className="ui-panel">
+            <label id="elementTitle" className="dark-label"></label>
             <select id="shapeTypeSelect"></select>
             <div id="pointPropsBox" className="props-box">
-              <label className="prop-header">Point</label>
-              <br /><br />
               <div className="prop-group">
                 <label><input type="number" step="any" id="pxProp" className="prop-window-item"></input>position x</label><br />
                 <label><input type="number" step="any" id="pyProp" className="prop-window-item"></input>position y</label><br />
