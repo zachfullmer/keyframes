@@ -58,6 +58,41 @@ export function Timeline() {
             $('#keyframeTypeSelect').val(keyframe.type.id);
         }
     }
+    function grabKeyframe(keyframe, lane = -1) {
+        currentLane = lane;
+        grabbedKeyframe = keyframe;
+    }
+    function moveKeyframe(keyframe, time) {
+        activeKeyframeList[currentLane].sort();
+        time = Math.max(Math.round(time), 0);
+        keyframe.time = time;
+        $('#ktProp').val(keyframe.time);
+    }
+    function findKeyframe(event) {
+        if (keyLists !== null) {
+            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+            if (l >= 0) {
+                let uPos = event.pageX - pThis.posX - infoAreaWidth;
+                for (let f in keyLists[l].keyframes) {
+                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
+                        if (event.type == 'mousedown') {
+                            if (event.which == 1) { // left button
+                                selectKeyframe(keyLists[l].keyframes[f], l);
+                                grabKeyframe(keyLists[l].keyframes[f], l);
+                            }
+                            else if (event.which == 2) { // middle button
+                                keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
+                            }
+                        }
+                        else if (event.type == 'mousemove') {
+                            selectKeyframe(keyLists[l].keyframes[f], l);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
     function moveTimeCursor(event) {
         if (keyLists !== null) {
             let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
@@ -108,24 +143,28 @@ export function Timeline() {
         }
     });
     this.hitbox.mousedown((event) => {
+        movingCursor = false;
+        grabbed = false;
         if (event.which == 1) { // left button
-            moveTimeCursor(event);
-            movingCursor = true;
-            grabbed = false;
+            if (keyframeGrabTool) {
+                findKeyframe(event);
+            }
+            else {
+                moveTimeCursor(event);
+                movingCursor = true;
+            }
         }
         else if (event.which == 3) { // right button
-            movingCursor = false;
             grabbed = true;
         }
         else if (event.which == 2) { // middle button
             moveTimeCursor(event);
-            movingCursor = false;
-            grabbed = false;
         }
     });
     $(document).mouseup(() => {
         movingCursor = false;
         grabbed = false;
+        grabKeyframe(null);
     });
     $(document).mousemove(function (event) {
         if (!this.lastMouse) this.lastMouse = [0, 0];
@@ -135,6 +174,9 @@ export function Timeline() {
         else if (grabbed) {
             let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
             pThis.pixelOffset -= moved[0];
+        }
+        else if (grabbedKeyframe !== null) {
+            moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
         }
         this.lastMouse = [event.pageX, event.pageY];
         if (pThis.hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
@@ -198,6 +240,9 @@ export function Timeline() {
     var keyLists = null;
     this.hiKeyframes = [];
     var selectedKeyframe = null;
+    var grabbedKeyframe = null;
+    var currentLane = -1;
+    var keyframeGrabTool = false;
     const kSelectedFillColor = '#663222';
     const kSelectedStrokeColor = '#ffa599';
     const kActiveFillColor = '#662';
@@ -246,6 +291,15 @@ export function Timeline() {
     });
     addHitbox(stopHitbox);
     //
+    var grabButtonTop = 0;
+    var grabButtonLeft = 0;
+    var grabHitbox = new Hitbox();
+    grabHitbox.setBox(buttonWidth, buttonHeight);
+    grabHitbox.click(() => {
+        keyframeGrabTool = !keyframeGrabTool;
+    });
+    addHitbox(grabHitbox);
+    //
     var magHitbox = new Hitbox();
     var magButtonPadding = 2;
     var magButtonTop = 0;
@@ -262,7 +316,7 @@ export function Timeline() {
             "get": function () { return _magButtonWidth; },
             "set": function (mbw) {
                 _magButtonWidth = mbw;
-                magButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing) * 2 - (_magButtonWidth + buttonSpacing);
+                magButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing) * 3 - (_magButtonWidth + buttonSpacing);
                 magHitbox.setPos(magButtonLeft, magButtonTop);
                 magHitbox.setBox(_magButtonWidth, magButtonHeight);
             }
@@ -283,7 +337,7 @@ export function Timeline() {
             "get": function () { return _curTime; },
             "set": function (ct) {
                 _curTime = ct;
-                selectKeyframe(null);
+                //selectKeyframe(null);
                 this.hiKeyframes.length = 0;
                 for (let k in keyLists) {
                     for (let f in keyLists[k].keyframes) {
@@ -315,6 +369,8 @@ export function Timeline() {
                 playHitbox.setPos(playButtonLeft, playButtonTop);
                 stopButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing) * 2;
                 stopHitbox.setPos(stopButtonLeft, stopButtonTop);
+                grabButtonLeft = this.left + infoAreaWidth - (buttonWidth + buttonSpacing) * 3;
+                grabHitbox.setPos(grabButtonLeft, grabButtonTop);
                 this.magButtonWidth = this.magButtonWidth;
             }
         },
@@ -327,6 +383,8 @@ export function Timeline() {
                 playHitbox.setPos(playButtonLeft, playButtonTop);
                 stopButtonTop = this.top + timeAreaHeight * buttonPadding;
                 stopHitbox.setPos(stopButtonLeft, stopButtonTop);
+                grabButtonTop = this.top + timeAreaHeight * buttonPadding;
+                grabHitbox.setPos(grabButtonLeft, grabButtonTop);
                 magButtonTop = this.top + timeAreaHeight * buttonPadding;
                 magHitbox.setPos(magButtonLeft, magButtonTop);
             }
@@ -656,10 +714,30 @@ export function Timeline() {
             ctx.fill();
             ctx.stroke();
         }
+        // stop button
         ctx.beginPath();
         ctx.rect(stopButtonLeft, stopButtonTop, buttonWidth, buttonHeight);
         ctx.fillStyle = '#772222';
         ctx.strokeStyle = '#ff3333';
+        ctx.fill();
+        ctx.stroke();
+        // grab button
+        let grabMidX = grabButtonLeft + buttonWidth / 2;
+        let grabMidY = grabButtonTop + buttonHeight / 2;
+        ctx.beginPath();
+        ctx.moveTo(grabMidX, grabButtonTop);
+        ctx.lineTo(grabButtonLeft + buttonWidth, grabMidY);
+        ctx.lineTo(grabMidX, grabButtonTop + buttonHeight);
+        ctx.lineTo(grabButtonLeft, grabMidY);
+        ctx.closePath();
+        if (keyframeGrabTool) {
+            ctx.fillStyle = kActiveFillColor;
+            ctx.strokeStyle = kActiveStrokeColor;
+        }
+        else {
+            ctx.fillStyle = kInactiveFillColor;
+            ctx.strokeStyle = kInactiveStrokeColor;
+        }
         ctx.fill();
         ctx.stroke();
         // mag button

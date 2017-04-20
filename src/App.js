@@ -86,7 +86,7 @@ class CanvasComponent extends React.Component {
                     <td></td>
                   </tr>
                   <tr>
-                    <td><input type="number" step="1" id="ktProp" className="prop-window-item" min="0"></input></td>
+                    <td><input type="number" step="1" id="ktProp" min="0"></input></td>
                     <td><label>time</label></td>
                   </tr>
                   <tr>

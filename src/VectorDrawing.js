@@ -98,6 +98,9 @@ export function KeyframeList(propInfo) {
             this.keyframes.splice(index, 1);
         }
     }
+    this.sort = () => {
+        this.keyframes.sort((a, b) => a.time - b.time);
+    }
     this.getValue = (time) => {
         let k = 0;
         while (k < this.keyframes.length) {

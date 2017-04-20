@@ -158,6 +158,10 @@ p.prop-header {
   height: 170px;
 }
 
+#keyframePropsBox {
+  display: none;
+}
+
 
 /* misc */
 
