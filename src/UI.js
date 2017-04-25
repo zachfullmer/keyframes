@@ -135,6 +135,7 @@ export function applyRename(item, isShape, nameChange = null) {
         }
         $('.point-ref-name-span-' + newName).text(newName);
     }
+    $('#elementTitle').text(newName);
 }
 
 export function cancelRename(item, isShape) {
