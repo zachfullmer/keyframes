@@ -98,6 +98,12 @@ input.rename-box {
 
 /**/
 
+#leftBox {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
 #rightBox {
     position: absolute;
     top: 0px;

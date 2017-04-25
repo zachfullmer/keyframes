@@ -1,13 +1,4 @@
-import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, initHitboxEvents, globalPlaying, globalTime } from './Canvas.js'
-import { pnt, shape } from './VectorDrawing.js'
-import { Keyframe, KeyframeList, keyframeTypes } from './VectorDrawing.js'
-import { opList, degrees } from './Helpers.js'
-import { addPoint, addShape, stopEditing, dropPoint, dragPoint, genShapeListName, setPropWindow, activeKeyframeList } from './UI.js'
-import { selectedPoint, selectedShape, grabbedPoint } from './UI.js'
-
-
-export function showTooltip(mousePos, text) {
+function showTooltip(mousePos, text) {
     let tooltip = $('#tooltip');
     tooltip.show();
     tooltip.offset({ left: mousePos[0] + 10, top: mousePos[1] + 15 });
@@ -21,12 +12,12 @@ export function showTooltip(mousePos, text) {
     tooltip.text(text);
 }
 
-export function hideTooltip() {
+function hideTooltip() {
     let tooltip = $('#tooltip');
     tooltip.hide();
 }
 
-export function initEvents() {
+function initEvents() {
     let canvas = $('#drawingArea');
     // disable right click
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });

@@ -2,7 +2,7 @@
 // it has added color and stroke attributes
 
 // The Text object type.
-export var Text = {
+var Text = {
     // static
     measureText: function (text, fontSize, fontFamily) {
         var w, h, div = Text.measureText.div || document.createElement('div');

@@ -1,0 +1,130 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='shortcut icon', href='favicon.ico')
+    link(rel='stylesheet', href='stylesheets/style.css')
+    title Vector Animation Tool
+  body
+    #root
+    div
+      #tooltip.ui-panel
+      #canvasBox
+        canvas#drawingArea(width='{300}', height='{300}')
+      #leftBox
+        #pointListBox.ui-panel
+        #shapeListBox.ui-panel
+      #rightBox
+        #propsBox.ui-panel
+          label#elementTitle.dark-label
+          select#shapeTypeSelect
+          #pointPropsBox.props-box
+            .prop-group
+              label
+                input#pxProp.prop-window-item(type='number', step='any')
+                | position x
+              br
+              label
+                input#pyProp.prop-window-item(type='number', step='any')
+                | position y
+              br
+            .prop-group
+              label
+                input#oxProp.prop-window-item(type='number', step='any')
+                | origin x
+              br
+              label
+                input#oyProp.prop-window-item(type='number', step='any')
+                | origin y
+              br
+            .prop-group
+              label
+                input#rProp.prop-window-item(type='number', step='any')
+                | rotation
+              br
+            .prop-group
+              label
+                input#sxProp.prop-window-item(type='number', step='0.1')
+                | scale x
+              br
+              label
+                input#syProp.prop-window-item(type='number', step='0.1')
+                | scale y
+              br
+          #polygonPropsBox.props-box
+            hr
+            label
+              input#pcProp.prop-window-item(type='color')
+              | color
+            br
+          #linePropsBox.props-box
+            hr
+            label
+              input#lcProp.prop-window-item(type='color')
+              | color
+            br
+          #circleFPropsBox.props-box
+            hr
+            .prop-group
+              label
+                input#cfrProp.prop-window-item(type='number', step='any', min='0')
+                | radius
+              br
+            .prop-group
+              label
+                input#cfcProp.prop-window-item(type='color')
+                | color
+              br
+          #circleOPropsBox.props-box
+            hr
+            .prop-group
+              label
+                input#corProp.prop-window-item(type='number', step='any', min='0')
+                | radius
+              br
+            .prop-group
+              label
+                input#cocProp.prop-window-item(type='color')
+                | color
+              br
+          #bezierPropsBox.props-box
+            hr
+            label
+              input#bcProp.prop-window-item(type='color')
+              | color
+            br
+        #keyframeBox.ui-panel
+          label.prop-header Keyframe
+          br
+          br
+          #keyframePropsBox
+            table
+              tbody
+                tr
+                  td
+                    label#kpProp.dark-label
+                  td
+                tr
+                  td
+                    input#ktProp(type='number', step='1', min='0')
+                  td
+                    label time
+                tr
+                  td
+                    select#keyframeTypeSelect
+                  td
+                    label type
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+    script(type='text/javascript', src='javascripts/helpers.js')
+    script(type='text/javascript', src='javascripts/vectordrawing.js')
+    script(type='text/javascript', src='javascripts/hitbox.js')
+    script(type='text/javascript', src='javascripts/text.js')
+    script(type='text/javascript', src='javascripts/events.js')
+    script(type='text/javascript', src='javascripts/timeline.js')
+    script(type='text/javascript', src='javascripts/canvas.js')
+    script(type='text/javascript', src='javascripts/ui.js')
+    script.
+      initUI();
+      initEvents();
+      initCanvas($('#drawingArea')[0].getContext('2d'));

@@ -1,10 +1,3 @@
-import $ from 'jquery'
-import { Text } from './Text.js'
-import { Hitbox, addHitbox, setGlobalTime, playGlobalTime, pauseGlobalTime, globalPlaying } from './Canvas.js'
-import { showTooltip, hideTooltip } from './Events.js'
-import { propTypes, activeKeyframeList } from './UI.js'
-import { Keyframe, keyframeTypes } from './VectorDrawing.js'
-
 function clr() {
     $('#keyframeBox').text('');
 }
@@ -40,166 +33,11 @@ function formatTime(ms, decimals) {
     return pad(minutes, 2) + ':' + pad(seconds, 2) + '.' + pad(milli, decimals);
 }
 
-export function Timeline() {
-    var pThis = this;
+function Timeline() {
     // hitbox
     this.hitbox = new Hitbox();
     var movingCursor = false;
     var grabbed = false;
-    function selectKeyframe(keyframe, lane = -1) {
-        pThis.selectedKeyframe = keyframe;
-        if (keyframe === null) {
-            $('#keyframePropsBox').hide();
-        }
-        else {
-            $('#kpProp').text(activeKeyframeList[lane].propInfo.name);
-            $('#keyframePropsBox').show();
-            $('#ktProp').val(keyframe.time);
-            $('#keyframeTypeSelect').val(keyframe.type.id);
-        }
-    }
-    function grabKeyframe(keyframe, lane = -1) {
-        currentLane = lane;
-        grabbedKeyframe = keyframe;
-    }
-    function moveKeyframe(keyframe, time) {
-        activeKeyframeList[currentLane].sort();
-        time = Math.max(Math.round(time), 0);
-        keyframe.time = time;
-        $('#ktProp').val(keyframe.time);
-    }
-    function findKeyframe(event) {
-        if (keyLists !== null) {
-            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
-            if (l >= 0) {
-                let uPos = event.pageX - pThis.posX - infoAreaWidth;
-                for (let f in keyLists[l].keyframes) {
-                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
-                        if (event.type == 'mousedown') {
-                            if (event.which == 1) { // left button
-                                selectKeyframe(keyLists[l].keyframes[f], l);
-                                grabKeyframe(keyLists[l].keyframes[f], l);
-                            }
-                            else if (event.which == 2) { // middle button
-                                keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
-                            }
-                        }
-                        else if (event.type == 'mousemove') {
-                            selectKeyframe(keyLists[l].keyframes[f], l);
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    function moveTimeCursor(event) {
-        if (keyLists !== null) {
-            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
-            if (l >= 0) {
-                let uPos = event.pageX - pThis.posX - infoAreaWidth;
-                for (let f in keyLists[l].keyframes) {
-                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
-                        setGlobalTime(keyLists[l].keyframes[f].time);
-                        if (event.type == 'mousedown') {
-                            if (event.which == 1) { // left button
-                                selectKeyframe(keyLists[l].keyframes[f], l);
-                            }
-                            else if (event.which == 2) { // middle button
-                                keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
-                            }
-                        }
-                        else if (event.type == 'mousemove') {
-                            selectKeyframe(keyLists[l].keyframes[f], l);
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-        let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-        if (t >= 0) {
-            setGlobalTime(t);
-        }
-    }
-    $(document).keydown((event) => {
-        if (event.which == 192) { // `
-            stopHitbox.click();
-        }
-        else if (event.which == 32) { // space
-            playHitbox.click();
-        }
-    });
-    this.hitbox.dblclick((event) => {
-        if (keyLists === null) {
-            return;
-        }
-        let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
-        if (l >= 0) {
-            let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-            let newKey = new Keyframe(t, keyframeTypes.linear, keyLists[l].getValue(this.curTime));
-            keyLists[l].addKeyframe(newKey);
-            this.hiKeyframes.push(newKey);
-        }
-    });
-    this.hitbox.mousedown((event) => {
-        movingCursor = false;
-        grabbed = false;
-        if (event.which == 1) { // left button
-            if (keyframeGrabTool) {
-                findKeyframe(event);
-            }
-            else {
-                moveTimeCursor(event);
-                movingCursor = true;
-            }
-        }
-        else if (event.which == 3) { // right button
-            grabbed = true;
-        }
-        else if (event.which == 2) { // middle button
-            moveTimeCursor(event);
-        }
-    });
-    $(document).mouseup(() => {
-        movingCursor = false;
-        grabbed = false;
-        grabKeyframe(null);
-    });
-    $(document).mousemove(function (event) {
-        if (!this.lastMouse) this.lastMouse = [0, 0];
-        if (movingCursor) {
-            moveTimeCursor(event);
-        }
-        else if (grabbed) {
-            let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
-            pThis.pixelOffset -= moved[0];
-        }
-        else if (grabbedKeyframe !== null) {
-            moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-        }
-        this.lastMouse = [event.pageX, event.pageY];
-        if (pThis.hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
-            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
-            if (t < 0) {
-                hideTooltip();
-            }
-            else {
-                showTooltip(this.lastMouse, formatTime(t, 3));
-            }
-        }
-        else {
-            hideTooltip();
-        }
-    });
-    this.hitbox.mousewheel((e) => {
-        if (e.originalEvent.wheelDelta > 0) {
-            this.magnification *= 0.9;
-        }
-        else {
-            this.magnification /= 0.9;
-        }
-    });
     addHitbox(this.hitbox);
     // text
     const stampFontSize = 10;
@@ -521,6 +359,161 @@ export function Timeline() {
     this.top = 0;
     this.magnification = 1.0;
     this.period = 2000;
+    var pThis = this;
+    function selectKeyframe(keyframe, lane = -1) {
+        pThis.selectedKeyframe = keyframe;
+        if (keyframe === null) {
+            $('#keyframePropsBox').hide();
+        }
+        else {
+            $('#kpProp').text(activeKeyframeList[lane].propInfo.name);
+            $('#keyframePropsBox').show();
+            $('#ktProp').val(keyframe.time);
+            $('#keyframeTypeSelect').val(keyframe.type.id);
+        }
+    }
+    function grabKeyframe(keyframe, lane = -1) {
+        currentLane = lane;
+        grabbedKeyframe = keyframe;
+    }
+    function moveKeyframe(keyframe, time) {
+        activeKeyframeList[currentLane].sort();
+        time = Math.max(Math.round(time), 0);
+        keyframe.time = time;
+        $('#ktProp').val(keyframe.time);
+    }
+    function findKeyframe(event) {
+        if (keyLists !== null) {
+            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+            if (l >= 0) {
+                let uPos = event.pageX - pThis.posX - infoAreaWidth;
+                for (let f in keyLists[l].keyframes) {
+                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
+                        if (event.type == 'mousedown') {
+                            if (event.which == 1) { // left button
+                                selectKeyframe(keyLists[l].keyframes[f], l);
+                                grabKeyframe(keyLists[l].keyframes[f], l);
+                            }
+                            else if (event.which == 2) { // middle button
+                                keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
+                            }
+                        }
+                        else if (event.type == 'mousemove') {
+                            selectKeyframe(keyLists[l].keyframes[f], l);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    function moveTimeCursor(event) {
+        if (keyLists !== null) {
+            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+            if (l >= 0) {
+                let uPos = event.pageX - pThis.posX - infoAreaWidth;
+                for (let f in keyLists[l].keyframes) {
+                    if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
+                        setGlobalTime(keyLists[l].keyframes[f].time);
+                        if (event.type == 'mousedown') {
+                            if (event.which == 1) { // left button
+                                selectKeyframe(keyLists[l].keyframes[f], l);
+                            }
+                            else if (event.which == 2) { // middle button
+                                keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
+                            }
+                        }
+                        else if (event.type == 'mousemove') {
+                            selectKeyframe(keyLists[l].keyframes[f], l);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+        let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
+        if (t >= 0) {
+            setGlobalTime(t);
+        }
+    }
+    $(document).keydown((event) => {
+        if (event.which == 192) { // `
+            stopHitbox.click();
+        }
+        else if (event.which == 32) { // space
+            playHitbox.click();
+        }
+    });
+    this.hitbox.dblclick((event) => {
+        if (keyLists === null) {
+            return;
+        }
+        let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+        if (l >= 0) {
+            let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
+            let newKey = new Keyframe(t, keyframeTypes.linear, keyLists[l].getValue(this.curTime));
+            keyLists[l].addKeyframe(newKey);
+            this.hiKeyframes.push(newKey);
+        }
+    });
+    this.hitbox.mousedown((event) => {
+        movingCursor = false;
+        grabbed = false;
+        if (event.which == 1) { // left button
+            if (keyframeGrabTool) {
+                findKeyframe(event);
+            }
+            else {
+                moveTimeCursor(event);
+                movingCursor = true;
+            }
+        }
+        else if (event.which == 3) { // right button
+            grabbed = true;
+        }
+        else if (event.which == 2) { // middle button
+            moveTimeCursor(event);
+        }
+    });
+    $(document).mouseup(() => {
+        movingCursor = false;
+        grabbed = false;
+        grabKeyframe(null);
+    });
+    $(document).mousemove(function (event) {
+        if (!this.lastMouse) this.lastMouse = [0, 0];
+        if (movingCursor) {
+            moveTimeCursor(event);
+        }
+        else if (grabbed) {
+            let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
+            pThis.pixelOffset -= moved[0];
+        }
+        else if (grabbedKeyframe !== null) {
+            moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
+        }
+        this.lastMouse = [event.pageX, event.pageY];
+        if (pThis.hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
+            let t = getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset;
+            if (t < 0) {
+                hideTooltip();
+            }
+            else {
+                showTooltip(this.lastMouse, formatTime(t, 3));
+            }
+        }
+        else {
+            hideTooltip();
+        }
+    });
+    this.hitbox.mousewheel((e) => {
+        if (e.originalEvent.wheelDelta > 0) {
+            this.magnification *= 0.9;
+        }
+        else {
+            this.magnification /= 0.9;
+        }
+    });
 
     this.setObjType = (type) => {
         objType = type;

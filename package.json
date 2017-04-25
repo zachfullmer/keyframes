@@ -1,19 +1,17 @@
 {
-  "name": "keyframes",
-  "version": "0.1.0",
+  "name": "keyframes3",
+  "version": "0.0.0",
   "private": true,
-  "devDependencies": {
-    "react-scripts": "0.9.5"
+  "scripts": {
+    "start": "node ./bin/www"
   },
   "dependencies": {
-    "jquery": "^3.2.1",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "morgan": "~1.8.1",
+    "pug": "^2.0.0-beta.12",
+    "serve-favicon": "~2.4.2"
   }
 }

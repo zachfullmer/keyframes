@@ -1,9 +1,4 @@
-import { polarToCart, cartToPolar, opList, colorNameToHex, copyList, hexToRgb, rgbToHex } from './Helpers.js'
-import { Hitbox, addHitbox, removeHitbox } from './Canvas.js'
-import { propTypes } from './UI.js';
-
-
-export const keyframeTypes = {
+const keyframeTypes = {
     instant: {
         id: 'instant',
         name: 'Instant',
@@ -40,7 +35,7 @@ export const keyframeTypes = {
     }
 };
 
-export function Keyframe(time, type, val = null) {
+function Keyframe(time, type, val = null) {
     this.time = time;
     this.type = type;
     var _val = val;
@@ -63,7 +58,7 @@ export function Keyframe(time, type, val = null) {
     });
 }
 
-export function KeyframeList(propInfo) {
+function KeyframeList(propInfo) {
     var _propInfo = propInfo;
     Object.defineProperties(this, {
         "propInfo": {
@@ -121,7 +116,7 @@ export function KeyframeList(propInfo) {
     }
 }
 
-export function pnt() {
+function pnt() {
     this.name = '';
     var _p = [0.0, 0.0]; // position
     var _o = [0.0, 0.0]; // origin
@@ -301,7 +296,7 @@ export function pnt() {
 }
 
 
-export const shapeTypes = {
+const shapeTypes = {
     polygon: {
         id: 0,
         name: 'Polygon',
@@ -330,7 +325,7 @@ export const shapeTypes = {
 }
 
 
-export function shape(type, points, color = 'white', radius = 20) {
+function shape(type, points, color = 'white', radius = 20) {
     var _color = '';
     var _colorRGB = [0, 0, 0];
     Object.defineProperties(this, {
@@ -423,7 +418,7 @@ export function shape(type, points, color = 'white', radius = 20) {
 }
 
 
-export function VectorDrawing() {
+function VectorDrawing() {
     this.rootPnt = null;
     var highlightedPoints = [];
     this.shapes = [];

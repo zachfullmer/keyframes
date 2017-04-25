@@ -1,16 +1,10 @@
-import $ from 'jquery'
-import { Hitbox, addHitbox, checkHitboxEvents, vec, timeline, globalTime, globalPlaying } from './Canvas.js'
-import { opList, degrees, cartToPolar, polarToCart, rgbToHex } from './Helpers.js'
-import { shape, pnt, shapeTypes, keyframeTypes } from './VectorDrawing.js'
+var selectedPoint = null;
+var selectedShape = null;
+var editedShape = null;
+var activeKeyframeList = null;
 
 
-export var selectedPoint = null;
-export var selectedShape = null;
-export var editedShape = null;
-export var activeKeyframeList = null;
-
-
-export const propTypes = {
+const propTypes = {
     point: [
         { name: 'position x', type: 'num', varName: 'px', propId: '#pxProp' },
         { name: 'position y', type: 'num', varName: 'py', propId: '#pyProp' },
@@ -65,7 +59,7 @@ function initRenameInput(item, isShape) {
     });
 }
 
-export function openRename(item, isShape) {
+function openRename(item, isShape) {
     let name = item.name;
     let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
     let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
@@ -77,7 +71,7 @@ export function openRename(item, isShape) {
 }
 
 const nameLengthLimit = 100;
-export function applyRename(item, isShape, nameChange = null) {
+function applyRename(item, isShape, nameChange = null) {
     // set up id names
     var name = item.name;
     let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
@@ -138,7 +132,7 @@ export function applyRename(item, isShape, nameChange = null) {
     $('#elementTitle').text(newName);
 }
 
-export function cancelRename(item, isShape) {
+function cancelRename(item, isShape) {
     let name = item.name;
     let nameSpan = $((isShape ? '#shapeNameSpan-' : '#pointNameSpan-') + name);
     let renameInput = $((isShape ? '#shapeRenameInput-' : '#pointRenameInput-') + name);
@@ -147,20 +141,20 @@ export function cancelRename(item, isShape) {
     nameSpan.show();
 }
 
-export function genListNameSpan(name, isShape) {
+function genListNameSpan(name, isShape) {
     let spanId = (isShape ? 'shapeNameSpan-' : 'pointNameSpan-') + name;
     let inputId = (isShape ? 'shapeRenameInput-' : 'pointRenameInput-') + name;
     return '<span id="' + spanId + '">' + name + '</span><input id="' + inputId + '" class="rename-box"></input>';
 }
 
-export function genShapeListName(isShape) {
+function genShapeListName(isShape) {
     let spanId = 'shapeSpan-' + isShape.name;
     let itemSymbol = shapeTypes[isShape.type].unicode;
     return genListNameSpan(isShape.name, true) + '<span id="' + spanId + '" style="color:' + isShape.color + ';float:right;">' + itemSymbol + '</span>';
 }
 
 var propWindowType = 'none';
-export function updatePropWindow() {
+function updatePropWindow() {
     let element = selectedPoint || selectedShape || editedShape;
     let props = propTypes[propWindowType];
     for (let p in props) {
@@ -177,7 +171,7 @@ export function updatePropWindow() {
     }
 }
 
-export function setPropWindow(type, elementName) {
+function setPropWindow(type, elementName) {
     propWindowType = type;
     let shape = null;
     let shapeTypeSelect = $('#shapeTypeSelect');
@@ -242,7 +236,7 @@ export function setPropWindow(type, elementName) {
     $('#elementTitle').text(elementName);
 }
 
-export function selectPoint(point) {
+function selectPoint(point) {
     if (point === null) {
         console.log('ERROR: unable to find point ' + '"' + point.name + '"');
         return;
@@ -265,7 +259,7 @@ export function selectPoint(point) {
     setPropWindow('point', point.name);
 }
 
-export function selectShape(shape) {
+function selectShape(shape) {
     if (shape === null) {
         console.log('ERROR: unable to find shape ' + '"' + shape.name + '"');
         return;
@@ -288,7 +282,7 @@ export function selectShape(shape) {
     setPropWindow(shape.type, shape.name);
 }
 
-export function editShape(shape) {
+function editShape(shape) {
     if (shape === null) {
         console.log('ERROR: unable to find shape ' + '"' + shape.name + '"');
         return;
@@ -314,7 +308,7 @@ export function editShape(shape) {
 var currentPointID = 0;
 var currentShapeID = 0;
 
-export function removePointFromShape(point, shape) {
+function removePointFromShape(point, shape) {
     var index = shape.points.indexOf(point);
     shape.points.splice(index, 1);
 }
@@ -336,7 +330,7 @@ function pointRefsLo(point, force = false) {
     }
 }
 
-export function removePointRefs(pointToRemove) {
+function removePointRefs(pointToRemove) {
     let divId = '#pointDiv-' + pointToRemove.name;
     let pointRefDiv = '.point-ref-div-' + pointToRemove.name;
     // remove references to point
@@ -364,7 +358,7 @@ export function removePointRefs(pointToRemove) {
     }
 }
 
-export function removeShape(shapeToRemove) {
+function removeShape(shapeToRemove) {
     let divId = '#shapeDiv-' + shapeToRemove.name;
     $(divId).remove();
     vec.removeShape(shapeToRemove);
@@ -375,14 +369,14 @@ export function removeShape(shapeToRemove) {
     }
 }
 
-export function stopEditing() {
+function stopEditing() {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
     editedShape = null;
 }
 
-export function pushPointToShape(point) {
+function pushPointToShape(point) {
     let shape = editedShape;
     let pointList = editedShape.points;
     let pointRef = 'point-ref-' + point.name;
@@ -448,7 +442,7 @@ export function pushPointToShape(point) {
     editedShape.points.push(point);
 }
 
-export function addPoint(point, parent = selectedPoint, name = null) {
+function addPoint(point, parent = selectedPoint, name = null) {
     let parentListId = '';
     if (parent === null) {
         parentListId = '#pointListBox';
@@ -530,7 +524,7 @@ export function addPoint(point, parent = selectedPoint, name = null) {
     currentPointID += 1;
 }
 
-export function addShape(shape) {
+function addShape(shape) {
     shape.name = 's' + currentShapeID;
     let listId = 'shapeList-' + shape.name;
     let itemId = 'shapeItem-' + shape.name;
@@ -563,20 +557,20 @@ export function addShape(shape) {
 }
 
 
-export var grabbedPointRef = null;
+var grabbedPointRef = null;
 
-export function grabPointRef(refDiv) {
+function grabPointRef(refDiv) {
     grabbedPointRef = refDiv;
 }
 
-export function dropPointRef() {
+function dropPointRef() {
     if (grabbedPointRef === null) {
         return;
     }
     grabbedPointRef = null;
 }
 
-export function swapPointRefs(div1, pointList) {
+function swapPointRefs(div1, pointList) {
     let div2 = grabbedPointRef;
     let li1 = div1.children().first();
     let li2 = div2.children().first();
@@ -599,15 +593,15 @@ export function swapPointRefs(div1, pointList) {
 }
 
 
-export var grabbedPoint = null;
+var grabbedPoint = null;
 
-export function grabPoint(point) {
+function grabPoint(point) {
     grabbedPoint = point;
     selectPoint(grabbedPoint);
     setPropWindow('point', point.name);
 }
 
-export function dropPoint() {
+function dropPoint() {
     if (grabbedPoint === null) {
         return;
     }
@@ -615,7 +609,7 @@ export function dropPoint() {
     grabbedPoint = null;
 }
 
-export function dragPoint(screenPos) {
+function dragPoint(screenPos) {
     if (grabbedPoint === null) {
         return;
     }
@@ -630,7 +624,7 @@ export function dragPoint(screenPos) {
 }
 
 
-export function initUI() {
+function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
     // init shape list

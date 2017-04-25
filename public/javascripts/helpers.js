@@ -1,27 +1,27 @@
-export function dist(a, b) {
+function dist(a, b) {
     let diff = [b[0] - a[0], b[1] - a[1]];
     return Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2));
 }
 
-export function polarToCart(polar) {
+function polarToCart(polar) {
     let cart = [0, 0];
     cart[0] = Math.cos(polar[1]) * polar[0];
     cart[1] = Math.sin(polar[1]) * polar[0];
     return cart;
 }
 
-export function cartToPolar(cart) {
+function cartToPolar(cart) {
     let polar = [0, 0];
     polar[0] = Math.sqrt(Math.pow(cart[0], 2) + Math.pow(cart[1], 2));
     polar[1] = Math.atan2(cart[1], cart[0]);
     return polar;
 }
 
-export function inter(a, b, t) {
+function inter(a, b, t) {
     return ((b - a) * t) + a;
 }
 
-export function interList(a, b, t, interFunc) {
+function interList(a, b, t, interFunc) {
     let r = [];
     for (let i = 0; i < a.length; i++) {
         r.push(interFunc(a[i], b[i], t));
@@ -29,7 +29,7 @@ export function interList(a, b, t, interFunc) {
     return r;
 }
 
-export function opList(list1, list2, func) {
+function opList(list1, list2, func) {
     let finalList = [];
     for (let i = 0; i < list1.length; i++) {
         finalList.push(func(list1[i], list2[i]));
@@ -37,7 +37,7 @@ export function opList(list1, list2, func) {
     return finalList;
 }
 
-export function copyList(list) {
+function copyList(list) {
     let newList = [];
     for (let l in list) {
         newList.push(list[l]);
@@ -46,7 +46,7 @@ export function copyList(list) {
 }
 
 // http://stackoverflow.com/questions/1573053/javascript-function-to-convert-color-names-to-hex-codes
-export function colorNameToHex(color) {
+function colorNameToHex(color) {
     var colors = {
         "aliceblue": "#f0f8ff", "antiquewhite": "#faebd7", "aqua": "#00ffff", "aquamarine": "#7fffd4", "azure": "#f0ffff",
         "beige": "#f5f5dc", "bisque": "#ffe4c4", "black": "#000000", "blanchedalmond": "#ffebcd", "blue": "#0000ff", "blueviolet": "#8a2be2", "brown": "#a52a2a", "burlywood": "#deb887",
@@ -85,12 +85,12 @@ function componentToHex(c) {
     return hex.length == 1 ? "0" + hex : hex;
 }
 
-export function rgbToHex(r, g, b) {
+function rgbToHex(r, g, b) {
     r = Math.round(r); g = Math.round(g); b = Math.round(b);
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-export function hexToRgb(hex) {
+function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? [
         parseInt(result[1], 16),
@@ -100,4 +100,4 @@ export function hexToRgb(hex) {
 }
 
 
-export const degrees = 57.2958;
+const degrees = 57.2958;
