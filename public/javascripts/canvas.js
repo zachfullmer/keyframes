@@ -71,7 +71,7 @@ function playGlobalTime() {
 }
 
 function updateTimelinePos() {
-    timeline.left = 300;
+    timeline.left = 200;
     timeline.right = window.innerWidth;
     timeline.bottom = window.innerHeight;
     timeline.top = window.innerHeight - 150;
