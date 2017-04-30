@@ -1,10 +1,23 @@
+$text-color: #fff;
+$text-color-dark: #888;
+$highlight: #474a22;
+$panel-bg: #000;
+$panel-bg-light: #111;
+$panel-border: #555;
+$point-bg: #111120;
+$point-bg-selected: #222d4a;
+$shape-bg: #3a1111;
+$shape-bg-selected: #4a222d;
+$shape-bg-edited: #6a224a;
+$input-disabled: #391717;
+
 /* main ui */
 
 .ui-panel {
     padding: 10px;
-    border: 1px solid #555;
-    background-color: #000;
-    color: #fff;
+    border: 1px solid $panel-border;
+    background-color: $panel-bg;
+    color: $text-color;
     position: relative;
     z-index: 2;
 }
@@ -21,14 +34,14 @@
 
 ul {
     list-style-type: none;
-    color: white;
+    color: $text-color;
     padding-left: 5px;
     margin: 0px;
 }
 
 .nesting-box {
-    background-color: #111;
-    border: 1px solid #555;
+    background-color: $panel-bg-light;
+    border: 1px solid $panel-border;
     margin: 1px;
     padding-left: 2px;
     padding-right: 2px;
@@ -37,7 +50,7 @@ ul {
 input.rename-box {
     background: transparent;
     border: none;
-    color: #fff;
+    color: $text-color;
 }
 
 
@@ -55,15 +68,15 @@ input.rename-box {
 
 .point-list {
     cursor: pointer;
-    background-color: #111120;
+    background-color: $point-bg;
 }
 
 .selected-point {
-    background-color: #222d4a;
+    background-color: $point-bg-selected;
 }
 
 .highlighted {
-    background-color: #474a22;
+    background-color: $highlight;
 }
 
 
@@ -84,15 +97,15 @@ input.rename-box {
 
 .shape-list {
     cursor: pointer;
-    background-color: #3a1111;
+    background-color: $shape-bg;
 }
 
 .selected-shape {
-    background-color: #4a222d;
+    background-color: $shape-bg-selected;
 }
 
 .edited-shape {
-    background-color: #6a224a;
+    background-color: $shape-bg-edited;
 }
 
 
@@ -136,24 +149,24 @@ input.rename-box {
 }
 
 input[type=number] {
-    border: 1px solid #555;
-    background-color: #111;
-    color: #fff;
+    border: 1px solid $panel-border;
+    background-color: $panel-bg-light;
+    color: $text-color;
     margin-right: 5px;
     width: 50px;
 }
 
 input[type=color] {
-    border: 1px solid #555;
-    background-color: #111;
+    border: 1px solid $panel-border;
+    background-color: $panel-bg-light;
     margin-right: 5px;
     width: 50px;
 }
 
 select {
-    color: #fff;
-    border: 1px solid #555;
-    background-color: #111;
+    color: $text-color;
+    border: 1px solid $panel-border;
+    background-color: $panel-bg-light;
     margin-right: 5px;
 }
 
@@ -167,7 +180,7 @@ p.prop-header {
 }
 
 .prop-window-item:disabled {
-    background-color: #391717;
+    background-color: $input-disabled;
 }
 
 
@@ -190,7 +203,7 @@ p.prop-header {
 /* misc */
 
 .dark-label {
-    color: #888;
+    color: $text-color-dark;
 }
 
 #elementTitle {
