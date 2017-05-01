@@ -97,6 +97,9 @@ function KeyframeList(propInfo) {
         this.keyframes.sort((a, b) => a.time - b.time);
     }
     this.getValue = (time) => {
+        if (this.keyframes.length == 0) {
+            return null;
+        }
         let k = 0;
         while (k < this.keyframes.length) {
             if (this.keyframes[k].time > time) {
@@ -104,6 +107,9 @@ function KeyframeList(propInfo) {
                 break;
             }
             k++;
+        }
+        if (k < 0) {
+            return null;
         }
         if (k >= this.keyframes.length - 1) {
             return this.keyframes[k - 1].val;
@@ -170,6 +176,15 @@ function pnt() {
         "s": {
             "get": function () { return _s; },
             "set": function (s2) { _s[0] = parseFloat(s2[0]); _s[1] = parseFloat(s2[1]); }
+        },
+        "family": {
+            "get": function () {
+                let fam = [this];
+                for (let c in this.children) {
+                    fam = fam.concat(this.children[c].family);
+                }
+                return fam;
+            }
         }
     });
     this.pf = [0.0, 0.0];
@@ -418,11 +433,18 @@ function shape(type, points, color = 'white', radius = 20) {
 }
 
 
+function anim(name, isDefault) {
+    this.name = name;
+    this.isDefault = isDefault;
+    this.animData = [];
+}
+
+
 function VectorDrawing() {
     this.rootPnt = null;
     var highlightedPoints = [];
     this.shapes = [];
-    this.anims = [[]];
+    this.anims = [];
     var _currentAnim = null;
     Object.defineProperties(this, {
         "currentAnim": {
@@ -430,7 +452,6 @@ function VectorDrawing() {
             "set": function (a) { _currentAnim = a; }
         },
     });
-    this.currentAnim = this.anims[0];
     this.hiPoint = (point) => {
         highlightedPoints.push(point);
     }
@@ -460,6 +481,20 @@ function VectorDrawing() {
         }
         return null;
     }
+    this.getInitPointInfo = (point, anim) => {
+        let pointInfo = [point];
+        let propInfo = [];
+        let pointType = propTypes['point'];
+        for (let p in pointType) {
+            let kl = new KeyframeList(pointType[p]);
+            if (anim.isDefault) {
+                kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, point[pointType[p].varName]));
+            }
+            propInfo.push(kl);
+        }
+        pointInfo.push(propInfo);
+        return pointInfo;
+    }
     this.addPoint = (point, parent) => {
         if (parent === null) {
             this.rootPnt = point;
@@ -467,26 +502,18 @@ function VectorDrawing() {
         else {
             parent.addChild(point);
         }
-        let pointInfo = [point];
-        let propInfo = [];
-        let pointType = propTypes['point'];
-        for (let p in pointType) {
-            let kl = new KeyframeList(pointType[p]);
-            kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, point[pointType[p].varName]));
-            propInfo.push(kl);
-        }
-        pointInfo.push(propInfo);
         for (let a in this.anims) {
-            this.anims[a].push(pointInfo);
+            let pointInfo = this.getInitPointInfo(point, this.anims[a]);
+            this.anims[a].animData.push(pointInfo);
         }
     }
     this.removePoint = (point) => {
         let result = this.rootPnt.removePoint(point);
         if (result !== null) {
             for (let a in this.anims) {
-                for (let k in this.anims[a]) {
-                    if (this.anims[a][k][0] === point) {
-                        this.anims[a].splice(k, 1);
+                for (let k in this.anims[a].animData) {
+                    if (this.anims[a].animData[k][0] === point) {
+                        this.anims[a].animData.splice(k, 1);
                         break;
                     }
                 }
@@ -494,18 +521,24 @@ function VectorDrawing() {
         }
         return result;
     }
-    this.addShape = (shape) => {
+    this.getInitShapeInfo = (shape, anim) => {
         let shapeInfo = [shape];
         let propInfo = [];
         let shapeType = propTypes[shape.type];
         for (let p in shapeType) {
             let kl = new KeyframeList(shapeType[p]);
-            kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
+            if (anim.isDefault) {
+                kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
+            }
             propInfo.push(kl);
         }
         shapeInfo.push(propInfo);
+        return shapeInfo;
+    }
+    this.addShape = (shape) => {
         for (let a in this.anims) {
-            this.anims[a].push(shapeInfo);
+            let shapeInfo = this.getInitShapeInfo(shape, this.anims[a]);
+            this.anims[a].animData.push(shapeInfo);
         }
         this.shapes.push(shape);
     }
@@ -515,18 +548,32 @@ function VectorDrawing() {
             this.shapes.splice(index, 1);
             for (let a in this.anims) {
                 for (let k in this.anims[a]) {
-                    if (this.anims[a][k][0] === shape) {
-                        this.anims[a].splice(k, 1);
+                    if (this.anims[a].animData[k][0] === shape) {
+                        this.anims[a].animData.splice(k, 1);
                         break;
                     }
                 }
             }
         }
     }
+    this.addAnim = (anim) => {
+        for (let s in this.shapes) {
+            anim.animData.push(this.getInitShapeInfo(this.shapes[s], anim));
+        }
+        if (this.rootPnt !== null) {
+            let points = this.rootPnt.family;
+            for (let p in points) {
+                anim.animData.push(this.getInitPointInfo(points[p], anim));
+            }
+        }
+        this.anims.push(anim);
+    }
     this.getElementKeyLists = (element) => {
-        for (let k in this.currentAnim) {
-            if (this.currentAnim[k][0] === element) {
-                return this.currentAnim[k][1];
+        if (this.currentAnim !== null) {
+            for (let k in this.currentAnim.animData) {
+                if (this.currentAnim.animData[k][0] === element) {
+                    return this.currentAnim.animData[k][1];
+                }
             }
         }
         return null;

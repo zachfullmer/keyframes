@@ -86,6 +86,13 @@ input.rename-box {
 #animList {
   padding: 0px; }
 
+.anim-list {
+  cursor: pointer;
+  background-color: #143a11; }
+
+.selected-anim {
+  background-color: #297723; }
+
 /* main ui panels */
 #leftBox {
   position: absolute;

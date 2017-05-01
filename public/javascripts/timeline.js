@@ -175,7 +175,6 @@ function Timeline() {
             "get": function () { return _curTime; },
             "set": function (ct) {
                 _curTime = ct;
-                //selectKeyframe(null);
                 this.hiKeyframes.length = 0;
                 for (let k in keyLists) {
                     for (let f in keyLists[k].keyframes) {
@@ -360,7 +359,7 @@ function Timeline() {
     this.magnification = 1.0;
     this.period = 2000;
     var pThis = this;
-    function selectKeyframe(keyframe, lane = -1) {
+    this.selectKeyframe = (keyframe, lane = -1) => {
         pThis.selectedKeyframe = keyframe;
         if (keyframe === null) {
             $('#keyframePropsBox').hide();
@@ -391,7 +390,7 @@ function Timeline() {
                     if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time)) < keyframeSize) {
                         if (event.type == 'mousedown') {
                             if (event.which == 1) { // left button
-                                selectKeyframe(keyLists[l].keyframes[f], l);
+                                pThis.selectKeyframe(keyLists[l].keyframes[f], l);
                                 grabKeyframe(keyLists[l].keyframes[f], l);
                             }
                             else if (event.which == 2) { // middle button
@@ -399,7 +398,7 @@ function Timeline() {
                             }
                         }
                         else if (event.type == 'mousemove') {
-                            selectKeyframe(keyLists[l].keyframes[f], l);
+                            pThis.selectKeyframe(keyLists[l].keyframes[f], l);
                         }
                         return;
                     }
@@ -417,14 +416,14 @@ function Timeline() {
                         setGlobalTime(keyLists[l].keyframes[f].time);
                         if (event.type == 'mousedown') {
                             if (event.which == 1) { // left button
-                                selectKeyframe(keyLists[l].keyframes[f], l);
+                                pThis.selectKeyframe(keyLists[l].keyframes[f], l);
                             }
                             else if (event.which == 2) { // middle button
                                 keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
                             }
                         }
                         else if (event.type == 'mousemove') {
-                            selectKeyframe(keyLists[l].keyframes[f], l);
+                            pThis.selectKeyframe(keyLists[l].keyframes[f], l);
                         }
                         return;
                     }

@@ -52,11 +52,13 @@ function initCanvas(context) {
 function setGlobalTime(newTime) {
     timeline.curTime = newTime;
     globalTime = newTime;
-    for (let e in vec.currentAnim) {
-        for (let k in vec.currentAnim[e][1]) {
-            let keyList = vec.currentAnim[e][1][k];
+    for (let e in vec.currentAnim.animData) {
+        for (let k in vec.currentAnim.animData[e][1]) {
+            let keyList = vec.currentAnim.animData[e][1][k];
             let finalVal = keyList.getValue(globalTime);
-            vec.currentAnim[e][0][keyList.propInfo.varName] = finalVal;
+            if (finalVal !== null) {
+                vec.currentAnim.animData[e][0][keyList.propInfo.varName] = finalVal;
+            }
         }
     }
     updatePropWindow();

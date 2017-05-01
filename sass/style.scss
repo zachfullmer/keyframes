@@ -9,6 +9,8 @@ $point-bg-selected: #222d4a;
 $shape-bg: #3a1111;
 $shape-bg-selected: #4a222d;
 $shape-bg-edited: #6a224a;
+$anim-bg: #143a11;
+$anim-bg-selected: #297723;
 $input-disabled: #391717;
 
 /* main ui */
@@ -122,6 +124,15 @@ input.rename-box {
 
 #animList {
     padding: 0px;
+}
+
+.anim-list {
+    cursor: pointer;
+    background-color: $anim-bg;
+}
+
+.selected-anim {
+    background-color: $anim-bg-selected;
 }
 
 

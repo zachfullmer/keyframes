@@ -180,8 +180,4 @@ function initEvents() {
             addShape(new shape('bezier', [], 'white'));
         }
     });
-    let keyLists = vec.getElementKeyLists(vec.rootPnt);
-    keyLists[0].addKeyframe(new Keyframe(2000, keyframeTypes.cosine, 200));
-    keyLists[0].addKeyframe(new Keyframe(300, keyframeTypes.linear, 300));
-    keyLists[0].addKeyframe(new Keyframe(1000, keyframeTypes.instant, 350));
 }

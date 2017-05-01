@@ -1,6 +1,7 @@
 var selectedPoint = null;
 var selectedShape = null;
 var editedShape = null;
+var selectedAnim = null;
 var activeKeyframeList = null;
 
 
@@ -237,10 +238,6 @@ function setPropWindow(type, elementName) {
 }
 
 function selectPoint(point) {
-    if (point === null) {
-        console.log('ERROR: unable to find point ' + '"' + point.name + '"');
-        return;
-    }
     if (selectedPoint !== null) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
@@ -260,10 +257,6 @@ function selectPoint(point) {
 }
 
 function selectShape(shape) {
-    if (shape === null) {
-        console.log('ERROR: unable to find shape ' + '"' + shape.name + '"');
-        return;
-    }
     if (selectedPoint !== null) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
@@ -283,10 +276,6 @@ function selectShape(shape) {
 }
 
 function editShape(shape) {
-    if (shape === null) {
-        console.log('ERROR: unable to find shape ' + '"' + shape.name + '"');
-        return;
-    }
     if (selectedPoint !== null) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
     }
@@ -305,8 +294,31 @@ function editShape(shape) {
     setPropWindow(shape.type, shape.name);
 }
 
+function selectAnim(anim) {
+    if (selectedAnim === anim) {
+        return;
+    }
+    vec.currentAnim = anim;
+    let keyframeSource = null;
+    if (editedShape !== null) keyframeSource = editedShape;
+    else if (selectedShape !== null) keyframeSource = selectedShape;
+    else if (selectedPoint !== null) keyframeSource = selectedPoint;
+    if (keyframeSource !== null) {
+        activeKeyframeList = vec.getElementKeyLists(keyframeSource);
+        timeline.setKeyLists(activeKeyframeList);
+    }
+    timeline.selectKeyframe(null);
+    if (selectedAnim !== null) {
+        $('#animItem-' + selectedAnim.name).removeClass('selected-anim');
+    }
+    selectedAnim = anim;
+    $('#animItem-' + anim.name).addClass('selected-anim');
+    //setPropWindow(anim.type, anim.name);
+}
+
 var currentPointID = 0;
 var currentShapeID = 0;
+var currentAnimID = 0;
 
 function removePointFromShape(point, shape) {
     var index = shape.points.indexOf(point);
@@ -556,6 +568,23 @@ function addShape(shape) {
     currentShapeID += 1;
 }
 
+function addAnim(anim) {
+    if (anim.name === null) {
+        anim.name = 'a' + currentAnimID;
+    }
+    let itemId = 'animItem-' + anim.name;
+    let id = '#' + itemId;
+    $('#animList').append('<div id="animDiv-' + anim.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select anim-list">' + anim.name + '</li></div>');
+    $(id).mousedown((event) => {
+        if (event.which == 1) {
+            selectAnim(anim);
+        }
+    });
+    $(id).contextmenu(() => { return false; });
+    vec.addAnim(anim);
+    currentAnimID += 1;
+}
+
 
 var grabbedPointRef = null;
 
@@ -627,8 +656,13 @@ function dragPoint(screenPos) {
 function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
+    // init animations
+    let defaultAnim = new anim('default', true);
+    addAnim(defaultAnim);
+    let anotherAnim = new anim('anim2', false);
+    addAnim(anotherAnim);
+    selectAnim(defaultAnim);
     // init shape list
-    $('#shapeListBox').append('<ul id="shapeList"></ul>');
     let shapeTypeSelect = $('#shapeTypeSelect');
     $.each(shapeTypes, (key, val) => {
         shapeTypeSelect.append($('<option/>', {
@@ -664,4 +698,10 @@ function initUI() {
         pushPointToShape(points[p]);
     }
     stopEditing();
+    let keyLists = vec.getElementKeyLists(vec.rootPnt);
+    if (keyLists !== null) {
+        keyLists[0].addKeyframe(new Keyframe(2000, keyframeTypes.cosine, 200));
+        keyLists[0].addKeyframe(new Keyframe(300, keyframeTypes.linear, 300));
+        keyLists[0].addKeyframe(new Keyframe(1000, keyframeTypes.instant, 350));
+    }
 }
