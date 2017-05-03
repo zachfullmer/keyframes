@@ -83,13 +83,13 @@ function Timeline() {
     var grabbedKeyframe = null;
     var currentLane = -1;
     var keyframeGrabTool = false;
-    const kSelectedFillColor = '#663222';
-    const kSelectedStrokeColor = '#ffa599';
+    const kSelectedFillColor = '#326622';
+    const kSelectedStrokeColor = '#a5ff99';
     const kActiveFillColor = '#662';
     const kActiveStrokeColor = '#ff9';
     const kInactiveFillColor = '#000';
     const kInactiveStrokeColor = '#ff9';
-    const kDisabledFillColor = '#222';
+    const kDisabledFillColor = '#111';
     const kDisabledStrokeColor = '#fff';
     // drawing
     const timeAreaHeight = 20;
