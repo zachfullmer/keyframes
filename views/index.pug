@@ -98,16 +98,24 @@ html(lang='en')
               | color
             br
         #keyframeBox.ui-panel
-          label.prop-header Keyframe
+          label.prop-header Animation
+          label#apProp.dark-label
           br
-          br
-          #keyframePropsBox
+          #animPropsBox
             table
               tbody
                 tr
                   td
-                    label#kpProp.dark-label
+                    input#atProp(type='number', step='1', min='0')
                   td
+                    label length
+          br
+          label.prop-header Keyframe
+          label#kpProp.dark-label
+          br
+          #keyframePropsBox
+            table
+              tbody
                 tr
                   td
                     input#ktProp(type='number', step='1', min='0')

@@ -151,6 +151,13 @@ function initEvents() {
         let spanId = 'shapeSpan-' + selectedShape.name;
         $('#' + spanId).css('color', selectedShape.color);
     });
+    // animation properties
+    $('#atProp').on('input', function () {
+        let period = parseInt($('#atProp').val());
+        timeline.period = period;
+        vec.currentAnim.period = period;
+        console.log('period');
+    });
     // keyframe properties
     $('#ktProp').on('input', function () {
         if (timeline.selectedKeyframe === null) {

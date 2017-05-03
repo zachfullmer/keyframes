@@ -2,7 +2,9 @@ var selectedPoint = null;
 var selectedShape = null;
 var editedShape = null;
 var selectedAnim = null;
-var activeKeyframeList = null;
+var activeKeyframeLists = null;
+var preKeyframeLists = null;
+var postKeyframeLists = null;
 
 
 const propTypes = {
@@ -237,6 +239,14 @@ function setPropWindow(type, elementName) {
     $('#elementTitle').text(elementName);
 }
 
+function buildTimeline(keyframeSource) {
+    let preAnim = vec.anims[0];
+    let postAnim = vec.anims[0];
+    activeKeyframeLists = vec.getElementKeyLists(keyframeSource);
+    preKeyframeLists = vec.getElementKeyLists(keyframeSource, preAnim);
+    postKeyframeLists = vec.getElementKeyLists(keyframeSource, postAnim);
+    timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, preAnim.period, postKeyframeLists, postAnim.period);
+}
 function selectPoint(point) {
     if (selectedPoint !== null) {
         $('#pointItem-' + selectedPoint.name).removeClass('selected-point');
@@ -247,8 +257,7 @@ function selectPoint(point) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    activeKeyframeList = vec.getElementKeyLists(point);
-    timeline.setKeyLists(activeKeyframeList);
+    buildTimeline(point);
     selectedPoint = point;
     selectedShape = null;
     editedShape = null;
@@ -266,8 +275,7 @@ function selectShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    activeKeyframeList = vec.getElementKeyLists(shape);
-    timeline.setKeyLists(activeKeyframeList);
+    buildTimeline(shape);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = null;
@@ -285,8 +293,7 @@ function editShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    activeKeyframeList = vec.getElementKeyLists(shape);
-    timeline.setKeyLists(activeKeyframeList);
+    buildTimeline(shape);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = shape;
@@ -304,8 +311,7 @@ function selectAnim(anim) {
     else if (selectedShape !== null) keyframeSource = selectedShape;
     else if (selectedPoint !== null) keyframeSource = selectedPoint;
     if (keyframeSource !== null) {
-        activeKeyframeList = vec.getElementKeyLists(keyframeSource);
-        timeline.setKeyLists(activeKeyframeList);
+        buildTimeline(keyframeSource);
     }
     timeline.selectKeyframe(null);
     if (selectedAnim !== null) {
@@ -313,6 +319,15 @@ function selectAnim(anim) {
     }
     selectedAnim = anim;
     $('#animItem-' + anim.name).addClass('selected-anim');
+    $('#apProp').text(' (' + anim.name + ')');
+    // update timeline period
+    $('#atProp').val(anim.period);
+    let period = parseInt($('#atProp').val());
+    timeline.period = period;
+    vec.currentAnim.period = period;
+    // stop play
+    pauseGlobalTime();
+    setGlobalTime(0);
     //setPropWindow(anim.type, anim.name);
 }
 
@@ -658,6 +673,7 @@ function initUI() {
     $('body').addClass('noscroll');
     // init animations
     let defaultAnim = new anim('default', true);
+    defaultAnim.period = 300;
     addAnim(defaultAnim);
     let anotherAnim = new anim('anim2', false);
     addAnim(anotherAnim);
@@ -700,8 +716,12 @@ function initUI() {
     stopEditing();
     let keyLists = vec.getElementKeyLists(vec.rootPnt);
     if (keyLists !== null) {
-        keyLists[0].addKeyframe(new Keyframe(2000, keyframeTypes.cosine, 200));
         keyLists[0].addKeyframe(new Keyframe(300, keyframeTypes.linear, 300));
-        keyLists[0].addKeyframe(new Keyframe(1000, keyframeTypes.instant, 350));
     }
+    selectAnim(anotherAnim);
+    keyLists = vec.getElementKeyLists(vec.rootPnt);
+    if (keyLists !== null) {
+        keyLists[0].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
+    }
+    selectPoint(vec.rootPnt);
 }

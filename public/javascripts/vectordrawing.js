@@ -65,9 +65,9 @@ function KeyframeList(propInfo) {
             "get": function () { return _propInfo; }
         }
     });
-    var funcName = 'func';
-    if (this.propInfo.type == 'num' || this.propInfo.type == 'deg') funcName = 'func';
-    else if (this.propInfo.type == 'col') funcName = 'funcArr';
+    this.funcName = 'func';
+    if (this.propInfo.type == 'num' || this.propInfo.type == 'deg') this.funcName = 'func';
+    else if (this.propInfo.type == 'col') this.funcName = 'funcArr';
     this.keyframes = [];
     this.addKeyframe = (keyframe) => {
         keyframe.propInfo = this.propInfo;
@@ -95,30 +95,6 @@ function KeyframeList(propInfo) {
     }
     this.sort = () => {
         this.keyframes.sort((a, b) => a.time - b.time);
-    }
-    this.getValue = (time) => {
-        if (this.keyframes.length == 0) {
-            return null;
-        }
-        let k = 0;
-        while (k < this.keyframes.length) {
-            if (this.keyframes[k].time > time) {
-                k -= 1;
-                break;
-            }
-            k++;
-        }
-        if (k < 0) {
-            return null;
-        }
-        if (k >= this.keyframes.length - 1) {
-            return this.keyframes[k - 1].val;
-        }
-        else {
-            let dt = time - this.keyframes[k].time;
-            let keyDiff = this.keyframes[k + 1].time - this.keyframes[k].time;
-            return this.keyframes[k + 1].type[funcName](this.keyframes[k].val, this.keyframes[k + 1].val, dt / keyDiff);
-        }
     }
 }
 
@@ -436,7 +412,54 @@ function shape(type, points, color = 'white', radius = 20) {
 function anim(name, isDefault) {
     this.name = name;
     this.isDefault = isDefault;
+    this.period = 1000;
     this.animData = [];
+    function getValue(time, listInfo, listPeriod, prevList, prevListPeriod, nextList) {
+        let fullList = prevList.map(t => [0, t]).concat(
+            listInfo.keyframes.map(t => [prevListPeriod, t])).concat(
+            nextList.map(t => [listPeriod + prevListPeriod, t]));
+        let k = 0;
+        if (fullList.length == 0) {
+            return null;
+        }
+        else {
+            while (k < fullList.length) {
+                if (fullList[k][1].time + fullList[k][0] > time) {
+                    k -= 1;
+                    break;
+                }
+                k++;
+            }
+        }
+        if (k < 0) {
+            return fullList[0][1].val;
+        }
+        else if (k >= fullList.length - 1) {
+            return fullList[fullList.length - 1][1].val;
+        }
+        else {
+            let cTime = fullList[k][1].time + fullList[k][0];
+            let nextTime = fullList[k + 1][1].time + fullList[k + 1][0];
+            let dt = time - cTime;
+            let keyDiff = nextTime - cTime;
+            return fullList[k + 1][1].type[listInfo.funcName](fullList[k][1].val, fullList[k + 1][1].val, dt / keyDiff);
+        }
+    }
+    this.updateValues = (time, prevAnim = null, nextAnim = null) => {
+        for (let e in this.animData) {
+            for (let k in this.animData[e][1]) {
+                let keyListInfo = this.animData[e][1][k];
+                let prevKeyList = (prevAnim ? prevAnim.animData[e][1][k].keyframes : []);
+                let nextKeyList = (nextAnim ? nextAnim.animData[e][1][k].keyframes : []);
+                let prevKeyPeriod = (prevAnim ? prevAnim.period : 0);
+                let nextKeyPeriod = (nextAnim ? nextAnim.period : 0);
+                let finalVal = getValue(time, keyListInfo, this.period, prevKeyList, prevKeyPeriod, nextKeyList);
+                if (finalVal !== null) {
+                    this.animData[e][0][keyListInfo.propInfo.varName] = finalVal;
+                }
+            }
+        }
+    }
 }
 
 
@@ -568,11 +591,11 @@ function VectorDrawing() {
         }
         this.anims.push(anim);
     }
-    this.getElementKeyLists = (element) => {
-        if (this.currentAnim !== null) {
-            for (let k in this.currentAnim.animData) {
-                if (this.currentAnim.animData[k][0] === element) {
-                    return this.currentAnim.animData[k][1];
+    this.getElementKeyLists = (element, anim = this.currentAnim) => {
+        if (anim !== null) {
+            for (let k in anim.animData) {
+                if (anim.animData[k][0] === element) {
+                    return anim.animData[k][1];
                 }
             }
         }

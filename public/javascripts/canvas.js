@@ -52,15 +52,7 @@ function initCanvas(context) {
 function setGlobalTime(newTime) {
     timeline.curTime = newTime;
     globalTime = newTime;
-    for (let e in vec.currentAnim.animData) {
-        for (let k in vec.currentAnim.animData[e][1]) {
-            let keyList = vec.currentAnim.animData[e][1][k];
-            let finalVal = keyList.getValue(globalTime);
-            if (finalVal !== null) {
-                vec.currentAnim.animData[e][0][keyList.propInfo.varName] = finalVal;
-            }
-        }
-    }
+    vec.currentAnim.updateValues(newTime, vec.anims[0], vec.anims[0]);
     updatePropWindow();
 }
 function pauseGlobalTime() {
@@ -102,7 +94,7 @@ function drawCanvas(timestamp) {
     // animation
     vec.update();
     if (globalPlaying) {
-        setGlobalTime((globalTime + delta) % timeline.period);
+        setGlobalTime((globalTime + delta) % (timeline.period + timeline.prePeriod + timeline.postPeriod));
     }
     //
     // drawing
