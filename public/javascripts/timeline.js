@@ -722,7 +722,7 @@ function Timeline() {
         }
         // lanes
         let startPos = this.top + timeAreaHeight;
-        let laneEnd = Math.min(this.right, linePixelPos);
+        let laneEnd = Math.max(this.left + infoAreaWidth, Math.min(this.right, linePixelPos));
         for (let k = 0; k < this.laneNum; k++) {
             ctx.beginPath();
             let yPos = startPos + k * this.laneSize;
