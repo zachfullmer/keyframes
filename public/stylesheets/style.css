@@ -139,6 +139,10 @@ p.prop-header {
 .prop-window-item:disabled {
   background-color: #391717; }
 
+input.selected-keyframe {
+  background-color: #113328;
+  border-color: #4d806b; }
+
 /* keyframeBox */
 #keyframeBox {
   position: relative;

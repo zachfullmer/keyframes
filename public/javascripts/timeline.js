@@ -79,18 +79,18 @@ function Timeline() {
     // keyframes
     var keyLists = null;
     this.hiKeyframes = [];
-    var selectedKeyframe = null;
+    this.selectedKeyframe = null;
     var grabbedKeyframe = null;
     var currentLane = -1;
     var keyframeGrabTool = false;
-    const kSelectedFillColor = '#326622';
-    const kSelectedStrokeColor = '#a5ff99';
+    const kSelectedFillColor = '#22664f';
+    const kSelectedStrokeColor = '#99ffd6';
     const kActiveFillColor = '#662';
     const kActiveStrokeColor = '#ff9';
     const kInactiveFillColor = '#000';
     const kInactiveStrokeColor = '#ff9';
     const kDisabledFillColor = '#111';
-    const kDisabledStrokeColor = '#fff';
+    const kDisabledStrokeColor = '#aaa';
     // drawing
     const timeAreaHeight = 20;
     const infoAreaWidth = 100;
@@ -370,11 +370,15 @@ function Timeline() {
     this.period = 1000;
     var pThis = this;
     this.selectKeyframe = (keyframe, lane = -1) => {
-        pThis.selectedKeyframe = keyframe;
+        if (this.selectedKeyframe !== null) {
+            $(this.selectedKeyframe.propInfo.propId).removeClass('selected-keyframe');
+        }
+        this.selectedKeyframe = keyframe;
         if (keyframe === null) {
             $('#keyframePropsBox').hide();
         }
         else {
+            $(keyframe.propInfo.propId).addClass('selected-keyframe');
             $('#kpProp').text(' (' + activeKeyframeLists[lane].propInfo.name + ')');
             $('#keyframePropsBox').show();
             $('#ktProp').val(keyframe.time);
@@ -394,7 +398,7 @@ function Timeline() {
     function findKeyframe(event) {
         if (keyLists !== null) {
             let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
-            if (l >= 0) {
+            if (l >= 0 && l < keyLists.length) {
                 let uPos = event.pageX - pThis.posX - infoAreaWidth;
                 for (let f in keyLists[l].keyframes) {
                     if (Math.abs(uPos - getPixelPos(keyLists[l].keyframes[f].time + _prePeriod)) < keyframeSize) {
@@ -432,24 +436,37 @@ function Timeline() {
                 else if (event.type == 'mousemove') {
                     pThis.selectKeyframe(list.keyframes[f], lane);
                 }
-                return list.keyframes[f].time + offset;
+                return list.keyframes[f];
             }
         }
         return null;
     }
     function moveTimeCursor(event) {
         let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-        if (keyLists !== null) {
+        let keyFound = null;
+        if (keyLists !== null && !globalPlaying) {
             let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
-            if (l >= 0) {
-                let newTime = checkKeyframes(event, keyLists[l], l, _prePeriod);
-                if (newTime === null) {
-                    newTime = checkKeyframes(event, preKeyLists[l], l, 0);
+            if (l >= 0 && l < keyLists.length) {
+                keyFound = checkKeyframes(event, keyLists[l], l, _prePeriod);
+                if (keyFound === null) {
+                    keyFound = checkKeyframes(event, preKeyLists[l], l, 0);
+                    if (keyFound === null) {
+                        keyFound = checkKeyframes(event, postKeyLists[l], l, _prePeriod + pThis.period);
+                        if (keyFound !== null) {
+                            t = keyFound.time + _prePeriod + pThis.period;
+                        }
+                    }
+                    else {
+                        t = keyFound.time;
+                    }
                 }
                 else {
-                    t = newTime;
+                    t = keyFound.time;
                 }
             }
+        }
+        if (keyFound === null) {
+            pThis.selectKeyframe(null);
         }
         if (t >= 0) {
             setGlobalTime(t);
@@ -468,9 +485,8 @@ function Timeline() {
             return;
         }
         let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
-        if (l >= 0) {
+        if (l >= 0 && l < keyLists.length) {
             let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-            console.log(keyLists[l]);
             let newKey = new Keyframe(t, keyframeTypes.linear, keyLists[l].getValue(this.curTime));
             keyLists[l].addKeyframe(newKey);
             this.hiKeyframes.push(newKey);
@@ -664,6 +680,12 @@ function Timeline() {
                 for (let f in preKeyLists[k].keyframes) {
                     let kTime = preKeyLists[k].keyframes[f].time;
                     let status = 'disabled';
+                    if (preKeyLists[k].keyframes[f] === this.selectedKeyframe) {
+                        status = 'selected';
+                    }
+                    else if (kTime == this.curTime && !globalPlaying) {
+                        status = 'active';
+                    }
                     drawKeyframe(ctx, parseInt(k), kTime, status);
                 }
             }
@@ -671,6 +693,12 @@ function Timeline() {
                 for (let f in postKeyLists[k].keyframes) {
                     let kTime = postKeyLists[k].keyframes[f].time + _prePeriod + this.period;
                     let status = 'disabled';
+                    if (postKeyLists[k].keyframes[f] === this.selectedKeyframe) {
+                        status = 'selected';
+                    }
+                    else if (kTime == this.curTime && !globalPlaying) {
+                        status = 'active';
+                    }
                     drawKeyframe(ctx, parseInt(k), kTime, status);
                 }
             }

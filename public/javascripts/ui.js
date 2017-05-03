@@ -673,7 +673,7 @@ function initUI() {
     $('body').addClass('noscroll');
     // init animations
     let defaultAnim = new anim('default', true);
-    defaultAnim.period = 300;
+    defaultAnim.period = 0;
     addAnim(defaultAnim);
     let anotherAnim = new anim('anim2', false);
     addAnim(anotherAnim);
@@ -714,14 +714,11 @@ function initUI() {
         pushPointToShape(points[p]);
     }
     stopEditing();
-    let keyLists = vec.getElementKeyLists(vec.rootPnt);
-    if (keyLists !== null) {
-        keyLists[0].addKeyframe(new Keyframe(300, keyframeTypes.linear, 300));
-    }
     selectAnim(anotherAnim);
     keyLists = vec.getElementKeyLists(vec.rootPnt);
     if (keyLists !== null) {
         keyLists[0].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
+        keyLists[1].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
     }
     selectPoint(vec.rootPnt);
 }
