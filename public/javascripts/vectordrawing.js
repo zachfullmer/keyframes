@@ -113,7 +113,7 @@ function pnt() {
     var _s = [1.0, 1.0]; // scale
     this.hitbox = new Hitbox(true);
     this.hitbox.setRad(8);
-    addHitbox(this.hitbox);
+    addHitbox(this.hitbox, pointHitboxes);
     // getters and setters
     Object.defineProperties(this, {
         "px": {
@@ -240,26 +240,26 @@ function pnt() {
             this.children[c].update(this);
         }
     }
-    this.draw = (ctx, hi) => {
+    this.draw = (ctx, offset, hi) => {
         if (hi.indexOf(this) >= 0) {
             ctx.beginPath();
-            ctx.arc(this.pf[0], this.pf[1], 10, 0, 2 * Math.PI, false);
+            ctx.arc(this.pf[0] + offset[0], this.pf[1] + offset[1], 10, 0, 2 * Math.PI, false);
             ctx.fillStyle = 'black';
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(this.pf[0], this.pf[1], 5, 0, 2 * Math.PI, false);
+            ctx.arc(this.pf[0] + offset[0], this.pf[1] + offset[1], 5, 0, 2 * Math.PI, false);
             ctx.strokeStyle = 'yellow';
             ctx.stroke();
             ctx.beginPath();
-            ctx.arc(this.pf[0], this.pf[1], 10, 0, 2 * Math.PI, false);
+            ctx.arc(this.pf[0] + offset[0], this.pf[1] + offset[1], 10, 0, 2 * Math.PI, false);
             ctx.stroke();
         }
         ctx.beginPath();
-        ctx.rect(this.pf[0], this.pf[1], 1, 1);
+        ctx.rect(this.pf[0] + offset[0], this.pf[1] + offset[1], 1, 1);
         ctx.fillStyle = 'white';
         ctx.fill();
         for (let c in this.children) {
-            this.children[c].draw(ctx, hi);
+            this.children[c].draw(ctx, offset, hi);
         }
     }
     this.getPointByName = (name) => {
@@ -279,7 +279,7 @@ function pnt() {
             if (parent === null) {
                 throw "Tried to remove root point";
             }
-            removeHitbox(this.hitbox);
+            removeHitbox(this.hitbox, pointHitboxes);
             parent.children.splice(index, 1);
             return copyList(this.children);
         }
@@ -356,16 +356,16 @@ function shape(type, points, color = 'white', radius = 20) {
         }
         return result;
     }
-    this.draw = (ctx) => {
+    this.draw = (ctx, offset) => {
         if (this.type == 'polygon') {
             if (this.points.length < 1) {
                 return;
             }
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
+            ctx.moveTo(this.points[0].pf[0] + offset[0], this.points[0].pf[1] + offset[1]);
             for (let p = 1; p < this.points.length; p++) {
-                ctx.lineTo(this.points[p].pf[0], this.points[p].pf[1]);
+                ctx.lineTo(this.points[p].pf[0] + offset[0], this.points[p].pf[1] + offset[1]);
             }
             ctx.closePath();
             ctx.fill();
@@ -376,9 +376,9 @@ function shape(type, points, color = 'white', radius = 20) {
             }
             ctx.strokeStyle = this.color;
             ctx.beginPath();
-            ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
+            ctx.moveTo(this.points[0].pf[0] + offset[0], this.points[0].pf[1] + offset[1]);
             for (let p = 1; p < this.points.length; p++) {
-                ctx.lineTo(this.points[p].pf[0], this.points[p].pf[1]);
+                ctx.lineTo(this.points[p].pf[0] + offset[0], this.points[p].pf[1] + offset[1]);
             }
             ctx.stroke();
         }
@@ -387,7 +387,7 @@ function shape(type, points, color = 'white', radius = 20) {
                 return;
             }
             ctx.beginPath();
-            ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
+            ctx.arc(this.points[0].pf[0] + offset[0], this.points[0].pf[1] + offset[1], this.radius, 0, 2 * Math.PI, false);
             ctx.fillStyle = this.color;
             ctx.fill();
         }
@@ -396,7 +396,7 @@ function shape(type, points, color = 'white', radius = 20) {
                 return;
             }
             ctx.beginPath();
-            ctx.arc(this.points[0].pf[0], this.points[0].pf[1], this.radius, 0, 2 * Math.PI, false);
+            ctx.arc(this.points[0].pf[0] + offset[0], this.points[0].pf[1] + offset[1], this.radius, 0, 2 * Math.PI, false);
             ctx.strokeStyle = this.color;
             ctx.stroke();
         }
@@ -406,10 +406,10 @@ function shape(type, points, color = 'white', radius = 20) {
             }
             ctx.beginPath();
             ctx.strokeStyle = this.color;
-            ctx.moveTo(this.points[0].pf[0], this.points[0].pf[1]);
-            ctx.bezierCurveTo(this.points[1].pf[0], this.points[1].pf[1],
-                this.points[2].pf[0], this.points[2].pf[1],
-                this.points[3].pf[0], this.points[3].pf[1]);
+            ctx.moveTo(this.points[0].pf[0] + offset[0], this.points[0].pf[1] + offset[1]);
+            ctx.bezierCurveTo(this.points[1].pf[0] + offset[0], this.points[1].pf[1] + offset[1],
+                this.points[2].pf[0] + offset[0], this.points[2].pf[1] + offset[1],
+                this.points[3].pf[0] + offset[0], this.points[3].pf[1] + offset[1]);
             ctx.stroke();
         }
     }
@@ -514,16 +514,16 @@ function VectorDrawing() {
         let index = highlightedPoints.indexOf(point);
         highlightedPoints.splice(index, 1);
     }
-    this.draw = (ctx) => {
+    this.draw = (ctx, offset) => {
         for (let e in this.shapes) {
-            this.shapes[e].draw(ctx);
+            this.shapes[e].draw(ctx, offset);
         }
     }
     this.update = () => {
         this.rootPnt.update(null);
     }
-    this.debugDraw = (ctx) => {
-        this.rootPnt.draw(ctx, highlightedPoints);
+    this.debugDraw = (ctx, offset) => {
+        this.rootPnt.draw(ctx, offset, highlightedPoints);
     }
     this.getPointByName = (name) => {
         return this.rootPnt.getPointByName(name);

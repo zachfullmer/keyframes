@@ -3,27 +3,32 @@ const maxDelta = 20;
 // canvas stuff
 var ctx = null;
 var canvas = null;
-var hitboxes = [];
-function addHitbox(hitbox) {
-    hitboxes.push(hitbox);
+var globalCamera = [-100, -80];
+var draggingCamera = false;
+var pointHitboxes = [];
+var timelineHitboxes = [];
+function addHitbox(hitbox, hitboxList) {
+    hitboxList.push(hitbox);
 }
-function removeHitbox(hitbox) {
-    hitboxes.splice(hitboxes.indexOf(hitbox), 1);
+function removeHitbox(hitbox, hitboxList) {
+    hitboxList.splice(hitboxList.indexOf(hitbox), 1);
 }
-function checkHitboxEvents(event) {
+function checkHitboxEvents(event, hitboxList, cam) {
+    event.pageX -= cam[0];
+    event.pageY -= cam[1];
     let hits = [];
-    for (let h in hitboxes) {
-        if (hitboxes[h].contains(event.pageX, event.pageY)) {
-            hits.push(hitboxes[h]);
+    for (let h in hitboxList) {
+        if (hitboxList[h].contains(event.pageX, event.pageY)) {
+            hits.push(hitboxList[h]);
         }
         else {
-            if (hitboxes[h].hover == true) {
+            if (hitboxList[h].hover == true) {
                 let type = event.type;
                 event.type = 'mouseleave';
-                hitboxes[h].execute(event);
+                hitboxList[h].execute(event);
                 event.type = type;
             }
-            hitboxes[h].hover = false;
+            hitboxList[h].hover = false;
         }
     }
     for (let h in hits) {
@@ -36,6 +41,7 @@ function checkHitboxEvents(event) {
         }
         hits[h].hover = true;
     }
+    return (hits.length > 0);
 }
 
 var globalPlaying = false;
@@ -99,19 +105,43 @@ function drawCanvas(timestamp) {
     //
     // drawing
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    vec.draw(ctx);
-    vec.debugDraw(ctx);
+    vec.draw(ctx, globalCamera);
+    vec.debugDraw(ctx, globalCamera);
     timeline.draw(ctx);
     //
     window.requestAnimationFrame(drawCanvas);
 }
 
 function initHitboxEvents(eventRoot) {
-    eventRoot.on('click dblclick mousemove mousedown mouseup mousewheel DOMMouseScroll', (event) => {
+    var lastMouse = null;
+    let moved = null;
+    eventRoot.on('click dblclick mousemove mousedown mouseup mousewheel DOMMouseScroll mouseleave', (event) => {
         if (event.type == 'DOMMouseScroll') {
             event.type = 'mousewheel';
             event.originalEvent.wheelDelta = event.originalEvent.detail;
         }
-        checkHitboxEvents(event);
+        if (event.type == 'mouseup' || event.type == 'mouseleave') {
+            draggingCamera = false;
+        }
+        if (event.type == 'mousemove') {
+            if (lastMouse === null) {
+                lastMouse = [0, 0];
+            }
+            let last = [lastMouse[0], lastMouse[1]];
+            lastMouse = [event.pageX, event.pageY];
+            let current = [lastMouse[0], lastMouse[1]];
+            moved = [current[0] - last[0], current[1] - last[1]];
+        }
+        if (!checkHitboxEvents(event, timelineHitboxes, [0, 0]) &&
+            !checkHitboxEvents(event, pointHitboxes, globalCamera)) {
+            if (event.type == 'mousedown') {
+                draggingCamera = true;
+            }
+            else if (event.type == 'mousemove' && draggingCamera) {
+                //$('#pointNameSpan-rootPoint').text('[' + (event.pageX - lastMouse[0]) + ',' + (event.pageY - lastMouse[1]) + ']');
+                globalCamera[0] += moved[0];
+                globalCamera[1] += moved[1];
+            }
+        }
     });
 }

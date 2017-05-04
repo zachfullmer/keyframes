@@ -46,10 +46,9 @@ function initEvents() {
         addPoint(p1, selectedPoint);
     });
     canvas.mousemove((event) => {
-        if (grabbedPoint === null) {
-            return
+        if (grabbedPoint !== null) {
+            dragPoint([event.pageX, event.pageY]);
         }
-        dragPoint([event.pageX, event.pageY]);
     });
     $(document).mouseup((event) => {
         if (event.which == 1) { // left
@@ -60,7 +59,8 @@ function initEvents() {
         $('#contextMenu').hide();
     });
     $(window).on('resize', (event) => {
-        checkHitboxEvents(event);
+        checkHitboxEvents(event, timelineHitboxes);
+        checkHitboxEvents(event, pointHitboxes);
     });
     // properties
     $('#shapeTypeSelect').on('change', function () {

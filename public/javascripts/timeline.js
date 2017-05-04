@@ -38,7 +38,7 @@ function Timeline() {
     this.hitbox = new Hitbox();
     var movingCursor = false;
     var grabbed = false;
-    addHitbox(this.hitbox);
+    addHitbox(this.hitbox, timelineHitboxes);
     // text
     const stampFontSize = 10;
     const propFontSize = 12;
@@ -120,7 +120,7 @@ function Timeline() {
             playGlobalTime();
         }
     });
-    addHitbox(playHitbox);
+    addHitbox(playHitbox, timelineHitboxes);
     //
     var stopHitbox = new Hitbox();
     var stopButtonTop = 0;
@@ -130,7 +130,7 @@ function Timeline() {
         pauseGlobalTime();
         setGlobalTime(0);
     });
-    addHitbox(stopHitbox);
+    addHitbox(stopHitbox, timelineHitboxes);
     //
     var grabButtonTop = 0;
     var grabButtonLeft = 0;
@@ -139,7 +139,7 @@ function Timeline() {
     grabHitbox.click(() => {
         keyframeGrabTool = !keyframeGrabTool;
     });
-    addHitbox(grabHitbox);
+    addHitbox(grabHitbox, timelineHitboxes);
     //
     var magHitbox = new Hitbox();
     var magButtonPadding = 2;
@@ -150,7 +150,7 @@ function Timeline() {
     magHitbox.click(() => {
         this.magnification = 1.0;
     });
-    addHitbox(magHitbox);
+    addHitbox(magHitbox, timelineHitboxes);
     let findHighlighted = (keys, offset) => {
         for (let k in keys) {
             for (let f in keys[k].keyframes) {
