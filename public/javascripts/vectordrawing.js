@@ -74,6 +74,10 @@ function KeyframeList(propInfo) {
     this.addKeyframe = (keyframe) => {
         keyframe.propInfo = this.propInfo;
         keyframe.parentList = this;
+        if (this.anim !== null) {
+            keyframe.time = Math.min(keyframe.time, this.anim.period);
+        }
+        keyframe.time = Math.max(keyframe.time, 0);
         if (keyframe.val === null) {
             if (this.propInfo.type == 'col') {
                 keyframe.val = [255, 255, 255];
