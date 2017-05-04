@@ -495,7 +495,8 @@ function Timeline() {
         let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
         if (l >= 0 && l < keyLists.length) {
             let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-            let newKey = new Keyframe(t, keyframeTypes.linear, keyLists[l].getValue(this.curTime));
+            console.log(keyLists[l]);
+            let newKey = new Keyframe(t, keyframeTypes.instant);
             keyLists[l].addKeyframe(newKey);
             this.hiKeyframes.push(newKey);
         }
