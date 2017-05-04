@@ -193,7 +193,7 @@ function Timeline() {
             "set": function (ct) {
                 _curTime = ct;
                 this.hiKeyframes.length = 0;
-                findHighlighted(keyLists, 0);
+                findHighlighted(keyLists, _prePeriod);
                 findHighlighted(preKeyLists, 0);
                 findHighlighted(postKeyLists, _prePeriod + this.period);
                 $('.prop-window-item').removeClass('active-keyframe');
