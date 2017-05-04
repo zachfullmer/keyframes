@@ -78,6 +78,8 @@ function Timeline() {
     var _curTime = 0;
     // keyframes
     var keyLists = null;
+    var preKeyLists = null;
+    var postKeyLists = null;
     this.hiKeyframes = [];
     this.selectedKeyframe = null;
     var grabbedKeyframe = null;
@@ -152,6 +154,17 @@ function Timeline() {
         this.magnification = 1.0;
     });
     addHitbox(magHitbox);
+    let findHighlighted = (keys, offset) => {
+        for (let k in keys) {
+            for (let f in keys[k].keyframes) {
+                let kTime = keys[k].keyframes[f].time + offset;
+                let highlight = (kTime == this.curTime && !globalPlaying);
+                if (highlight) {
+                    this.hiKeyframes.push(keys[k].keyframes[f]);
+                }
+            }
+        }
+    }
     //
     Object.defineProperties(this, {
         "magButtonWidth": {
@@ -180,14 +193,12 @@ function Timeline() {
             "set": function (ct) {
                 _curTime = ct;
                 this.hiKeyframes.length = 0;
-                for (let k in keyLists) {
-                    for (let f in keyLists[k].keyframes) {
-                        let kTime = keyLists[k].keyframes[f].time;
-                        let highlight = (kTime == this.curTime && !globalPlaying);
-                        if (highlight) {
-                            this.hiKeyframes.push(keyLists[k].keyframes[f]);
-                        }
-                    }
+                findHighlighted(keyLists, 0);
+                findHighlighted(preKeyLists, 0);
+                findHighlighted(postKeyLists, _prePeriod + this.period);
+                $('.prop-window-item').removeClass('active-keyframe');
+                for (let h in this.hiKeyframes) {
+                    $(this.hiKeyframes[h].propInfo.propId).addClass('active-keyframe');
                 }
             }
         },
@@ -370,15 +381,12 @@ function Timeline() {
     this.period = 1000;
     var pThis = this;
     this.selectKeyframe = (keyframe, lane = -1) => {
-        if (this.selectedKeyframe !== null) {
-            $(this.selectedKeyframe.propInfo.propId).removeClass('selected-keyframe');
-        }
         this.selectedKeyframe = keyframe;
         if (keyframe === null) {
             $('#keyframePropsBox').hide();
+            $('#kpProp').text('');
         }
         else {
-            $(keyframe.propInfo.propId).addClass('selected-keyframe');
             $('#kpProp').text(' (' + activeKeyframeLists[lane].propInfo.name + ')');
             $('#keyframePropsBox').show();
             $('#ktProp').val(keyframe.time);
@@ -683,7 +691,7 @@ function Timeline() {
                     if (preKeyLists[k].keyframes[f] === this.selectedKeyframe) {
                         status = 'selected';
                     }
-                    else if (kTime == this.curTime && !globalPlaying) {
+                    else if (this.hiKeyframes.indexOf(preKeyLists[k].keyframes[f]) >= 0) {
                         status = 'active';
                     }
                     drawKeyframe(ctx, parseInt(k), kTime, status);
@@ -696,7 +704,7 @@ function Timeline() {
                     if (postKeyLists[k].keyframes[f] === this.selectedKeyframe) {
                         status = 'selected';
                     }
-                    else if (kTime == this.curTime && !globalPlaying) {
+                    else if (this.hiKeyframes.indexOf(postKeyLists[k].keyframes[f]) >= 0) {
                         status = 'active';
                     }
                     drawKeyframe(ctx, parseInt(k), kTime, status);
@@ -709,7 +717,7 @@ function Timeline() {
                     if (keyLists[k].keyframes[f] === this.selectedKeyframe) {
                         status = 'selected';
                     }
-                    else if (kTime == this.curTime && !globalPlaying) {
+                    else if (this.hiKeyframes.indexOf(keyLists[k].keyframes[f]) >= 0) {
                         status = 'active';
                     }
                     drawKeyframe(ctx, parseInt(k), kTime, status);

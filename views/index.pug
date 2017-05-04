@@ -106,7 +106,7 @@ html(lang='en')
               tbody
                 tr
                   td
-                    input#atProp(type='number', step='1', min='0')
+                    input#atProp.selected-anim(type='number', step='1', min='0')
                   td
                     label length
           br
@@ -118,12 +118,12 @@ html(lang='en')
               tbody
                 tr
                   td
-                    input#ktProp(type='number', step='1', min='0')
+                    input#ktProp.selected-keyframe(type='number', step='1', min='0')
                   td
                     label time
                 tr
                   td
-                    select#keyframeTypeSelect
+                    select#keyframeTypeSelect.selected-keyframe
                   td
                     label type
     script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js')

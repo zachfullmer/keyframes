@@ -190,13 +190,20 @@ p.prop-header {
     margin-bottom: 10px;
 }
 
-.prop-window-item:disabled {
-    background-color: $input-disabled;
+input.selected-anim {
+    background-color: #193311;
+    border-color: #52804d;
 }
 
-input.selected-keyframe {
-    background-color: #113328;
-    border-color: #4d806b;
+input.selected-keyframe,
+select.selected-keyframe {
+    background-color: #153E31;
+    border-color: #58927B;
+}
+
+input.active-keyframe {
+    background-color: #333311;
+    border-color: #98985C;
 }
 
 
@@ -250,6 +257,7 @@ canvas {
     left: 0px;
     top: 0px;
     z-index: 1;
+    cursor: default;
 }
 
 .ui-panel label,
