@@ -751,9 +751,10 @@ function initUI() {
             text: val.name
         }));
     });
+    // camera
+    globalCamera = [$(window).width() / 2, $(window).height() / 2];
     // init point list
     let root = new pnt();
-    root.p = [$(window).width() / 2, $(window).height() / 2];
     addPoint(root, null, 'rootPoint');
     selectPoint(vec.rootPnt);
     let points = [];
