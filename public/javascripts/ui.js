@@ -5,6 +5,8 @@ var selectedAnim = null;
 var activeKeyframeLists = null;
 var preKeyframeLists = null;
 var postKeyframeLists = null;
+var preAnim = null;
+var postAnim = null;
 
 
 const propTypes = {
@@ -239,13 +241,29 @@ function setPropWindow(type, elementName) {
     $('#elementTitle').text(elementName);
 }
 
+function setPreAnim(anim) {
+    if (preAnim) {
+        $('#animItem-' + preAnim.name).children('.anim-pre').hide();
+    }
+    preAnim = anim;
+    $('#animItem-' + anim.name).children('.anim-pre').show();
+}
+function setPostAnim(anim) {
+    if (postAnim) {
+        $('#animItem-' + postAnim.name).children('.anim-post').hide();
+    }
+    postAnim = anim;
+    $('#animItem-' + anim.name).children('.anim-post').show();
+}
 function buildTimeline(keyframeSource) {
-    let preAnim = vec.anims[0];
-    let postAnim = vec.anims[0];
+    setPreAnim(vec.anims[0]);
+    setPostAnim(vec.anims[0]);
     activeKeyframeLists = vec.getElementKeyLists(keyframeSource);
     preKeyframeLists = vec.getElementKeyLists(keyframeSource, preAnim);
     postKeyframeLists = vec.getElementKeyLists(keyframeSource, postAnim);
-    timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, preAnim.period, postKeyframeLists, postAnim.period);
+    let prePeriod = (preAnim ? preAnim.period : null);
+    let postPeriod = (postAnim ? postAnim.period : null);
+    timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, prePeriod, postKeyframeLists, postPeriod);
 }
 function selectPoint(point) {
     if (selectedPoint !== null) {
@@ -589,7 +607,7 @@ function addAnim(anim) {
     }
     let itemId = 'animItem-' + anim.name;
     let id = '#' + itemId;
-    $('#animList').append('<div id="animDiv-' + anim.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select anim-list">' + anim.name + '</li></div>');
+    $('#animList').append('<div id="animDiv-' + anim.name + '" class="nesting-box"><li id="' + itemId + '" class="no-select anim-list">' + anim.name + '<span class="anim-post" title="next animation">&#8680;</span><span class="anim-pre" title="previous animation">&#8678;</span></li></div>');
     $(id).mousedown((event) => {
         if (event.which == 1) {
             selectAnim(anim);

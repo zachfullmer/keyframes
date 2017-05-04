@@ -135,6 +135,12 @@ input.rename-box {
     background-color: $anim-bg-selected;
 }
 
+.anim-pre,
+.anim-post {
+    float: right;
+    display: none;
+}
+
 
 /* main ui panels */
 
