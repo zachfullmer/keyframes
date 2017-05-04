@@ -40,6 +40,7 @@ function Keyframe(time, type, val = null) {
     this.type = type;
     var _val = val;
     this.propInfo = null;
+    this.parentList = null;
     Object.defineProperties(this, {
         "val": {
             "get": function () { return _val; },
@@ -59,6 +60,7 @@ function Keyframe(time, type, val = null) {
 }
 
 function KeyframeList(propInfo) {
+    this.anim = null;
     var _propInfo = propInfo;
     Object.defineProperties(this, {
         "propInfo": {
@@ -71,6 +73,7 @@ function KeyframeList(propInfo) {
     this.keyframes = [];
     this.addKeyframe = (keyframe) => {
         keyframe.propInfo = this.propInfo;
+        keyframe.parentList = this;
         if (keyframe.val === null) {
             if (this.propInfo.type == 'col') {
                 keyframe.val = [255, 255, 255];
@@ -412,8 +415,27 @@ function shape(type, points, color = 'white', radius = 20) {
 function anim(name, isDefault) {
     this.name = name;
     this.isDefault = isDefault;
-    this.period = 1000;
+    var _period = 1000;
     this.animData = [];
+    Object.defineProperties(this, {
+        "period": {
+            "get": function () { return _period; },
+            "set": function (p) {
+                if (p < 0) {
+                    return;
+                }
+                _period = p;
+                for (let a in this.animData) {
+                    for (let l in this.animData[a][1]) {
+                        for (let k in this.animData[a][1][l].keyframes) {
+                            let key = this.animData[a][1][l].keyframes[k];
+                            timeline.moveKeyframe(key, key.time);
+                        }
+                    }
+                }
+            }
+        }
+    });
     function getValue(time, listInfo, listPeriod, prevList, prevListPeriod, nextList) {
         let fullList = prevList.map(t => [0, t]).concat(
             listInfo.keyframes.map(t => [prevListPeriod, t])).concat(
@@ -458,6 +480,12 @@ function anim(name, isDefault) {
                     this.animData[e][0][keyListInfo.propInfo.varName] = finalVal;
                 }
             }
+        }
+    }
+    this.addAnimData = (animData) => {
+        this.animData.push(animData);
+        for (let a in animData[1]) {
+            animData[1][a].anim = this;
         }
     }
 }
@@ -527,7 +555,7 @@ function VectorDrawing() {
         }
         for (let a in this.anims) {
             let pointInfo = this.getInitPointInfo(point, this.anims[a]);
-            this.anims[a].animData.push(pointInfo);
+            this.anims[a].addAnimData(pointInfo);
         }
     }
     this.removePoint = (point) => {
@@ -561,7 +589,7 @@ function VectorDrawing() {
     this.addShape = (shape) => {
         for (let a in this.anims) {
             let shapeInfo = this.getInitShapeInfo(shape, this.anims[a]);
-            this.anims[a].animData.push(shapeInfo);
+            this.anims[a].addAnimData(shapeInfo);
         }
         this.shapes.push(shape);
     }
@@ -581,12 +609,12 @@ function VectorDrawing() {
     }
     this.addAnim = (anim) => {
         for (let s in this.shapes) {
-            anim.animData.push(this.getInitShapeInfo(this.shapes[s], anim));
+            anim.addAnimData(this.getInitShapeInfo(this.shapes[s], anim));
         }
         if (this.rootPnt !== null) {
             let points = this.rootPnt.family;
             for (let p in points) {
-                anim.animData.push(this.getInitPointInfo(points[p], anim));
+                anim.addAnimData(this.getInitPointInfo(points[p], anim));
             }
         }
         this.anims.push(anim);

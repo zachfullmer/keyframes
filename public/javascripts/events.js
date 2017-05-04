@@ -156,7 +156,6 @@ function initEvents() {
         let period = parseInt($('#atProp').val());
         timeline.period = period;
         vec.currentAnim.period = period;
-        console.log('period');
     });
     // keyframe properties
     $('#ktProp').on('input', function () {
@@ -164,7 +163,7 @@ function initEvents() {
             console.log('no keyframe selected');
             return;
         }
-        timeline.selectedKeyframe.time = $('#ktProp').val();
+        timeline.moveKeyframe(timeline.selectedKeyframe, parseInt($('#ktProp').val()));
     });
     $('#keyframeTypeSelect').on('change', function () {
         timeline.selectedKeyframe.type = keyframeTypes[$('#keyframeTypeSelect').val()];

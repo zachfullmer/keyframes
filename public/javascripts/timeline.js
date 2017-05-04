@@ -83,7 +83,6 @@ function Timeline() {
     this.hiKeyframes = [];
     this.selectedKeyframe = null;
     var grabbedKeyframe = null;
-    var currentLane = -1;
     var keyframeGrabTool = false;
     const kSelectedFillColor = '#22664f';
     const kSelectedStrokeColor = '#99ffd6';
@@ -393,15 +392,16 @@ function Timeline() {
             $('#keyframeTypeSelect').val(keyframe.type.id);
         }
     }
-    function grabKeyframe(keyframe, lane = -1) {
-        currentLane = lane;
+    function grabKeyframe(keyframe) {
         grabbedKeyframe = keyframe;
     }
-    function moveKeyframe(keyframe, time) {
-        activeKeyframeLists[currentLane].sort();
-        time = Math.max(Math.round(time), 0);
+    this.moveKeyframe = (keyframe, time) => {
+        keyframe.parentList.sort();
+        time = Math.min(keyframe.parentList.anim.period, Math.max(Math.round(time), 0));
         keyframe.time = time;
-        $('#ktProp').val(keyframe.time);
+        if (keyframe === this.selectedKeyframe) {
+            $('#ktProp').val(keyframe.time);
+        }
     }
     function findKeyframe(event) {
         if (keyLists !== null) {
@@ -413,7 +413,7 @@ function Timeline() {
                         if (event.type == 'mousedown') {
                             if (event.which == 1) { // left button
                                 pThis.selectKeyframe(keyLists[l].keyframes[f], l);
-                                grabKeyframe(keyLists[l].keyframes[f], l);
+                                grabKeyframe(keyLists[l].keyframes[f]);
                             }
                             else if (event.which == 2) { // middle button
                                 keyLists[l].removeKeyframe(keyLists[l].keyframes[f]);
@@ -495,7 +495,6 @@ function Timeline() {
         let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
         if (l >= 0 && l < keyLists.length) {
             let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
-            console.log(keyLists[l]);
             let newKey = new Keyframe(t, keyframeTypes.instant);
             keyLists[l].addKeyframe(newKey);
             this.hiKeyframes.push(newKey);
@@ -535,7 +534,7 @@ function Timeline() {
             pThis.pixelOffset -= moved[0];
         }
         else if (grabbedKeyframe !== null) {
-            moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset - _prePeriod);
+            pThis.moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset - _prePeriod);
         }
         this.lastMouse = [event.pageX, event.pageY];
         if (pThis.hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
