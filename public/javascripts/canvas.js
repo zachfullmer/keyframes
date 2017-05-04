@@ -52,7 +52,7 @@ function initCanvas(context) {
 function setGlobalTime(newTime) {
     timeline.curTime = newTime;
     globalTime = newTime;
-    vec.currentAnim.updateValues(newTime, vec.anims[0], vec.anims[0]);
+    vec.currentAnim.updateValues(newTime, preAnim, postAnim);
     updatePropWindow();
 }
 function pauseGlobalTime() {

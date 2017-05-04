@@ -7,6 +7,7 @@ var preKeyframeLists = null;
 var postKeyframeLists = null;
 var preAnim = null;
 var postAnim = null;
+var keyframeSource = null;
 
 
 const propTypes = {
@@ -246,23 +247,23 @@ function setPreAnim(anim) {
         $('#animItem-' + preAnim.name).children('.anim-pre').hide();
     }
     preAnim = anim;
-    $('#animItem-' + anim.name).children('.anim-pre').show();
+    if (preAnim) {
+        $('#animItem-' + anim.name).children('.anim-pre').show();
+    }
 }
 function setPostAnim(anim) {
     if (postAnim) {
         $('#animItem-' + postAnim.name).children('.anim-post').hide();
     }
     postAnim = anim;
-    $('#animItem-' + anim.name).children('.anim-post').show();
+    if (postAnim) {
+        $('#animItem-' + anim.name).children('.anim-post').show();
+    }
 }
-function buildTimeline(keyframeSource) {
-    setPreAnim(vec.anims[0]);
-    setPostAnim(vec.anims[0]);
+function buildTimeline() {
     activeKeyframeLists = vec.getElementKeyLists(keyframeSource);
     preKeyframeLists = vec.getElementKeyLists(keyframeSource, preAnim);
     postKeyframeLists = vec.getElementKeyLists(keyframeSource, postAnim);
-    let prePeriod = (preAnim ? preAnim.period : null);
-    let postPeriod = (postAnim ? postAnim.period : null);
     timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, postKeyframeLists);
 }
 function selectPoint(point) {
@@ -275,7 +276,8 @@ function selectPoint(point) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    buildTimeline(point);
+    keyframeSource = point;
+    buildTimeline();
     selectedPoint = point;
     selectedShape = null;
     editedShape = null;
@@ -293,7 +295,8 @@ function selectShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    buildTimeline(shape);
+    keyframeSource = shape;
+    buildTimeline();
     selectedPoint = null;
     selectedShape = shape;
     editedShape = null;
@@ -311,7 +314,8 @@ function editShape(shape) {
     if (editedShape !== null) {
         $('#shapeItem-' + editedShape.name).removeClass('edited-shape');
     }
-    buildTimeline(shape);
+    keyframeSource = shape;
+    buildTimeline();
     selectedPoint = null;
     selectedShape = shape;
     editedShape = shape;
@@ -324,7 +328,7 @@ function selectAnim(anim) {
         return;
     }
     vec.currentAnim = anim;
-    let keyframeSource = null;
+    keyframeSource = null;
     if (editedShape !== null) keyframeSource = editedShape;
     else if (selectedShape !== null) keyframeSource = selectedShape;
     else if (selectedPoint !== null) keyframeSource = selectedPoint;
@@ -613,6 +617,25 @@ function addAnim(anim) {
             selectAnim(anim);
         }
     });
+    $(id).mouseup((event) => {
+        if (event.which == 3) { // right
+            let menu = $('#contextMenu');
+            menu.css('left', event.pageX);
+            menu.css('top', event.pageY);
+            clearContextMenu();
+            let checked = (preAnim === anim);
+            addContextMenuItem('Set as pre-animation', checked, () => {
+                setPreAnim((preAnim === anim ? null : anim));
+                buildTimeline();
+            });
+            checked = (postAnim === anim);
+            addContextMenuItem('Set as post-animation', checked, () => {
+                setPostAnim((postAnim === anim ? null : anim));
+                buildTimeline();
+            });
+            menu.show();
+        }
+    })
     $(id).contextmenu(() => { return false; });
     vec.addAnim(anim);
     currentAnimID += 1;
@@ -686,6 +709,22 @@ function dragPoint(screenPos) {
 }
 
 
+function addContextMenuItem(text, checked, func) {
+    console.log(checked);
+    let menu = $('#contextMenu');
+    let menuItem = $('<div class="context-menu-item no-select"><span>&#10004;</span>' + text + '</div>');
+    if (!checked) {
+        menuItem.children('span').addClass('invisible-text');
+    }
+    menuItem.click(func);
+    menu.append(menuItem);
+}
+
+function clearContextMenu() {
+    $('#contextMenu').html('');
+}
+
+
 function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
@@ -739,4 +778,6 @@ function initUI() {
         keyLists[1].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
     }
     selectPoint(vec.rootPnt);
+    // context menu
+    $('#contextMenu').click(() => $('#contextMenu').hide());
 }

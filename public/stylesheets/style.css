@@ -166,6 +166,30 @@ input.active-keyframe {
 #keyframePropsBox {
   display: none; }
 
+/* context menu */
+#contextMenu {
+  display: none;
+  min-width: 150px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 0px;
+  z-index: 5;
+  cursor: pointer; }
+
+.context-menu-item {
+  background: #111;
+  margin: 0px;
+  padding: 5px 10px 5px 10px; }
+  .context-menu-item:hover {
+    background-color: #113; }
+
+.context-menu-item span {
+  margin-right: 10px;
+  color: #297723; }
+  .context-menu-item span.invisible-text {
+    opacity: 0; }
+
 /* misc */
 .dark-label {
   color: #888; }

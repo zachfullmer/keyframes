@@ -23,6 +23,9 @@ function initEvents() {
     $('body').on('contextmenu', '#drawingArea', (e) => { return false; });
     // hitbox checking
     initHitboxEvents(canvas);
+    $(document).on('contextmenu', (event) => {
+        event.preventDefault();
+    });
     $(document).keydown((event) => {
         if (event.which == 27) { // escape
             stopEditing();
@@ -52,6 +55,9 @@ function initEvents() {
         if (event.which == 1) { // left
             dropPoint();
         }
+    });
+    $(document).click(() => {
+        $('#contextMenu').hide();
     });
     $(window).on('resize', (event) => {
         checkHitboxEvents(event);

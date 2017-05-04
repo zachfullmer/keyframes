@@ -12,6 +12,7 @@ $shape-bg-edited: #6a224a;
 $anim-bg: #143a11;
 $anim-bg-selected: #297723;
 $input-disabled: #391717;
+$context-highlight: #113;
 
 /* main ui */
 
@@ -226,6 +227,37 @@ input.active-keyframe {
 
 #keyframePropsBox {
     display: none;
+}
+
+
+/* context menu */
+
+#contextMenu {
+    display: none;
+    min-width: 150px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 0px;
+    z-index: 5;
+    cursor: pointer;
+}
+
+.context-menu-item {
+    background: $panel-bg-light;
+    margin: 0px;
+    padding: 5px 10px 5px 10px;
+    &:hover {
+        background-color: $context-highlight;
+    }
+}
+
+.context-menu-item span {
+    margin-right: 10px;
+    color: $anim-bg-selected;
+    &.invisible-text {
+        opacity: 0;
+    }
 }
 
 
