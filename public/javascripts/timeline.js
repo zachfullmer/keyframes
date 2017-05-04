@@ -469,7 +469,7 @@ function Timeline() {
                     }
                 }
                 else {
-                    t = keyFound.time;
+                    t = keyFound.time + _prePeriod;
                 }
             }
         }
