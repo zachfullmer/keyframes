@@ -263,7 +263,7 @@ function buildTimeline(keyframeSource) {
     postKeyframeLists = vec.getElementKeyLists(keyframeSource, postAnim);
     let prePeriod = (preAnim ? preAnim.period : null);
     let postPeriod = (postAnim ? postAnim.period : null);
-    timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, prePeriod, postKeyframeLists, postPeriod);
+    timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, postKeyframeLists);
 }
 function selectPoint(point) {
     if (selectedPoint !== null) {
