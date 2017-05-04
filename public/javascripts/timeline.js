@@ -465,15 +465,19 @@ function Timeline() {
             if (l >= 0 && l < keyLists.length) {
                 keyFound = checkKeyframes(event, keyLists[l], l, this.prePeriod);
                 if (keyFound === null) {
-                    keyFound = checkKeyframes(event, preKeyLists[l], l, 0);
-                    if (keyFound === null) {
-                        keyFound = checkKeyframes(event, postKeyLists[l], l, this.prePeriod + this.period);
-                        if (keyFound !== null) {
-                            t = keyFound.time + this.prePeriod + this.period;
+                    if (preKeyLists !== null) {
+                        keyFound = checkKeyframes(event, preKeyLists[l], l, 0);
+                        if (keyFound === null) {
+                            if (postKeyLists !== null) {
+                                keyFound = checkKeyframes(event, postKeyLists[l], l, this.prePeriod + this.period);
+                                if (keyFound !== null) {
+                                    t = keyFound.time + this.prePeriod + this.period;
+                                }
+                            }
                         }
-                    }
-                    else {
-                        t = keyFound.time;
+                        else {
+                            t = keyFound.time;
+                        }
                     }
                 }
                 else {
