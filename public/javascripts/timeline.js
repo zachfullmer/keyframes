@@ -507,9 +507,12 @@ function Timeline() {
         let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
         if (l >= 0 && l < keyLists.length) {
             let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
+            if (t < 0) {
+                t = this.curTime;
+            }
             let newKey = new Keyframe(t, keyframeTypes.instant);
             keyLists[l].addKeyframe(newKey);
-            this.hiKeyframes.push(newKey);
+            this.curTime = this.curTime;
         }
     });
     this.hitbox.mousedown((event) => {
