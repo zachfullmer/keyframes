@@ -457,19 +457,19 @@ function Timeline() {
         }
         return null;
     }
-    function moveTimeCursor(event) {
-        let t = Math.round(getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset);
+    this.moveTimeCursor = (event) => {
+        let t = Math.round(getTime(event.pageX - this.left - infoAreaWidth) + 2 * this.timeOffset);
         let keyFound = null;
         if (keyLists !== null && !globalPlaying) {
-            let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
+            let l = Math.floor((event.pageY - (this.top + timeAreaHeight)) / this.laneSize);
             if (l >= 0 && l < keyLists.length) {
                 keyFound = checkKeyframes(event, keyLists[l], l, this.prePeriod);
                 if (keyFound === null) {
                     keyFound = checkKeyframes(event, preKeyLists[l], l, 0);
                     if (keyFound === null) {
-                        keyFound = checkKeyframes(event, postKeyLists[l], l, this.prePeriod + pThis.period);
+                        keyFound = checkKeyframes(event, postKeyLists[l], l, this.prePeriod + this.period);
                         if (keyFound !== null) {
-                            t = keyFound.time + this.prePeriod + pThis.period;
+                            t = keyFound.time + this.prePeriod + this.period;
                         }
                     }
                     else {
@@ -516,7 +516,7 @@ function Timeline() {
                 findKeyframe(event);
             }
             else {
-                moveTimeCursor(event);
+                pThis.moveTimeCursor(event);
                 movingCursor = true;
             }
         }
@@ -524,7 +524,7 @@ function Timeline() {
             grabbed = true;
         }
         else if (event.which == 2) { // middle button
-            moveTimeCursor(event);
+            pThis.moveTimeCursor(event);
         }
     });
     $(document).mouseup(() => {
@@ -535,7 +535,7 @@ function Timeline() {
     $(document).mousemove(function (event) {
         if (!this.lastMouse) this.lastMouse = [0, 0];
         if (movingCursor) {
-            moveTimeCursor(event);
+            pThis.moveTimeCursor(event);
         }
         else if (grabbed) {
             let moved = [event.pageX - this.lastMouse[0], event.pageY - this.lastMouse[1]];
