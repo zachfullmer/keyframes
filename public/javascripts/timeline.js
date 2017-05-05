@@ -411,7 +411,7 @@ function Timeline() {
             $('#ktProp').val(keyframe.time);
         }
     }
-    function findKeyframe(event) {
+    this.findKeyframe = (event) => {
         if (keyLists !== null) {
             let l = Math.floor((event.pageY - (pThis.top + timeAreaHeight)) / pThis.laneSize);
             if (l >= 0 && l < keyLists.length) {
@@ -520,7 +520,7 @@ function Timeline() {
         grabbed = false;
         if (event.which == 1) { // left button
             if (keyframeGrabTool) {
-                findKeyframe(event);
+                this.findKeyframe(event);
             }
             else {
                 pThis.moveTimeCursor(event);
