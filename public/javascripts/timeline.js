@@ -450,6 +450,7 @@ function Timeline() {
                     }
                     else if (event.which == 2) { // middle button
                         list.removeKeyframe(list.keyframes[f]);
+                        return null;
                     }
                 }
                 else if (event.type == 'mousemove') {
