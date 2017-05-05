@@ -5,8 +5,6 @@ var selectedAnim = null;
 var activeKeyframeLists = null;
 var preKeyframeLists = null;
 var postKeyframeLists = null;
-var preAnim = null;
-var postAnim = null;
 var keyframeSource = null;
 
 
@@ -243,27 +241,27 @@ function setPropWindow(type, elementName) {
 }
 
 function setPreAnim(anim) {
-    if (preAnim) {
-        $('#animItem-' + preAnim.name).children('.anim-pre').hide();
+    if (vec.preAnim) {
+        $('#animItem-' + vec.preAnim.name).children('.anim-pre').hide();
     }
-    preAnim = anim;
-    if (preAnim) {
+    vec.preAnim = anim;
+    if (vec.preAnim) {
         $('#animItem-' + anim.name).children('.anim-pre').show();
     }
 }
 function setPostAnim(anim) {
-    if (postAnim) {
-        $('#animItem-' + postAnim.name).children('.anim-post').hide();
+    if (vec.postAnim) {
+        $('#animItem-' + vec.postAnim.name).children('.anim-post').hide();
     }
-    postAnim = anim;
-    if (postAnim) {
+    vec.postAnim = anim;
+    if (vec.postAnim) {
         $('#animItem-' + anim.name).children('.anim-post').show();
     }
 }
 function buildTimeline() {
     activeKeyframeLists = vec.getElementKeyLists(keyframeSource);
-    preKeyframeLists = vec.getElementKeyLists(keyframeSource, preAnim);
-    postKeyframeLists = vec.getElementKeyLists(keyframeSource, postAnim);
+    preKeyframeLists = vec.getElementKeyLists(keyframeSource, vec.preAnim);
+    postKeyframeLists = vec.getElementKeyLists(keyframeSource, vec.postAnim);
     timeline.setKeyLists(activeKeyframeLists, preKeyframeLists, postKeyframeLists);
 }
 function selectPoint(point) {
@@ -623,14 +621,14 @@ function addAnim(anim) {
             menu.css('left', event.pageX);
             menu.css('top', event.pageY);
             clearContextMenu();
-            let checked = (preAnim === anim);
+            let checked = (vec.preAnim === anim);
             addContextMenuItem('Set as pre-animation', checked, () => {
-                setPreAnim((preAnim === anim ? null : anim));
+                setPreAnim((vec.preAnim === anim ? null : anim));
                 buildTimeline();
             });
-            checked = (postAnim === anim);
+            checked = (vec.postAnim === anim);
             addContextMenuItem('Set as post-animation', checked, () => {
-                setPostAnim((postAnim === anim ? null : anim));
+                setPostAnim((vec.postAnim === anim ? null : anim));
                 buildTimeline();
             });
             menu.show();

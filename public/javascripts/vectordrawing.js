@@ -504,6 +504,8 @@ function VectorDrawing() {
     this.shapes = [];
     this.anims = [];
     var _currentAnim = null;
+    this.preAnim = null;
+    this.postAnim = null;
     Object.defineProperties(this, {
         "currentAnim": {
             "get": function () { return _currentAnim; },
