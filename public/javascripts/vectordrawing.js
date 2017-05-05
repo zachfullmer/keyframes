@@ -605,7 +605,7 @@ function VectorDrawing() {
         if (index > -1) {
             this.shapes.splice(index, 1);
             for (let a in this.anims) {
-                for (let k in this.anims[a]) {
+                for (let k in this.anims[a].animData) {
                     if (this.anims[a].animData[k][0] === shape) {
                         this.anims[a].animData.splice(k, 1);
                         break;
