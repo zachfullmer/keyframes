@@ -35,10 +35,11 @@ const keyframeTypes = {
     }
 };
 
-function Keyframe(time, type, val = null) {
+function Keyframe(time, type, val = null, relative = false) {
     this.time = time;
     this.type = type;
     var _val = val;
+    this.relative = relative;
     this.propInfo = null;
     this.parentList = null;
     Object.defineProperties(this, {
@@ -443,7 +444,29 @@ function anim(name, isDefault) {
             }
         }
     });
-    function getValue(time, listInfo, listPeriod, prevList, prevListPeriod, nextList) {
+    function getKeyValue(list, kIndex) {
+        if (list[kIndex][1].relative) {
+            let lookBackIndex = kIndex - 1;
+            let val = list[kIndex][1].val;
+            while (lookBackIndex >= 0) {
+                if (list[lookBackIndex][1].relative) {
+                    val += list[lookBackIndex][1].val;
+                }
+                else {
+                    break;
+                }
+                lookBackIndex--;
+            }
+            if (lookBackIndex >= 0) {
+                val += list[lookBackIndex][1].val;
+            }
+            return val;
+        }
+        else {
+            return list[kIndex][1].val;
+        }
+    }
+    function getKeyListValue(time, listInfo, listPeriod, prevList, prevListPeriod, nextList) {
         let fullList = prevList.map(t => [0, t]).concat(
             listInfo.keyframes.map(t => [prevListPeriod, t])).concat(
             nextList.map(t => [listPeriod + prevListPeriod, t]));
@@ -461,17 +484,25 @@ function anim(name, isDefault) {
             }
         }
         if (k < 0) {
-            return fullList[0][1].val;
+            return getKeyValue(fullList, 0);
         }
         else if (k >= fullList.length - 1) {
-            return fullList[fullList.length - 1][1].val;
+            return getKeyValue(fullList, fullList.length - 1);
         }
         else {
+            let kVal = getKeyValue(fullList, k);
+            let kNextVal = null;
+            if (fullList[k + 1][1].relative) {
+                kNextVal = kVal + fullList[k + 1][1].val;
+            }
+            else {
+                kNextVal = fullList[k + 1][1].val;
+            }
             let cTime = fullList[k][1].time + fullList[k][0];
             let nextTime = fullList[k + 1][1].time + fullList[k + 1][0];
             let dt = time - cTime;
             let keyDiff = nextTime - cTime;
-            return fullList[k + 1][1].type[listInfo.funcName](fullList[k][1].val, fullList[k + 1][1].val, dt / keyDiff);
+            return fullList[k + 1][1].type[listInfo.funcName](kVal, kNextVal, dt / keyDiff);
         }
     }
     this.updateValues = (time, prevAnim = null, nextAnim = null) => {
@@ -482,7 +513,7 @@ function anim(name, isDefault) {
                 let nextKeyList = (nextAnim ? nextAnim.animData[e][1][k].keyframes : []);
                 let prevKeyPeriod = (prevAnim ? prevAnim.period : 0);
                 let nextKeyPeriod = (nextAnim ? nextAnim.period : 0);
-                let finalVal = getValue(time, keyListInfo, this.period, prevKeyList, prevKeyPeriod, nextKeyList);
+                let finalVal = getKeyListValue(time, keyListInfo, this.period, prevKeyList, prevKeyPeriod, nextKeyList);
                 if (finalVal !== null) {
                     this.animData[e][0][keyListInfo.propInfo.varName] = finalVal;
                 }
