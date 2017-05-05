@@ -168,17 +168,21 @@ function updatePropWindow() {
         }
         else if (props[p].type == 'deg') {
             let val = element[props[p].varName] * degrees;
-            if (timeline.selectedKeyframe !== null && timeline.selectedKeyframe.propInfo.propId == props[p].propId) {
-                // just in case this is a relative keyframe
-                val = timeline.selectedKeyframe.val * degrees;
+            for (let k in timeline.hiKeyframes) {
+                if (timeline.hiKeyframes[k].propInfo.propId == props[p].propId) {
+                    val = timeline.hiKeyframes[k].val * degrees;
+                    break;
+                }
             }
             $(props[p].propId).val(val);
         }
         else {
             let val = element[props[p].varName];
-            if (timeline.selectedKeyframe !== null && timeline.selectedKeyframe.propInfo.propId == props[p].propId) {
-                // just in case this is a relative keyframe
-                val = timeline.selectedKeyframe.val;
+            for (let k in timeline.hiKeyframes) {
+                if (timeline.hiKeyframes[k].propInfo.propId == props[p].propId) {
+                    val = timeline.hiKeyframes[k].val;
+                    break;
+                }
             }
             $(props[p].propId).val(val);
         }
@@ -779,6 +783,7 @@ function initUI() {
         pushPointToShape(points[p]);
     }
     stopEditing();
+    setPreAnim(vec.anims[0]);
     selectAnim(anotherAnim);
     keyLists = vec.getElementKeyLists(vec.rootPnt);
     if (keyLists !== null) {
@@ -787,7 +792,6 @@ function initUI() {
         keyLists[0].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 300));
     }
     selectPoint(vec.rootPnt);
-    setPreAnim(vec.anims[0]);
     // context menu
     $('#contextMenu').click(() => $('#contextMenu').hide());
 }
