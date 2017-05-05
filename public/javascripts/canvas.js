@@ -3,7 +3,7 @@ const maxDelta = 20;
 // canvas stuff
 var ctx = null;
 var canvas = null;
-var globalCamera = [-100, -80];
+var globalCamera = [0, 0];
 var draggingCamera = false;
 var pointHitboxes = [];
 var timelineHitboxes = [];
