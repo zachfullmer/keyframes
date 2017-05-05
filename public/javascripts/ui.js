@@ -710,7 +710,6 @@ function dragPoint(screenPos) {
 
 
 function addContextMenuItem(text, checked, func) {
-    console.log(checked);
     let menu = $('#contextMenu');
     let menuItem = $('<div class="context-menu-item no-select"><span>&#10004;</span>' + text + '</div>');
     if (!checked) {
@@ -779,6 +778,7 @@ function initUI() {
         keyLists[1].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
     }
     selectPoint(vec.rootPnt);
+    setPreAnim(vec.anims[0]);
     // context menu
     $('#contextMenu').click(() => $('#contextMenu').hide());
 }

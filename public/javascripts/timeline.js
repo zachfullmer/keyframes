@@ -514,8 +514,6 @@ function Timeline() {
             }
             let val = $(keyLists[l].propInfo.propId).val();
             let newKey = new Keyframe(t, keyframeTypes.instant, val);
-            console.log(keyLists[l]);
-
             keyLists[l].addKeyframe(newKey);
             this.curTime = this.curTime;
         }

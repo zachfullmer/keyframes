@@ -45,18 +45,21 @@ function Keyframe(time, type, val = null) {
         "val": {
             "get": function () { return _val; },
             "set": function (v) {
-                if (this.propInfo.type == 'col') {
-                    if (typeof v == 'string') {
+                if (typeof v == 'string') {
+                    if (v[0] == '#') {
                         v = hexToRgb(v);
                     }
-                }
-                else {
-                    v = parseFloat(v);
+                    else {
+                        v = parseFloat(v);
+                    }
                 }
                 _val = v;
             }
         }
     });
+    if (val !== null) {
+        this.val = val;
+    }
 }
 
 function KeyframeList(propInfo) {
