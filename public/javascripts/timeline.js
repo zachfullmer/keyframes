@@ -194,8 +194,10 @@ function Timeline() {
                 findHighlighted(preKeyLists, 0);
                 findHighlighted(postKeyLists, this.prePeriod + this.period);
                 $('.prop-window-item').removeClass('active-keyframe');
+                $('.prop-window-item').prop('disabled', true);
                 for (let h in this.hiKeyframes) {
                     $(this.hiKeyframes[h].propInfo.propId).addClass('active-keyframe');
+                    $(this.hiKeyframes[h].propInfo.propId).prop('disabled', false);
                 }
             }
         },
