@@ -167,10 +167,20 @@ function updatePropWindow() {
             $(props[p].propId).val(rgbToHex(col[0], col[1], col[2]));
         }
         else if (props[p].type == 'deg') {
-            $(props[p].propId).val(element[props[p].varName] * degrees);
+            let val = element[props[p].varName] * degrees;
+            if (timeline.selectedKeyframe !== null && timeline.selectedKeyframe.propInfo.propId == props[p].propId) {
+                // just in case this is a relative keyframe
+                val = timeline.selectedKeyframe.val * degrees;
+            }
+            $(props[p].propId).val(val);
         }
         else {
-            $(props[p].propId).val(element[props[p].varName]);
+            let val = element[props[p].varName];
+            if (timeline.selectedKeyframe !== null && timeline.selectedKeyframe.propInfo.propId == props[p].propId) {
+                // just in case this is a relative keyframe
+                val = timeline.selectedKeyframe.val;
+            }
+            $(props[p].propId).val(val);
         }
     }
 }
@@ -772,8 +782,9 @@ function initUI() {
     selectAnim(anotherAnim);
     keyLists = vec.getElementKeyLists(vec.rootPnt);
     if (keyLists !== null) {
-        keyLists[0].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
-        keyLists[1].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 600));
+        keyLists[0].addKeyframe(new Keyframe(100, keyframeTypes.cosine, 50));
+        keyLists[0].addKeyframe(new Keyframe(200, keyframeTypes.cosine, 100, true));
+        keyLists[0].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 300));
     }
     selectPoint(vec.rootPnt);
     setPreAnim(vec.anims[0]);

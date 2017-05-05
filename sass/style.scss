@@ -229,6 +229,16 @@ input.active-keyframe {
     display: none;
 }
 
+#keyframePropsBox select,
+#keyframePropsBox input {
+    width: 100px;
+}
+
+#keyframePropsBox input[type=checkbox] {
+    width: auto;
+    float: right;
+}
+
 
 /* context menu */
 
@@ -314,9 +324,4 @@ canvas {
     user-select: none;
     /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
-}
-
-#keyframePropsBox select,
-#keyframePropsBox input {
-    width: 100px;
 }

@@ -178,6 +178,9 @@ function initEvents() {
     $('#keyframeTypeSelect').on('change', function () {
         timeline.selectedKeyframe.type = keyframeTypes[$('#keyframeTypeSelect').val()];
     });
+    $('#krProp').on('change', function () {
+        timeline.selectedKeyframe.relative = $('#krProp').prop('checked');
+    });
     //
     $(document).keypress((event) => {
         if (event.which == 122) { // z

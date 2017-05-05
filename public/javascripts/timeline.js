@@ -399,6 +399,7 @@ function Timeline() {
             $('#kpProp').text(' (' + activeKeyframeLists[lane].propInfo.name + ')');
             $('#keyframePropsBox').show();
             $('#ktProp').val(keyframe.time);
+            $('#krProp').prop('checked', keyframe.relative);
             $('#keyframeTypeSelect').val(keyframe.type.id);
         }
     }
