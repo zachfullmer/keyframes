@@ -752,7 +752,7 @@ function initUI() {
         }));
     });
     // camera
-    globalCamera = [$(window).width() / 2, $(window).height() / 2];
+    centerCamera();
     // init point list
     let root = new pnt();
     addPoint(root, null, 'rootPoint');

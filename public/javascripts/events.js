@@ -27,8 +27,12 @@ function initEvents() {
         event.preventDefault();
     });
     $(document).keydown((event) => {
+        console.log(event.which);
         if (event.which == 27) { // escape
             stopEditing();
+        }
+        else if (event.which == 36) { // home
+            centerCamera();
         }
     });
     canvas.dblclick((event) => {

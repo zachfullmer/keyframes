@@ -89,6 +89,22 @@ function resizeCanvas() {
     }
 }
 
+function drawCrosshair(ctx) {
+    ctx.strokeStyle = '#0b1639';
+    ctx.beginPath();
+    ctx.moveTo(0, 0 + globalCamera[1]);
+    ctx.lineTo(window.innerWidth, 0 + globalCamera[1]);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0 + globalCamera[0], 0);
+    ctx.lineTo(0 + globalCamera[0], window.innerHeight);
+    ctx.stroke();
+}
+
+function centerCamera() {
+    globalCamera = [$(window).width() / 2, $(window).height() / 2];
+}
+
 var lastT = null;
 function drawCanvas(timestamp) {
     if (lastT === null) {
@@ -105,6 +121,7 @@ function drawCanvas(timestamp) {
     //
     // drawing
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawCrosshair(ctx);
     vec.draw(ctx, globalCamera);
     vec.debugDraw(ctx, globalCamera);
     timeline.draw(ctx);
