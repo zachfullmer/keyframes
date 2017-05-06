@@ -349,7 +349,7 @@ function Timeline() {
         "prePeriod": {
             "get": function () {
                 if (preKeyLists === null || preKeyLists.length == 0) {
-                    return null;
+                    return 0;
                 }
                 return preKeyLists[0].anim.period;
             }
@@ -357,7 +357,7 @@ function Timeline() {
         "postPeriod": {
             "get": function () {
                 if (postKeyLists === null || postKeyLists.length == 0) {
-                    return null;
+                    return 0;
                 }
                 return postKeyLists[0].anim.period;
             }
@@ -407,12 +407,12 @@ function Timeline() {
         grabbedKeyframe = keyframe;
     }
     this.moveKeyframe = (keyframe, time) => {
-        keyframe.parentList.sort();
         time = Math.min(keyframe.parentList.anim.period, Math.max(Math.round(time), 0));
         keyframe.time = time;
         if (keyframe === this.selectedKeyframe) {
             $('#ktProp').val(keyframe.time);
         }
+        keyframe.parentList.sort();
     }
     this.findKeyframe = (event) => {
         if (keyLists !== null) {
@@ -554,7 +554,7 @@ function Timeline() {
             pThis.pixelOffset -= moved[0];
         }
         else if (grabbedKeyframe !== null) {
-            pThis.moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset - this.prePeriod);
+            pThis.moveKeyframe(grabbedKeyframe, getTime(event.pageX - pThis.left - infoAreaWidth) + 2 * pThis.timeOffset - pThis.prePeriod);
         }
         this.lastMouse = [event.pageX, event.pageY];
         if (pThis.hitbox.contains(this.lastMouse[0], this.lastMouse[1])) {
