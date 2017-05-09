@@ -383,7 +383,8 @@ function shape(type, points, color = 'white', radius = 20) {
     this.radius = radius;
     this.toJson = () => {
         let obj = {};
-        obj.type = type;
+        obj.name = this.name;
+        obj.type = this.type;
         obj.points = points.map(x => x.name);
         return obj;
     }
