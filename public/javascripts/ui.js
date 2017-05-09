@@ -10,30 +10,30 @@ var keyframeSource = null;
 
 const propTypes = {
     point: [
-        { name: 'position x', type: 'num', varName: 'px', propId: '#pxProp' },
-        { name: 'position y', type: 'num', varName: 'py', propId: '#pyProp' },
-        { name: 'origin x', type: 'num', varName: 'ox', propId: '#oxProp' },
-        { name: 'origin y', type: 'num', varName: 'oy', propId: '#oyProp' },
-        { name: 'rotation', type: 'deg', varName: 'r', propId: '#rProp' },
-        { name: 'scale x', type: 'num', varName: 'sx', propId: '#sxProp' },
-        { name: 'scale y', type: 'num', varName: 'sy', propId: '#syProp' }
+        { name: 'position x', type: 'num', varName: 'px', propId: '#pxProp', jsonProp: 'px' },
+        { name: 'position y', type: 'num', varName: 'py', propId: '#pyProp', jsonProp: 'py' },
+        { name: 'origin x', type: 'num', varName: 'ox', propId: '#oxProp', jsonProp: 'ox' },
+        { name: 'origin y', type: 'num', varName: 'oy', propId: '#oyProp', jsonProp: 'oy' },
+        { name: 'rotation', type: 'deg', varName: 'r', propId: '#rProp', jsonProp: 'r' },
+        { name: 'scale x', type: 'num', varName: 'sx', propId: '#sxProp', jsonProp: 'sx' },
+        { name: 'scale y', type: 'num', varName: 'sy', propId: '#syProp', jsonProp: 'sy' }
     ],
     polygon: [
-        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#pcProp' }
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#pcProp', jsonProp: 'col' }
     ],
     line: [
-        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#lcProp' }
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#lcProp', jsonProp: 'col' }
     ],
     circleF: [
-        { name: 'radius', type: 'num', varName: 'radius', propId: '#cfrProp' },
-        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#cfcProp' }
+        { name: 'radius', type: 'num', varName: 'radius', propId: '#cfrProp', jsonProp: 'rad' },
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#cfcProp', jsonProp: 'col' }
     ],
     circleO: [
-        { name: 'radius', type: 'num', varName: 'radius', propId: '#corProp' },
-        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#cocProp' }
+        { name: 'radius', type: 'num', varName: 'radius', propId: '#corProp', jsonProp: 'rad' },
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#cocProp', jsonProp: 'col' }
     ],
     bezier: [
-        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#bcProp' }
+        { name: 'color', type: 'col', varName: 'colorRGB', propId: '#bcProp', jsonProp: 'col' }
     ]
 }
 
@@ -783,6 +783,13 @@ function initUI() {
         pushPointToShape(points[p]);
     }
     stopEditing();
+    let s2 = new shape('line', []);
+    addShape(s2);
+    editShape(s2);
+    for (let p in points) {
+        pushPointToShape(points[p]);
+    }
+    stopEditing();
     setPreAnim(vec.anims[0]);
     selectAnim(anotherAnim);
     keyLists = vec.getElementKeyLists(vec.rootPnt);
@@ -794,4 +801,6 @@ function initUI() {
     selectPoint(vec.rootPnt);
     // context menu
     $('#contextMenu').click(() => $('#contextMenu').hide());
+    // json
+    vec.toJson();
 }

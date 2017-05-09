@@ -89,7 +89,7 @@ function KeyframeList(propInfo) {
             frames.push(this.keyframes[k].toJson());
         }
         let obj = {
-            attr: _propInfo.varName,
+            attr: _propInfo.jsonProp,
             keyframes: frames
         }
         return obj;
@@ -573,7 +573,7 @@ function anim(name, isDefault) {
                 let nextKeyPeriod = (nextAnim ? nextAnim.period : 0);
                 let finalVal = getKeyListValue(time, keyListInfo, this.period, prevKeyList, prevKeyPeriod, nextKeyList);
                 if (finalVal !== null) {
-                    this.animData[e][0][keyListInfo.propInfo.varName] = finalVal;
+                    this.animData[e][0][keyListInfo.propInfo.jsonProp] = finalVal;
                 }
             }
         }
@@ -637,7 +637,7 @@ function VectorDrawing() {
         for (let p in pointType) {
             let kl = new KeyframeList(pointType[p]);
             if (anim.isDefault) {
-                kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, point[pointType[p].varName]));
+                kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, point[pointType[p].jsonProp]));
             }
             propInfo.push(kl);
         }
@@ -677,7 +677,7 @@ function VectorDrawing() {
         for (let p in shapeType) {
             let kl = new KeyframeList(shapeType[p]);
             if (anim.isDefault) {
-                kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].varName]));
+                kl.addKeyframe(new Keyframe(0, keyframeTypes.instant, shape[shapeType[p].jsonProp]));
             }
             propInfo.push(kl);
         }
