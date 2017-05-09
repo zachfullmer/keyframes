@@ -42,6 +42,14 @@ function Keyframe(time, type, val = null, relative = false) {
     this.relative = relative;
     this.propInfo = null;
     this.parentList = null;
+    this.toJson = () => {
+        let obj = {};
+        obj.time = this.time;
+        obj.type = this.type.id;
+        obj.relative = this.relative;
+        obj.val = this.val;
+        return obj;
+    }
     Object.defineProperties(this, {
         "val": {
             "get": function () { return _val; },
@@ -75,6 +83,17 @@ function KeyframeList(propInfo) {
     if (this.propInfo.type == 'num' || this.propInfo.type == 'deg') this.funcName = 'func';
     else if (this.propInfo.type == 'col') this.funcName = 'funcArr';
     this.keyframes = [];
+    this.toJson = () => {
+        let frames = [];
+        for (let k in this.keyframes) {
+            frames.push(this.keyframes[k].toJson());
+        }
+        let obj = {
+            attr: _propInfo.varName,
+            keyframes: frames
+        }
+        return obj;
+    }
     this.addKeyframe = (keyframe) => {
         keyframe.propInfo = this.propInfo;
         keyframe.parentList = this;
@@ -185,6 +204,17 @@ function pnt() {
             "get": function () { return this._parent; }
         }
     });
+    this.toJson = (parentJson = null) => {
+        let obj = {};
+        obj.name = this.name;
+        if (this.children.length > 0) {
+            obj.children = [];
+            for (let c in this.children) {
+                obj.children.push(this.children[c].toJson());
+            }
+        }
+        return obj;
+    }
     this.transform = (point) => {
         // origin
         point = opList(point, this.of, (a, b) => a + b);
@@ -351,6 +381,12 @@ function shape(type, points, color = 'white', radius = 20) {
     this.points = points;
     this.color = color;
     this.radius = radius;
+    this.toJson = () => {
+        let obj = {};
+        obj.type = type;
+        obj.points = points.map(x => x.name);
+        return obj;
+    }
     this.getPointsByName = (name) => {
         let result = [];
         for (let p in this.points) {
@@ -425,6 +461,27 @@ function anim(name, isDefault) {
     this.isDefault = isDefault;
     var _period = 1000;
     this.animData = [];
+    this.toJson = () => {
+        let obj = {};
+        obj.name = this.name;
+        obj.period = this.period;
+        obj.refs = [];
+        for (let d in this.animData) {
+            let lists = {};
+            lists.keyLists = [];
+            for (let l in this.animData[d][1]) {
+                let lJson = this.animData[d][1][l].toJson();
+                if (lJson.keyframes.length > 0) {
+                    lists.keyLists.push(lJson);
+                }
+            }
+            if (lists.keyLists.length > 0) {
+                lists.ref = this.animData[d][0].name;
+                obj.refs.push(lists);
+            }
+        }
+        return obj;
+    }
     Object.defineProperties(this, {
         "period": {
             "get": function () { return _period; },
@@ -674,5 +731,18 @@ function VectorDrawing() {
         for (let k in keyLists) {
             //console.log(keyLists[k].keyframes[0].val);
         }
+    }
+    this.toJson = () => {
+        let obj = {};
+        obj.root = this.rootPnt.toJson();
+        obj.shapes = [];
+        for (let s in this.shapes) {
+            obj.shapes.push(this.shapes[s].toJson());
+        }
+        obj.anims = [];
+        for (let a in this.anims) {
+            obj.anims.push(this.anims[a].toJson());
+        }
+        return obj;
     }
 }
