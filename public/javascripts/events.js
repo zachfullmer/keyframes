@@ -31,6 +31,10 @@ function showSnackbar(text) {
 
 var currentFilename = null;
 
+function updateDocTitle() {
+    document.title = currentFilename.replace(/\.json$/, '') + ' - ' + 'Vector Anim';
+}
+
 function validateFilename(filename) {
     if (filename === null) {
         return null;
@@ -49,6 +53,7 @@ function saveDrawing() {
         $.post('/save', { filename: currentFilename, text: JSON.stringify(vec.toJson()) }, (res) => {
             console.log(res);
             showSnackbar('Saved!');
+            updateDocTitle();
         });
     });
 }
