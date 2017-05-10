@@ -284,6 +284,7 @@ div#saveWindow {
     z-index: 4;
     width: 400px;
     height: 150px;
+    background-color: $panel-bg-light;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
@@ -302,6 +303,7 @@ div#saveWindow div {
 div#saveWindow input {
     display: block;
     width: 80%;
+    background-color: #333;
     margin: auto;
     margin-top: 10%;
 }
