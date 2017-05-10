@@ -1,3 +1,4 @@
+
 function showTooltip(mousePos, text) {
     let tooltip = $('#tooltip');
     tooltip.show();
@@ -17,6 +18,53 @@ function hideTooltip() {
     tooltip.hide();
 }
 
+var snackbarTimeout = null;
+function showSnackbar(text) {
+    $('#snackbar').text(text);
+    if (snackbarTimeout !== null) {
+        clearTimeout(snackbarTimeout);
+        $('#snackbar').removeClass('show');
+    }
+    $('#snackbar').addClass('show');
+    snackbarTimeout = setTimeout(() => { $('#snackbar').removeClass('show') }, 1800);
+}
+
+var currentFilename = null;
+
+function validateFilename(filename) {
+    if (filename === null) {
+        return null;
+    }
+    filename = filename.replace(/\.json$/, '');
+    if (filename.search(/\W/) >= 0) {
+        return null;
+    }
+    filename += '.json';
+    return filename;
+}
+
+function saveDrawing() {
+    console.log('saving drawing "' + currentFilename + '"...');
+    $.post('/save', { filename: currentFilename }, (res) => {
+        $.post('/save', { filename: currentFilename, text: JSON.stringify(vec.toJson()) }, (res) => {
+            console.log(res);
+            showSnackbar('Saved!');
+        });
+    });
+}
+
+function confirmSave() {
+    currentFilename = validateFilename($('#saveBox').val());
+    if (currentFilename === null) {
+        $('#saveMessage').text('Invalid filename');
+        $('#saveMessage').css('color', '#dd4444');
+    }
+    else {
+        saveDrawing();
+        $('#saveWindow').hide();
+    }
+}
+
 function initEvents() {
     let canvas = $('#drawingArea');
     // disable right click
@@ -27,13 +75,39 @@ function initEvents() {
         event.preventDefault();
     });
     $(document).keydown((event) => {
-        console.log(event.which);
         if (event.which == 27) { // escape
             stopEditing();
+            $('#saveWindow').hide();
         }
         else if (event.which == 36) { // home
             centerCamera();
         }
+        else if (event.which == 13) { // enter
+            if ($('#saveWindow').is(':visible')) {
+                confirmSave();
+            }
+        }
+        else if (event.which == 83) { // s
+            $('#saveMessage').text('Enter a filename:');
+            if (event.ctrlKey) {
+                currentFilename = validateFilename(currentFilename);
+                if (event.shiftKey || currentFilename === null) {
+                    $('#saveWindow').show();
+                    $('#saveBox').focus();
+                    $('#saveBox').select();
+                }
+                else {
+                    confirmSave();
+                }
+                event.preventDefault();
+            }
+        }
+    });
+    $('#saveConfirm').click(() => {
+        confirmSave();
+    });
+    $('#saveCancel').click(() => {
+        $('#saveWindow').hide();
     });
     canvas.dblclick((event) => {
         if (globalPlaying) {

@@ -1,4 +1,8 @@
 /* main ui */
+#leftBox,
+#rightBox {
+  z-index: 2; }
+
 .ui-panel {
   padding: 10px;
   border: 1px solid #555;
@@ -12,6 +16,12 @@
   z-index: 3;
   display: none;
   padding: 3px; }
+
+button {
+  border: 1px solid #555;
+  background-color: #000;
+  color: #fff;
+  padding: 2px 10px; }
 
 /* lists */
 ul {
@@ -115,16 +125,12 @@ input.rename-box {
   width: 200px;
   height: 250px; }
 
-input[type=number] {
+input[type=number],
+input[type=color],
+input {
   border: 1px solid #555;
   background-color: #111;
   color: #fff;
-  margin-right: 5px;
-  width: 80px; }
-
-input[type=color] {
-  border: 1px solid #555;
-  background-color: #111;
   margin-right: 5px;
   width: 80px; }
 
@@ -198,6 +204,36 @@ input.active-keyframe {
   .context-menu-item span.invisible-text {
     opacity: 0; }
 
+/* save window */
+div#saveWindow {
+  z-index: 4;
+  width: 400px;
+  height: 150px;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  left: 50vw;
+  top: 50vh;
+  display: none; }
+
+div#saveWindow div {
+  width: 70%;
+  box-sizing: border-box;
+  margin: auto;
+  margin-top: 10%; }
+
+div#saveWindow input {
+  display: block;
+  width: 80%;
+  margin: auto;
+  margin-top: 10%; }
+
+#saveConfirm {
+  float: left; }
+
+#saveCancel {
+  float: right; }
+
 /* misc */
 .dark-label {
   color: #888; }
@@ -245,5 +281,52 @@ canvas {
   user-select: none;
   /* Non-prefixed version, currently
                                 supported by Chrome and Opera */ }
+
+/*snackbar*/
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #111;
+  text-align: center;
+  padding: 16px;
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  bottom: 30px; }
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 1.5s;
+  animation: fadein 0.5s, fadeout 0.5s 1.5s; }
+
+@-webkit-keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0; }
+  to {
+    bottom: 30px;
+    opacity: 1; } }
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0; }
+  to {
+    bottom: 30px;
+    opacity: 1; } }
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1; }
+  to {
+    bottom: 0;
+    opacity: 0; } }
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1; }
+  to {
+    bottom: 0;
+    opacity: 0; } }
 
 /*# sourceMappingURL=style.css.map */
