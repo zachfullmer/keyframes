@@ -30,6 +30,7 @@ function showSnackbar(text) {
 }
 
 var currentFilename = null;
+var loading = false;
 
 function updateDocTitle() {
     document.title = currentFilename.replace(/\.json$/, '') + ' - ' + 'Vector Anim';
@@ -40,7 +41,7 @@ function validateFilename(filename) {
         return null;
     }
     filename = filename.replace(/\.json$/, '');
-    if (filename.search(/\W/) >= 0) {
+    if (filename.search(/\W/) >= 0 || filename.length == 0) {
         return null;
     }
     filename += '.json';
@@ -58,14 +59,37 @@ function saveDrawing() {
     });
 }
 
+function loadDrawing() {
+    console.log('loading drawing "' + currentFilename + '"...');
+    $.post('/save', { filename: currentFilename }, (res) => {
+        $.post('/load', { filename: currentFilename, text: JSON.stringify(vec.toJson()) }, (res) => {
+            console.log(res);
+            showSnackbar('Loaded file ' + currentFilename);
+            updateDocTitle();
+        });
+    });
+}
+
 function confirmSave() {
     currentFilename = validateFilename($('#saveBox').val());
     if (currentFilename === null) {
-        $('#saveMessage').text('Invalid filename');
+        $('#saveMessage').text('Can\'t save: invalid filename');
         $('#saveMessage').css('color', '#dd4444');
     }
     else {
         saveDrawing();
+        $('#saveWindow').hide();
+    }
+}
+
+function confirmLoad() {
+    currentFilename = validateFilename($('#saveBox').val());
+    if (currentFilename === null) {
+        $('#saveMessage').text('Can\'t load: invalid filename');
+        $('#saveMessage').css('color', '#dd4444');
+    }
+    else {
+        loadDrawing();
         $('#saveWindow').hide();
     }
 }
@@ -89,17 +113,23 @@ function initEvents() {
         }
         else if (event.which == 13) { // enter
             if ($('#saveWindow').is(':visible')) {
-                confirmSave();
+                if (loading) {
+                    confirmLoad();
+                }
+                else {
+                    confirmSave();
+                }
             }
         }
         else if (event.which == 83) { // s
-            $('#saveMessage').text('Enter a filename:');
             if (event.ctrlKey) {
+                $('#saveMessage').text('Enter a filename to save:');
                 currentFilename = validateFilename(currentFilename);
                 if (event.shiftKey || currentFilename === null) {
                     $('#saveWindow').show();
                     $('#saveBox').focus();
                     $('#saveBox').select();
+                    loading = false;
                 }
                 else {
                     confirmSave();
@@ -107,9 +137,25 @@ function initEvents() {
                 event.preventDefault();
             }
         }
+        else if (event.which == 79) { // o
+            if (event.ctrlKey) {
+                $('#saveMessage').text('Open which drawing?');
+                currentFilename = validateFilename(currentFilename);
+                $('#saveWindow').show();
+                $('#saveBox').focus();
+                $('#saveBox').select();
+                event.preventDefault();
+                loading = true;
+            }
+        }
     });
     $('#saveConfirm').click(() => {
-        confirmSave();
+        if (loading) {
+            confirmLoad();
+        }
+        else {
+            confirmSave();
+        }
     });
     $('#saveCancel').click(() => {
         $('#saveWindow').hide();

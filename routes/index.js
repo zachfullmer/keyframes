@@ -15,8 +15,6 @@ router.post('/save', function (req, res, next) {
   }
   filename = 'drawings/' + filename;
   if (req.body.text === undefined) {
-    console.log('save');
-    console.log(filename);
     try {
       fs.access(filename, fs.constants.F_OK, (err) => {
         console.log(err);
@@ -29,7 +27,6 @@ router.post('/save', function (req, res, next) {
       });
     }
     catch (e) {
-      console.log(e);
       res.send({ exists: false });
       return;
     }
@@ -40,6 +37,19 @@ router.post('/save', function (req, res, next) {
     res.end('saved to ' + filename);
     return;
   }
+});
+
+router.post('/load', function (req, res, next) {
+  console.log('loading...');
+  let filename = req.body.filename;
+  if (!filename || filename.length == 0) {
+    res.end('ERROR: empty filepath!');
+    return;
+  }
+  filename = 'drawings/' + filename;
+  console.log('filename: ' + filename);
+  //fs.writeFile(filename, req.body.text);
+  res.sendFile(filename);
 });
 
 module.exports = router;

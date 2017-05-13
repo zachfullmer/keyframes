@@ -47,7 +47,7 @@ function Keyframe(time, type, val = null, relative = false) {
         obj.time = this.time;
         obj.type = this.type.id;
         obj.relative = this.relative;
-        obj.val = this.val;
+        obj.val = this.val.toString();
         return obj;
     }
     Object.defineProperties(this, {
