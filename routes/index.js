@@ -49,7 +49,7 @@ router.post('/load', function (req, res, next) {
   filename = 'drawings/' + filename;
   console.log('filename: ' + filename);
   //fs.writeFile(filename, req.body.text);
-  res.sendFile(filename);
+  res.download(filename);
 });
 
 module.exports = router;
