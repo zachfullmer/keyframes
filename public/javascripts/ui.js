@@ -736,6 +736,11 @@ function clearContextMenu() {
 }
 
 
+function loadDrawingToUi(json) {
+    vec.loadFromJson(json);
+}
+
+
 function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
@@ -802,5 +807,5 @@ function initUI() {
     // context menu
     $('#contextMenu').click(() => $('#contextMenu').hide());
     // json
-    vec.toJson();
+
 }

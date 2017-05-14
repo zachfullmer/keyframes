@@ -37,7 +37,12 @@ const keyframeTypes = {
 
 function Keyframe(time, type, val = null, relative = false) {
     this.time = time;
-    this.type = type;
+    if (typeof type == 'string') {
+        this.type = keyframeTypes[type];
+    }
+    else {
+        this.type = type;
+    }
     var _val = val;
     this.relative = relative;
     this.propInfo = null;
@@ -57,6 +62,13 @@ function Keyframe(time, type, val = null, relative = false) {
                 if (typeof v == 'string') {
                     if (v[0] == '#') {
                         v = hexToRgb(v);
+                    }
+                    else if (v.indexOf(',') >= 0) {
+                        let arr = v.split(',');
+                        if (arr.length != 3) {
+                            throw 'ERROR: invalid keyframe value "' + v + '"';
+                        }
+                        v = arr;
                     }
                     else {
                         v = parseFloat(v);
@@ -214,6 +226,15 @@ function pnt() {
             }
         }
         return obj;
+    }
+    this.loadFromJson = (json) => {
+        this.children.length = 0;
+        this.name = json.name;
+        for (let c in json.children) {
+            let p = new pnt();
+            p.loadFromJson(json.children[c]);
+            this.children.push(p);
+        }
     }
     this.transform = (point) => {
         // origin
@@ -745,5 +766,67 @@ function VectorDrawing() {
             obj.anims.push(this.anims[a].toJson());
         }
         return obj;
+    }
+    this.loadFromJson = (json) => {
+        this.rootPnt.loadFromJson(json.root);
+        this.shapes.length = 0;
+        for (let js in json.shapes) {
+            let shapeJson = json.shapes[js];
+            let points = [];
+            for (let p in shapeJson.points) {
+                points.push(this.getPointByName(shapeJson.points[p]));
+            }
+            let s = new shape(shapeJson.type, points);
+            s.name = shapeJson.name;
+            this.shapes.push(s);
+        }
+        this.anims = [];
+        for (let a in json.anims) {
+            let an = new anim(json.anims[a].name, false);
+            an.period = json.anims[a].period;
+            isDefault = false;
+            let refList = [];
+            this.addAnim(an);
+            for (let r in json.anims[a].refs) {
+                let refJson = json.anims[a].refs[r];
+                let ref = this.getPointByName(refJson.ref);
+                let type = null;
+                let keyLists = [];
+                if (ref === null) {
+                    ref = this.getShapeByName(refJson.ref);
+                    type = ref.type;
+                }
+                else {
+                    type = 'point';
+                }
+                let destRef = null;
+                for (let re in an.animData) {
+                    if (an.animData[re][0] === ref) {
+                        destRef = an.animData[re];
+                    }
+                }
+                if (destRef === null) {
+                    throw 'ERROR: ref not found';
+                }
+                for (let l in refJson.keyLists) {
+                    let listJson = refJson.keyLists[l];
+                    let propType = null;
+                    let kl = null;
+                    for (let j in destRef[1]) {
+                        if (listJson.attr == destRef[1][j].propInfo.jsonProp) {
+                            kl = destRef[1][j];
+                            break;
+                        }
+                    }
+                    if (kl === null) {
+                        throw 'unable to find keylist "' + refJson.keyLists[l].attr + '"'
+                    }
+                    for (let k in listJson.keyframes) {
+                        let key = listJson.keyframes[k];
+                        kl.addKeyframe(new Keyframe(key.time, key.type, key.val, key.relative));
+                    }
+                }
+            }
+        }
     }
 }

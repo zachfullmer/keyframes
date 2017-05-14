@@ -63,7 +63,7 @@ function loadDrawing() {
     console.log('loading drawing "' + currentFilename + '"...');
     $.post('/save', { filename: currentFilename }, (res) => {
         $.post('/load', { filename: currentFilename }, (res) => {
-            vec.loadFromJson(res);
+            loadDrawingToUi(res);
             showSnackbar('Loaded file ' + currentFilename);
             updateDocTitle();
         });
