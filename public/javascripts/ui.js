@@ -455,9 +455,8 @@ function stopEditing() {
     editedShape = null;
 }
 
-function pushPointToShape(point) {
-    let shape = editedShape;
-    let pointList = editedShape.points;
+function addPointRefToUi(point, shape) {
+    let pointList = shape.points;
     let pointRef = 'point-ref-' + point.name;
     let pointRefDiv = 'point-ref-div-' + point.name;
     let pointRefNameSpan = 'point-ref-name-span-' + point.name;
@@ -481,7 +480,7 @@ function pushPointToShape(point) {
     // div
     let div = $('<div class="nesting-box ' + pointRefDiv + '"></div>');
     div.append(li);
-    $('#shapeList-' + editedShape.name).append(div);
+    $('#shapeList-' + shape.name).append(div);
     li.mousedown((event) => {
         if (event.which == 1) { // left click
             selectPoint(point);
@@ -518,7 +517,11 @@ function pushPointToShape(point) {
     li.mouseleave(() => {
         pointRefsLo(point);
     });
-    editedShape.points.push(point);
+}
+
+function addPointRef(point, shape = editedShape) {
+    addPointRefToUi(point, shape);
+    shape.points.push(point);
 }
 
 function addPointToUi(point, parent, name) {
@@ -552,7 +555,7 @@ function addPointToUi(point, parent, name) {
                 if (globalPlaying) {
                     return;
                 }
-                pushPointToShape(point);
+                addPointRef(point);
             }
         }
         else if (event.which == 2) { // middle click
@@ -588,7 +591,7 @@ function addPointToUi(point, parent, name) {
                 grabPoint(point);
             }
             else {
-                pushPointToShape(point);
+                addPointRef(point);
             }
         }
         else if (event.which == 2) { // middle
@@ -797,6 +800,9 @@ function loadDrawingToUi(json) {
     selectPoint(vec.rootPnt);
     for (let s in vec.shapes) {
         addShapeToUi(vec.shapes[s]);
+        for (let p in vec.shapes[s].points) {
+            addPointRefToUi(vec.shapes[s].points[p], vec.shapes[s]);
+        }
     }
     for (let a in vec.anims) {
         addAnimToUi(vec.anims[a]);
