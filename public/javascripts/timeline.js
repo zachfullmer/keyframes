@@ -581,6 +581,11 @@ function Timeline() {
 
     this.setObjType = (type) => {
         objType = type;
+        if (type === null) {
+            this.laneNum = 1;
+            laneNames = [''];
+            return;
+        }
         this.laneNum = propTypes[type].length;
         laneNames.length = 0;
         for (let p in propTypes[type]) {
@@ -859,5 +864,15 @@ function Timeline() {
         this.magText.y = magButtonTop + magButtonHeight / 2;
         ctx.fillStyle = '#fff';
         this.magText.draw(ctx);
+    }
+    this.reset = () => {
+        this.setKeyLists(null);
+        this.setObjType(null);
+        this.selectKeyframe(null);
+        this.period = 0;
+        this.timeOffset = 0;
+        this.magnification = 1.0;
+        pauseGlobalTime();
+        setGlobalTime(0);
     }
 }

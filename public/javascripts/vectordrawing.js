@@ -140,8 +140,8 @@ function KeyframeList(propInfo) {
     }
 }
 
-function pnt() {
-    this.name = '';
+function pnt(name = '') {
+    this.name = name;
     var _p = [0.0, 0.0]; // position
     var _o = [0.0, 0.0]; // origin
     var _r = 0.0; // rotation (radians)
@@ -768,8 +768,8 @@ function VectorDrawing() {
         return obj;
     }
     this.loadFromJson = (json) => {
+        this.clear();
         this.rootPnt.loadFromJson(json.root);
-        this.shapes.length = 0;
         for (let js in json.shapes) {
             let shapeJson = json.shapes[js];
             let points = [];
@@ -780,7 +780,7 @@ function VectorDrawing() {
             s.name = shapeJson.name;
             this.shapes.push(s);
         }
-        this.anims = [];
+        this.anims.length = 0;
         for (let a in json.anims) {
             let an = new anim(json.anims[a].name, false);
             an.period = json.anims[a].period;
@@ -829,4 +829,27 @@ function VectorDrawing() {
             }
         }
     }
+    this.clear = () => {
+        // clear points
+        pointHitboxes.length = 0;
+        this.rootPnt = new pnt('rootPoint');
+        // clear shapes
+        this.shapes.length = 0;
+        // clear anims
+        this.anims = [new anim('default', true)];
+        // other properties
+        this.preAnim = null;
+        this.postAnim = null;
+    }
+    function executeOnPoint(point, parent, func) {
+        func(point, parent);
+        for (let c in point.children) {
+            executeOnPoint(point.children[c], point, func);
+        }
+    }
+    this.forEachPoint = (func) => {
+        executeOnPoint(this.rootPnt, null, func);
+    }
+
+    this.clear();
 }

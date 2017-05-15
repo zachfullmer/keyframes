@@ -160,6 +160,9 @@ function genShapeListName(isShape) {
 var propWindowType = 'none';
 function updatePropWindow() {
     let element = selectedPoint || selectedShape || editedShape;
+    if (element === null) {
+        return;
+    }
     let props = propTypes[propWindowType];
     for (let p in props) {
         if (props[p].type == 'col') {
@@ -205,7 +208,7 @@ function setPropWindow(type, elementName) {
     if (selectedPoint !== null) {
         keyLists = vec.getElementKeyLists(selectedPoint);
     }
-    $('.props-box').hide();
+    hidePropWindow();
     if (type == 'point') {
         for (let p in propTypes[type]) {
             $(propTypes[type][p].propId).val(selectedPoint[propTypes[type][p].varName]);
@@ -252,6 +255,11 @@ function setPropWindow(type, elementName) {
         shapeTypeSelect.val(type);
     }
     $('#elementTitle').text(elementName);
+}
+
+function hidePropWindow() {
+    $('.props-box').hide();
+    $('#elementTitle').text('');
 }
 
 function setPreAnim(anim) {
@@ -336,9 +344,19 @@ function editShape(shape) {
 }
 
 function selectAnim(anim) {
+    if (anim === null) {
+        if (selectedAnim !== null) {
+            $('#animItem-' + selectedAnim.name).removeClass('selected-anim');
+        }
+        selectedAnim = anim;
+        $('#apProp').text('');
+        $('#animPropsBox').hide();
+        return;
+    }
     if (selectedAnim === anim) {
         return;
     }
+    $('#animPropsBox').show();
     vec.currentAnim = anim;
     keyframeSource = null;
     if (editedShape !== null) keyframeSource = editedShape;
@@ -503,7 +521,7 @@ function pushPointToShape(point) {
     editedShape.points.push(point);
 }
 
-function addPoint(point, parent = selectedPoint, name = null) {
+function addPointToUi(point, parent, name) {
     let parentListId = '';
     if (parent === null) {
         parentListId = '#pointListBox';
@@ -512,8 +530,6 @@ function addPoint(point, parent = selectedPoint, name = null) {
         parentListId = '#pointList-' + parent.name;
         point.p = opList(point.p, parent.pf, (a, b) => a - b);
     }
-    vec.addPoint(point, parent);
-    vec.updateKeyLists(point);
     if (name === null) {
         point.name = 'p' + currentPointID;
     }
@@ -585,7 +601,13 @@ function addPoint(point, parent = selectedPoint, name = null) {
     currentPointID += 1;
 }
 
-function addShape(shape) {
+function addPoint(point, parent = selectedPoint, name = null) {
+    vec.addPoint(point, parent);
+    vec.updateKeyLists(point);
+    addPointToUi(point, parent, name);
+}
+
+function addShapeToUi(shape) {
     shape.name = 's' + currentShapeID;
     let listId = 'shapeList-' + shape.name;
     let itemId = 'shapeItem-' + shape.name;
@@ -613,11 +635,15 @@ function addShape(shape) {
         }
     });
     $(id).contextmenu(() => { return false; });
-    vec.addShape(shape);
     currentShapeID += 1;
 }
 
-function addAnim(anim) {
+function addShape(shape) {
+    addShapeToUi(shape);
+    vec.addShape(shape);
+}
+
+function addAnimToUi(anim) {
     if (anim.name === null) {
         anim.name = 'a' + currentAnimID;
     }
@@ -649,8 +675,12 @@ function addAnim(anim) {
         }
     })
     $(id).contextmenu(() => { return false; });
-    vec.addAnim(anim);
     currentAnimID += 1;
+}
+
+function addAnim(anim) {
+    addAnimToUi(anim);
+    vec.addAnim(anim);
 }
 
 
@@ -736,21 +766,62 @@ function clearContextMenu() {
 }
 
 
+function clearDrawingDataFromUi() {
+    currentPointID = 0;
+    currentShapeID = 0;
+    currentAnimID = 0;
+    $('#pointListBox').empty();
+    $('#shapeList').empty();
+    $('#animList').empty();
+    selectedPoint = null;
+    selectedShape = null;
+    editedShape = null;
+    selectAnim(null);
+    activeKeyframeLists = null;
+    preKeyframeLists = null;
+    postKeyframeLists = null;
+    keyframeSource = null;
+    hidePropWindow();
+    timeline.reset();
+}
+
 function loadDrawingToUi(json) {
+    vec.clear();
+    clearDrawingDataFromUi();
     vec.loadFromJson(json);
+    vec.forEachPoint((point, parent) => {
+        addPointToUi(point, parent, point.name);
+    });
+    selectPoint(vec.rootPnt);
+    for (let s in vec.shapes) {
+        addShapeToUi(vec.shapes[s]);
+    }
+    for (let a in vec.anims) {
+        addAnimToUi(vec.anims[a]);
+    }
+    selectAnim(vec.anims[0]);
+}
+
+function loadEmptyDrawingToUi() {
+    vec.clear();
+    clearDrawingDataFromUi();
+    vec.forEachPoint((point, parent) => {
+        addPointToUi(point, parent, point.name);
+    });
+    selectPoint(vec.rootPnt);
+    for (let s in vec.shapes) {
+        addShapeToUi(vec.shapes[s]);
+    }
+    for (let a in vec.anims) {
+        addAnimToUi(vec.anims[a]);
+    }
+    selectAnim(vec.anims[0]);
 }
 
 
 function initUI() {
     // document-level stuff
     $('body').addClass('noscroll');
-    // init animations
-    let defaultAnim = new anim('default', true);
-    defaultAnim.period = 0;
-    addAnim(defaultAnim);
-    let anotherAnim = new anim('anim2', false);
-    addAnim(anotherAnim);
-    selectAnim(defaultAnim);
     // init shape list
     let shapeTypeSelect = $('#shapeTypeSelect');
     $.each(shapeTypes, (key, val) => {
@@ -769,43 +840,8 @@ function initUI() {
     });
     // camera
     centerCamera();
-    // init point list
-    let root = new pnt();
-    addPoint(root, null, 'rootPoint');
-    selectPoint(vec.rootPnt);
-    let points = [];
-    let pos = [[20, 40], [50, -70], [-10, -80], [-30, -30]];
-    for (let a = 0; a < 4; a++) {
-        let p = new pnt();
-        points.push(p);
-        p.p = pos[a];
-        addPoint(p, vec.rootPnt);
-    }
-    let s = new shape('bezier', [], 'white');
-    addShape(s);
-    editShape(s);
-    for (let p in points) {
-        pushPointToShape(points[p]);
-    }
-    stopEditing();
-    let s2 = new shape('line', []);
-    addShape(s2);
-    editShape(s2);
-    for (let p in points) {
-        pushPointToShape(points[p]);
-    }
-    stopEditing();
-    setPreAnim(vec.anims[0]);
-    selectAnim(anotherAnim);
-    keyLists = vec.getElementKeyLists(vec.rootPnt);
-    if (keyLists !== null) {
-        keyLists[0].addKeyframe(new Keyframe(100, keyframeTypes.cosine, 50));
-        keyLists[0].addKeyframe(new Keyframe(200, keyframeTypes.cosine, 100, true));
-        keyLists[0].addKeyframe(new Keyframe(400, keyframeTypes.cosine, 300));
-    }
-    selectPoint(vec.rootPnt);
+    // init drawing
+    loadEmptyDrawingToUi();
     // context menu
     $('#contextMenu').click(() => $('#contextMenu').hide());
-    // json
-
 }

@@ -307,21 +307,7 @@ function initEvents() {
         timeline.selectedKeyframe.relative = $('#krProp').prop('checked');
     });
     //
-    $(document).keypress((event) => {
-        if (event.which == 122) { // z
-            addShape(new shape('polygon', [], 'white'));
-        }
-        else if (event.which == 120) { // x
-            addShape(new shape('line', [], 'white'));
-        }
-        else if (event.which == 99) { // c
-            addShape(new shape('circleF', [], 'white', 20));
-        }
-        else if (event.which == 118) { // v
-            addShape(new shape('circleO', [], 'white', 20));
-        }
-        else if (event.which == 98) { // b
-            addShape(new shape('bezier', [], 'white'));
-        }
+    $('#shapeListBox').dblclick((event) => {
+        addShape(new shape('polygon', [], 'white'));
     });
 }
