@@ -608,7 +608,9 @@ function addPoint(point, parent = selectedPoint, name = null) {
 }
 
 function addShapeToUi(shape) {
-    shape.name = 's' + currentShapeID;
+    if (shape.name === null) {
+        shape.name = 's' + currentShapeID;
+    }
     let listId = 'shapeList-' + shape.name;
     let itemId = 'shapeItem-' + shape.name;
     let spanId = 'shapeSpan-' + shape.name;
