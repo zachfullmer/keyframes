@@ -134,7 +134,9 @@ function drawCanvas(timestamp) {
 function initHitboxEvents(eventRoot) {
     var lastMouse = null;
     let moved = null;
-    eventRoot.on('click dblclick mousemove mousedown mouseup mousewheel DOMMouseScroll mouseleave', (event) => {
+    $(document).on('mouseup mouseleave mousemove', (event) => {
+    });
+    $(document).on('click dblclick mousemove mousedown mouseup mousewheel DOMMouseScroll mouseleave', (event) => {
         if (event.type == 'DOMMouseScroll') {
             event.type = 'mousewheel';
             event.originalEvent.wheelDelta = event.originalEvent.detail;
@@ -150,16 +152,20 @@ function initHitboxEvents(eventRoot) {
             lastMouse = [event.pageX, event.pageY];
             let current = [lastMouse[0], lastMouse[1]];
             moved = [current[0] - last[0], current[1] - last[1]];
+            if (!checkHitboxEvents(event, pointHitboxes, globalCamera)) {
+                if (draggingCamera) {
+                    //$('#pointNameSpan-rootPoint').text('[' + (event.pageX - lastMouse[0]) + ',' + (event.pageY - lastMouse[1]) + ']');
+                    globalCamera[0] += moved[0];
+                    globalCamera[1] += moved[1];
+                }
+            }
         }
+    });
+    eventRoot.on('click dblclick mousemove mousedown mouseup mousewheel DOMMouseScroll mouseleave', (event) => {
         if (!checkHitboxEvents(event, timelineHitboxes, [0, 0]) &&
             !checkHitboxEvents(event, pointHitboxes, globalCamera)) {
             if (event.type == 'mousedown') {
                 draggingCamera = true;
-            }
-            else if (event.type == 'mousemove' && draggingCamera) {
-                //$('#pointNameSpan-rootPoint').text('[' + (event.pageX - lastMouse[0]) + ',' + (event.pageY - lastMouse[1]) + ']');
-                globalCamera[0] += moved[0];
-                globalCamera[1] += moved[1];
             }
         }
     });
