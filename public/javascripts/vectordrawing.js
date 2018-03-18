@@ -397,7 +397,7 @@ function shape(type, points, color = 'white', radius = 20) {
             }
         }
     });
-    this.name = '';
+    this.name = null;
     this.type = type;
     this.points = points;
     this.color = color;
@@ -548,7 +548,7 @@ function anim(name, isDefault) {
     function getKeyListValue(time, listInfo, listPeriod, prevList, prevListPeriod, nextList) {
         let fullList = prevList.map(t => [0, t]).concat(
             listInfo.keyframes.map(t => [prevListPeriod, t])).concat(
-            nextList.map(t => [listPeriod + prevListPeriod, t]));
+                nextList.map(t => [listPeriod + prevListPeriod, t]));
         let k = 0;
         if (fullList.length == 0) {
             return null;
@@ -594,7 +594,7 @@ function anim(name, isDefault) {
                 let nextKeyPeriod = (nextAnim ? nextAnim.period : 0);
                 let finalVal = getKeyListValue(time, keyListInfo, this.period, prevKeyList, prevKeyPeriod, nextKeyList);
                 if (finalVal !== null) {
-                    this.animData[e][0][keyListInfo.propInfo.jsonProp] = finalVal;
+                    this.animData[e][0][keyListInfo.propInfo.varName] = finalVal;
                 }
             }
         }
