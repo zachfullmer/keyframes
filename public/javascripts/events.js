@@ -188,8 +188,8 @@ function initEvents() {
         $('#contextMenu').hide();
     });
     $(window).on('resize', (event) => {
-        checkHitboxEvents(event, timelineHitboxes);
-        checkHitboxEvents(event, pointHitboxes);
+        checkHitboxEvents(event, timelineHitboxes, [0, 0]);
+        checkHitboxEvents(event, pointHitboxes, [0, 0]);
     });
     // properties
     $('#shapeTypeSelect').on('change', function () {
