@@ -197,9 +197,11 @@ function initEvents() {
             return;
         }
         selectedShape.type = this.value;
+        vec.updateShapeType(selectedShape);
         let itemId = '#shapeItem-' + selectedShape.name;
         $(itemId).html(genShapeListName(selectedShape));
-        setPropWindow(this.value);
+        setPropWindow(this.value, selectedShape.name);
+        selectShape(selectedShape);
     });
     $('.prop-window-item').on('input', function () {
         let id = '#' + this.id;

@@ -605,6 +605,12 @@ function anim(name, isDefault) {
             animData[1][a].anim = this;
         }
     }
+    this.setAnimData = (index, animData) => {
+        this.animData[index] = animData;
+        for (let a in animData[1]) {
+            animData[1][a].anim = this;
+        }
+    }
 }
 
 
@@ -711,6 +717,17 @@ function VectorDrawing() {
             this.anims[a].addAnimData(shapeInfo);
         }
         this.shapes.push(shape);
+    }
+    this.updateShapeType = (shape) => {
+        for (let a in this.anims) {
+            let shapeInfo = this.getInitShapeInfo(shape, this.anims[a]);
+            for (var s in this.anims[a].animData) {
+                if (this.anims[a].animData[s][0] === shape) {
+                    this.anims[a].setAnimData(s, shapeInfo);
+                    break;
+                }
+            }
+        }
     }
     this.removeShape = (shape) => {
         let index = this.shapes.indexOf(shape);
