@@ -317,6 +317,7 @@ function selectShape(shape) {
     }
     keyframeSource = shape;
     buildTimeline();
+    timeline.selectKeyframe(null);
     selectedPoint = null;
     selectedShape = shape;
     editedShape = null;
